@@ -20,20 +20,20 @@ function App() {
     setTriangles(parseInt(event.target.value));
   }
 
-  fetch('http://localhost:8080/objects/husky/husky.obj')
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response;
-    })
-    .then((response => response.text()))
-    .then((data) => {
-      console.log(data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  // fetch('http://localhost:8080/objects/husky/husky.obj')
+  //   .then((response) => {
+  //     if (!response.ok) {
+  //       throw new Error('Network response was not ok');
+  //     }
+  //     return response;
+  //   })
+  //   .then((response => response.text()))
+  //   .then((data) => {
+  //     console.log(data);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
 
   // force a re-render of CanvasGL when the demo changes
   useEffect(() => {
@@ -56,6 +56,7 @@ function App() {
         <CanvasGL key={triangles} width={800} height={500} demo={demo} triangles={triangles} />
         <ControlComponent demo={demo} setDemo={updateDemoState} />
       </header>
+
     </div>
   );
 }

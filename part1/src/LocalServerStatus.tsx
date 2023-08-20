@@ -20,7 +20,7 @@ const LocalServerStatus = () => {
         // use the fetch API to request the status from the local server
         // the fetch API returns a promise, so we use the then method to
         // specify what to do when the promise is resolved
-        fetch('http://10.18.195.243:8080/')
+        fetch('http://localhost:8080/')
             .then((data) => {
                 if (data.status === 200) {
                     setStatus('online');
