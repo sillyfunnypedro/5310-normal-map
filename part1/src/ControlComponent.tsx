@@ -12,17 +12,26 @@ interface ControlComponentProps {
     renderMode: string;
 
     // the callback functions to update the object and mode
-    updateRenderObject: (newObject: string) => void;
+    updateRenderObject: (newObject: string, newFile: string) => void;
     updateRenderMode: (newMode: string) => void;
 }
 
+
+const objectFileMap: Map<string, string> = new Map([
+    ["triangle", "triangle/triangle.obj"],
+    ["square", "square/square.obj"],
+    ["cube", "cube/cube.obj"],
+    ["capsule", "capsule/capsule.obj"],
+    ["chapel", "chapel/chapel_obj.obj"],
+    ["bunny", "bunny/bunny_centered.obj"]
+]);
 /**
  * 
  * @param string[]
  * 
  * @returns HTML component with as many buttons as there are strings in the array
  */
-function makeButtons(strings: string[], value: string, callback: (arg: string) => void) {
+function makeModeButtons(strings: string[], value: string, callback: (arg: string) => void) {
     return (
         <div>
             {strings.map((string) => (
@@ -40,6 +49,31 @@ function makeButtons(strings: string[], value: string, callback: (arg: string) =
     );
 }
 
+
+/**
+ * 
+ * @param string[]
+ * 
+ * @returns HTML component with as many buttons as there are strings in the array
+ */
+function makeObjectButtons(value: string, callback: (model: string, file: string) => void) {
+    const strings = Array.from(objectFileMap.keys());
+    return (
+        <div>
+            {strings.map((string) => (
+                <button
+                    key={string}
+                    onClick={() => callback(string, objectFileMap.get(string) as string)}
+                    style={{
+                        backgroundColor: value === string ? 'red' : 'white',
+                    }}
+                >
+                    {string}
+                </button>
+            ))}
+        </div>
+    );
+}
 // define the ControlComponent
 function ControlComponent({ renderObject, renderMode, updateRenderObject, updateRenderMode }: ControlComponentProps) {
 
@@ -51,8 +85,8 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
 
     return (
         <div>
-            {makeButtons(["triangle", "square"], renderObject, updateRenderObject)}
-            {makeButtons(["solid", "wireframe"], renderMode, updateRenderMode)}
+            {makeObjectButtons(renderObject, updateRenderObject)}
+            {makeModeButtons(["solid", "wireframe"], renderMode, updateRenderMode)}
         </div>
 
 

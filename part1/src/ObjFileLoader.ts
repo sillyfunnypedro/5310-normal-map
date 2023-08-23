@@ -35,7 +35,7 @@ class ObjFileLoader {
      * */
     public async loadIntoCache(path: string) {
         if (this.cache.has(path)) {
-            console.log('xxxxxx. already loaded');
+            console.log(`${path} already loaded`);
             return this.cache.get(path)!;
         }
         console.log('loading into cache');
@@ -51,7 +51,7 @@ class ObjFileLoader {
             )
             .then((response => response.text()))
             .then((data) => {
-                console.log('sdjkfsdkjfhsdfkjhsdfj');
+                console.log(`data for ${path}`);
                 console.log(data);
                 this.cache.set(path, data);
             }

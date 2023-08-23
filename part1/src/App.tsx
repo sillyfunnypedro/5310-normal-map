@@ -45,8 +45,20 @@ function App() {
 
   // load the model string from the cache
   useEffect(() => {
-    let newString = objLoader.getFile(fileName);
-    updateModelString(newString);
+    // reping every 1/20th of a second until the newString is not ''
+    // this is a hack to get around the fact that the ObjFileLoader
+    // is not a react component and so it cannot use the useEffect hook
+    // to update the modelString
+    let interval = setInterval(() => {
+
+      let newString = objLoader.getFile(fileName);
+      if (newString !== '') {
+
+        updateModelString(newString);
+        clearInterval(interval);
+      }
+    }, 50);
+
   }, [fileName]);
 
 
@@ -64,17 +76,13 @@ function App() {
     setRenderMode(nemMode);
   }
 
-  function updateRenderObject(newObject: string) {
+  function updateRenderObject(newObject: string, newFile: string) {
     if (newObject === renderObject) {
       return;
     }
 
-    if (newObject === 'triangle') {
-      setFileName('triangle/triangle.obj');
-    }
-    else if (newObject === 'square') {
-      setFileName('square/square.obj');
-    }
+    setFileName(newFile);
+
     setRenderObject(newObject);
   }
 
