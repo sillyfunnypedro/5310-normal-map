@@ -29,27 +29,25 @@ function App() {
 
   const [modelString, setModelString] = useState('');
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
-  // triangles will be passed to CanvasGL as a prop, it will range between 1 and 6
-  // for the triangle/square demo the value 1 will indicate triangle, the value 2 will indicate square
-  // for the hexagon the display should add the right number of triangles based on this value
-  // it is controlled by a slider
 
   // get the value of the file input
   objLoader.loadIntoCache(fileName); // it is okay to call this repeatedly since in most cases it is a no-op
 
 
-
-  if (modelString === '') {
-
-    const newString = objLoader.getFile(fileName);
+  function updateModelString(newString: string) {
     if (newString !== modelString) {
       setModelString(newString);
       let newModelGL = new ModelGL();
       newModelGL.parseModel(newString);
       setModelGL(newModelGL);
-
     }
   }
+
+  // load the model string from the cache
+  useEffect(() => {
+    let newString = objLoader.getFile(fileName);
+    updateModelString(newString);
+  }, [fileName]);
 
 
 
