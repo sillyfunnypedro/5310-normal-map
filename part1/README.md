@@ -1,10 +1,11 @@
 # Assignment - Render a .obj model
 
-<img align="right" src="./media/bunnyWireframe.png" alt="Stanford Bunny" width="400px"/>
+
 
 > "Introducing the Stanford Bunny! Wait Stanford...how about a Husky?"
 
 # Resources to help
+<img align="right" src="./media/stanfordBunnyWire.jpg" alt="Stanford Bunny" width="200px"/>
 
 Some additional resources to help you through this lab assignment
 
@@ -33,9 +34,7 @@ Some additional resources to help you through this lab assignment
 	- [Another nice writeup on .obj format](https://www.cs.cmu.edu/~mbz/personal/graphics/obj.html)
 	- [wiki page on wavfront .obj format](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
 	- [Comparison of different .obj loaders](https://aras-p.info/blog/2022/05/14/comparing-obj-parse-libraries/)
-- OpenGL Related
-	- [Index Buffer Object](http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-9-vbo-indexing/]
-		- For help with the Index buffer strategy
+
 
 # Description
 
@@ -44,7 +43,7 @@ You have learned that we can draw polygons to the screen by plotting them out on
 
 One of the more famous 3D models is the [Stanford Bunny](https://en.wikipedia.org/wiki/Stanford_bunny). This bunny was a scan of a ceramic figurine (don't worry--no bunnies were harmed!) by a laser at Stanford University in 1994. Other common models that are used in computer graphics are the [Stanford Dragon](https://en.wikipedia.org/wiki/Stanford_dragon), the [Utah teapot](https://en.wikipedia.org/wiki/Utah_teapot), or [Suzanne](https://en.wikipedia.org/wiki/Blender_(software)#Suzanne).
 
-## Part 1 - Render a model
+## Part 1 - Parse, Convert, and Render a model
 
 ### Task 0: Install http-server on your machine
 Running WebGL means that we are not allowed to read files from the local machine.   Typically web applications need to be able to source their data from a data store.  In this particular course we do not want to rely on files that might be on other machines so we will start our own server on our machine.  Complete details (and the source code for the server) can be found [here](https://github.com/http-party/http-server).
@@ -54,19 +53,29 @@ I have shamelessly copied the instalation instructions from the project's home p
 #### Running on-demand:
 Using npx you can run the script without installing it first:
 
+```
 npx http-server [path] [options]
+```
 #### Globally via npm
+```
 npm install --global http-server
+```
 This will install http-server globally so that it may be run from the command line anywhere.
 
 #### Globally via Homebrew
 
+```zsh
 brew install http-server
+```
+
 As a dependency in your npm package:
+```
 npm install http-server
-<img align="right" src="./media/server-running.jpg" alt="Stanford Bunny" width="400px"/>
+```
 
 Once you have done this navigate to the root directory of the 5310Resources project and then run http-server in that directory.
+
+
 ```bash
 http-server -c-i --cors
 ```
@@ -74,9 +83,11 @@ http-server -c-i --cors
 you can see if the server is running by opening a browser on your machine and going to http://localhost:8080
 
 You should see something like this 
+
 The files will be potentially different, but what you see should match what is in the root directory of the ResourcesDirectory
 In my sample code i will be assuming that you have a http-server running from that directory.   If you run your server in a different place you will have to adjust the paths to your files accordingly.
 
+<img align="right" src="localhost:8080/media/serverrunning.jpg" alt="serverRunning" width="400px"/>
 
 
 ### Task 1 - Model Loading
