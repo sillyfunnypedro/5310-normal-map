@@ -31,26 +31,19 @@ function App() {
 
 
 
-
-
+  /**
+   *  This function is called when the obj file is loaded into the cache.
+   */
+  function loadComplete() {
+    console.log('load complete');
+    const model = objLoader.getModel(renderObject)!;
+    setModelGL(model);
+  }
 
   // load the model the cache
   useEffect(() => {
-    objLoader.loadIntoCache(renderObject);
-    // reping every 1/20th of a second until the newString is not ''
-    // this is a hack to get around the fact that the ObjFileLoader
-    // is not a react component and so it cannot use the useEffect hook
-    // to update the modelString
-    let interval = setInterval(() => {
-
-      let newModel = objLoader.getModel(renderObject);
-      if (newModel !== undefined) {
-        setModelGL(newModel);
-        clearInterval(interval);
-      }
-    }, 50);
-
-  }, [fileName]);
+    objLoader.loadIntoCache(renderObject, loadComplete);
+  }, [renderObject]);
 
 
 

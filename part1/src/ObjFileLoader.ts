@@ -14,7 +14,6 @@ import { objectFileMap } from './ObjectFileMap';
 
 class ObjFileLoader {
     private URLPrefix: string = 'http://localhost:8080/objects/';
-    private stringCache: Map<string, string> = new Map();
     private modelCache: Map<string, ModelGL> = new Map();
 
     private static instance: ObjFileLoader;
@@ -40,11 +39,12 @@ class ObjFileLoader {
      * @method load
      * @public
      * */
-    public async loadIntoCache(objectName: string) {
+    public async loadIntoCache(objectName: string, callback: Function) {
         const path = objectFileMap.get(objectName)!;
-        if (this.stringCache.has(path)) {
+        if (this.modelCache.has(path)) {
             console.log(`${path} already loaded`);
-            return this.stringCache.get(path)!;
+            callback();
+            return;
         }
         console.log('loading into cache');
         const fullPath = this.URLPrefix + path;
@@ -59,21 +59,26 @@ class ObjFileLoader {
             )
             .then((response => response.text()))
             .then((data) => {
-                console.log(`data for ${path}`);
-                //console.log(data);
-                this.stringCache.set(path, data);
                 const model = new ModelGL();
                 model.parseModel(data);
                 this.modelCache.set(path, model);
+                callback();
             }
             )
             .catch((error) => {
                 console.log(error);
-                this.stringCache.set(path, '');
             }
             );
     }
 
+    /**
+     * Get a model from the cache
+     * @param {string} ObjectName
+     * @returns ModelGL | undefined
+     * @memberof ObjFileLoader
+     * @method getModel
+     * @public
+     * */
     public getModel(ObjectName: string): ModelGL | undefined {
         const path = objectFileMap.get(ObjectName)!;
         if (this.modelCache.has(path)) {
