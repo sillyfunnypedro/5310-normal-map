@@ -162,28 +162,22 @@ For this file, the encoding is the following:
 
 ### Task 2 - Parametrized display
 
-For task 2, we are going to utilize SDL to make our graphics application interactive. 
+For task 2, i have provided a control panel on the main page.  In this assignment you will be either rendering the object in wireframe mode or filled. 
 
-The tasks for interactivity in this assignment are the following:
-- Pressing the <kbd>w</kbd> key draws your object in wireframe mode (By default when you start the application it will show the model in filled).
-- Pressing the <kbd>q</kbd> key exits the application.
-- Pressing the <kbd>1</kbd> key renders a .obj model read in from the command-line
-- (Optional) Pressing the <kbd>2</kbd> - <kbd>9</kbd> key renders any other objects that have been read in from the command-line.
-	- e.g. (./lab "./../../common/objects/bunny_centered.obj" "./../../common/objects/capsule/capsule.obj")
-		- Pressing 1 would render the bunny, and a 2 would render the capsule.
 
-A resource for performing [keyboard input with SDL is provided here](http://lazyfoo.net/tutorials/SDL/04_key_presses/index.php)
 
 ### Assignment strategy
 
 My suggested strategy for this project is:
 
+
+
 * You can use any of the code from the labs that you may find useful.
 	* In fact, I highly recommend it!
-* Have a C++ class (in a .hpp and .cpp file) for loading OBJ models--not doing so is bad style!
-	* For example, `class OBJModel` would be an ideal name for handling the loading and rendering of an OBJ model.
-	* Utilize within the class a STL data structure (e.g. std::vector, std::array, etc.)
-  	* You may assume all faces are triangles (though if you download additional test .obj files from the web this may not be the case)
+* Start by rendering the model in triangle/triangle.obj
+	* this is the triangle we have been working with, it is the easiest object to display and you will recognize it when you see.
+	* we are back to a plain old triangle, but now we are defining it in a file that we read.
+* Implement the ModelGL.ts class so that if 
 * Think about how you can load a line of text and then split it into individual tokens.
   	* A resource loading files (Filo I/O) in C++ can be found here: http://www.cplusplus.com/doc/tutorial/files/
   	* The reference on strings may be useful: http://www.cplusplus.com/reference/string/string/
@@ -199,7 +193,7 @@ If you don't see a 3D model appearing on your screen after your attempt, here ar
 1. Try rendering in wire frame mode first to see if anything shows up (A quick google of 'how do I render wireframe in OpenGL' will show you how to do this) 
 2. Try loading a few different models (of different sizes) to see if your .obj loader works.
 3. Ensure that you are loading your buffers with the correct number of vertices and indices (i.e. A common mistake I see is the improper use of 'sizeof' which returns the data type size, not the actual number of elements in a collection. See std::vector.size() for example)
-4. Try to write a 'print()' function to display all the vertices and indices.
+4. Try to write a 'console.log' function to display all the vertices and indices.
 	- The vertices and indices printed out should match the data you are parsing.
 6. If your bunny looks 'almost right', but a little bit scrambled -- Careful also with 'off by 1 errors'
 	- Remember, the face list in the .obj uses a 1-based index, whereas we as C++ programmers are used to a 0-based index.

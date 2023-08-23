@@ -1,3 +1,5 @@
+
+
 export type ObjectGL = {
     vertices: Float32Array,
     indices: Uint16Array
@@ -40,3 +42,7 @@ export function getRectangle(): ObjectGL {
 
     return { vertices: rectangleVertices, indices: rectangleIndices };
 }
+
+
+
+

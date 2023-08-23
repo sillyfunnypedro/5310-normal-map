@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from 'react';
 import { fragmentShader } from './shaders/FragmentShader'
 import { vertexShader } from './shaders/VertexShader'
-import { ObjectGL, getHexagon, getRectangle } from './Models'
+
+import ModelGL from './ModelGL';
 
 export { };
 /**
@@ -18,25 +19,27 @@ export { };
 interface CanvasGLProps {
     width: number;
     height: number;
-    demo: string;
-    triangles: number;
+    model: ModelGL | null;
+    renderMode: string;
 }
 
 
-
-function CanvasGL({ width, height, demo, triangles }: CanvasGLProps) {
+function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLProps) {
 
     const [shouldRender, setShouldRender] = React.useState(false);
 
     useEffect(() => {
         setShouldRender(true);
-    }, [demo]);
+    }, [renderModelGL]);
 
+    if (!renderModelGL) {
+        console.log('The model is null');
+    }
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (!shouldRender) {
+        if (!shouldRender || !renderModelGL) {
             return;
         }
         const canvas = canvasRef.current;
@@ -120,15 +123,17 @@ function CanvasGL({ width, height, demo, triangles }: CanvasGLProps) {
             gl.useProgram(shaderProgram);
 
 
-            let objectData: ObjectGL;
+            // create a buffer for the indices and bind the index buffer
+            const positionBuffer = gl.createBuffer();
 
-            if (demo === 'rectangle') {
-                objectData = getRectangle();
-            } else {
-                objectData = getHexagon();
-            }
 
-            // create the index buffers for the triangle, square, and hexagon
+            // bind the index buffer
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+            gl.bufferData(gl.ARRAY_BUFFER, renderModelGL.vertices, gl.STATIC_DRAW);
+
+
+
 
             const indexBuffer = gl.createBuffer();
             // bind the index buffer
@@ -136,19 +141,10 @@ function CanvasGL({ width, height, demo, triangles }: CanvasGLProps) {
 
 
             // pass the triangle's indices to the index buffer
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(objectData.indices), gl.STATIC_DRAW);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, renderModelGL.indices, gl.STATIC_DRAW);
 
-
-
-
-            // create a buffer for the positions and bind the position buffer
-            const positionBuffer = gl.createBuffer();
-            // bind the position buffer
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-
-
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(objectData.vertices), gl.STATIC_DRAW);
+            //
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(renderModelGL.vertices), gl.STATIC_DRAW);
 
 
             // get the position attribute location
@@ -157,28 +153,14 @@ function CanvasGL({ width, height, demo, triangles }: CanvasGLProps) {
             // enable the position attribute
             gl.enableVertexAttribArray(positionLocation);
 
-            // bind the position buffer
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
 
             // tell the position attribute how to get data out of the position buffer
             // the position attribute is a vec3 (3 values per vertex) and then there are three
             // colors per vertex
-            gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+            gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
 
 
-            // get the color attribute location
-            const colorLocation = gl.getAttribLocation(shaderProgram, 'color');
-
-            // enable the color attribute
-            gl.enableVertexAttribArray(colorLocation);
-
-            // bind the position buffer
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-            // tell the color attribute how to get data out of the position buffer
-            // the color attribute is a vec3 (3 values per vertex) and then there are three
-            // colors per vertex
-            gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
             // Clear the whole canvas
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -186,7 +168,7 @@ function CanvasGL({ width, height, demo, triangles }: CanvasGLProps) {
 
             // Clear the canvas to a purple color
             gl.clearColor(.6, .2, .6, 1);
-            gl.clear(gl.COLOR_BUFFER_BIT);
+            //gl.clear(gl.COLOR_BUFFER_BIT);
 
             // calculate the square that fits in the canvas make that the viewport
             let squareSize = gl.canvas.width;
@@ -201,19 +183,20 @@ function CanvasGL({ width, height, demo, triangles }: CanvasGLProps) {
 
             gl.viewport(xOffset, yOffset, squareSize, squareSize);
 
-            // draw the elements in the position buffer
-            // for triangle and square its just a different number of
-            // vertices that need to be drawn
 
 
-            gl.drawElements(gl.TRIANGLES, triangles * 3, gl.UNSIGNED_SHORT, 0);
+            if (renderMode === "wireframe") {
+                gl.drawElements(gl.LINE_LOOP, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
+            } else {
+                gl.drawElements(gl.TRIANGLES, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
+            }
 
 
             gl.flush();
             gl.finish();
 
         }
-    }, [shouldRender, demo, width, height]);
+    }, [shouldRender, renderModelGL, width, height, renderMode]);
 
     return <canvas ref={canvasRef} width={width} height={height} />;
 }

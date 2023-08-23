@@ -59,7 +59,6 @@ class ModelGL {
         }
 
         this.vertices = new Float32Array(vertices);
-        console.log("dslkjflsdjfsldkfjsdlk", this.tmpIndices)
         this.indices = new Uint16Array(this.tmpIndices);
         this.numVertices = vertices.length / 3;
         this.numIndices = this.tmpIndices.length;
@@ -72,12 +71,11 @@ class ModelGL {
      * @returns Uint16Array
      * @memberof ModelGL
      * @method parseFace
-     * @public
+     * @private
      * 
      * store the indices in this.tmpIndices so they can be converted to int16 later
      * */
-    public parseFace(face: string) {
-        let indices: number[] = [];
+    private parseFace(face: string) {
         let tokens: string[] = face.split(" ");
         let numVertices = tokens.length - 1;
         if (numVertices < 3) {

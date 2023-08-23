@@ -6,45 +6,56 @@ import React, { useState } from 'react';
 
 // define the ControlComponentProps interface
 interface ControlComponentProps {
-    // the current demo
-    demo: string;
-    // the function to set the demo
-    setDemo: (demo: string) => void;
+
+    // the current object and mode
+    renderObject: string;
+    renderMode: string;
+
+    // the callback functions to update the object and mode
+    updateRenderObject: (newObject: string) => void;
+    updateRenderMode: (newMode: string) => void;
+}
+
+/**
+ * 
+ * @param string[]
+ * 
+ * @returns HTML component with as many buttons as there are strings in the array
+ */
+function makeButtons(strings: string[], value: string, callback: (arg: string) => void) {
+    return (
+        <div>
+            {strings.map((string) => (
+                <button
+                    key={string}
+                    onClick={() => callback(string)}
+                    style={{
+                        backgroundColor: value === string ? 'red' : 'white',
+                    }}
+                >
+                    {string}
+                </button>
+            ))}
+        </div>
+    );
 }
 
 // define the ControlComponent
-function ControlComponent({ demo, setDemo }: ControlComponentProps) {
-    // use the useState hook to create a state variable for the demo
-    // and a function to set the demo
-    // set the initial state to the first demo
-    // const [demo, setDemo] = useState(buttons[0].name);
+function ControlComponent({ renderObject, renderMode, updateRenderObject, updateRenderMode }: ControlComponentProps) {
 
-    // return the buttons
-    const rectangle = "rectangle";
-    const hexagon = "hexagon";
+    // make a panel with two rows of buttons.
+    // the first row has two buttons, one for the triangle and one for the square
+    // the second row has one button for solid and one button for wireframe
+    // return the html component that contains the buttons
+
+
     return (
         <div>
-            <button
-                key={rectangle}
-                onClick={() => setDemo(rectangle)}
-                style={{
-                    backgroundColor: demo === rectangle ? 'red' : 'white',
-                }}
-            >
-                {rectangle}
-            </button>
-
-            <button
-                key={hexagon}
-                onClick={() => setDemo(hexagon)}
-                style={{
-                    backgroundColor: demo === hexagon ? 'red' : 'white',
-                }}
-            >
-                {hexagon}
-            </button>
-
+            {makeButtons(["triangle", "square"], renderObject, updateRenderObject)}
+            {makeButtons(["solid", "wireframe"], renderMode, updateRenderMode)}
         </div>
+
+
     );
 }
 
