@@ -1,3 +1,6 @@
+import ModelGL from './ModelGL';
+import { objectFileMap } from './ObjectFileMap';
+
 /**
  * ObjFileLoader.ts
  * @description ObjFileLoader class
@@ -11,7 +14,8 @@
 
 class ObjFileLoader {
     private URLPrefix: string = 'http://localhost:8080/objects/';
-    private cache: Map<string, string> = new Map();
+    private stringCache: Map<string, string> = new Map();
+    private modelCache: Map<string, ModelGL> = new Map();
 
     private static instance: ObjFileLoader;
 
@@ -29,14 +33,18 @@ class ObjFileLoader {
      * Load a file from a given path, and store it in the cache
      * the function does not return anything.
      * @param {string} path
+     * Call back function to indicate model is ready
+     * @param {Function} callback
+     * @param 
      * @memberof ObjFileLoader
      * @method load
      * @public
      * */
-    public async loadIntoCache(path: string) {
-        if (this.cache.has(path)) {
+    public async loadIntoCache(objectName: string) {
+        const path = objectFileMap.get(objectName)!;
+        if (this.stringCache.has(path)) {
             console.log(`${path} already loaded`);
-            return this.cache.get(path)!;
+            return this.stringCache.get(path)!;
         }
         console.log('loading into cache');
         const fullPath = this.URLPrefix + path;
@@ -52,25 +60,28 @@ class ObjFileLoader {
             .then((response => response.text()))
             .then((data) => {
                 console.log(`data for ${path}`);
-                console.log(data);
-                this.cache.set(path, data);
+                //console.log(data);
+                this.stringCache.set(path, data);
+                const model = new ModelGL();
+                model.parseModel(data);
+                this.modelCache.set(path, model);
             }
             )
             .catch((error) => {
                 console.log(error);
-                this.cache.set(path, '');
+                this.stringCache.set(path, '');
             }
             );
     }
 
-
-    public getFile(path: string): string {
-        if (this.cache.has(path)) {
-
-            return this.cache.get(path)!;
+    public getModel(ObjectName: string): ModelGL | undefined {
+        const path = objectFileMap.get(ObjectName)!;
+        if (this.modelCache.has(path)) {
+            return this.modelCache.get(path);
         }
-        return '';
+        return undefined;
     }
+
 }
 
 export default ObjFileLoader;

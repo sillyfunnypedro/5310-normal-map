@@ -1,5 +1,4 @@
-// import react and useState
-import React, { useState } from 'react';
+import { objectFileMap } from './ObjectFileMap';
 
 /** two buttons for the first part of the assignment */
 
@@ -17,14 +16,7 @@ interface ControlComponentProps {
 }
 
 
-const objectFileMap: Map<string, string> = new Map([
-    ["triangle", "triangle/triangle.obj"],
-    ["square", "square/square.obj"],
-    ["cube", "cube/cube.obj"],
-    ["capsule", "capsule/capsule.obj"],
-    ["chapel", "chapel/chapel_obj.obj"],
-    ["bunny", "bunny/bunny_centered.obj"]
-]);
+
 /**
  * 
  * @param string[]

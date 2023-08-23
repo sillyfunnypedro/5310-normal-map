@@ -186,7 +186,12 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
 
 
             if (renderMode === "wireframe") {
-                gl.drawElements(gl.LINE_LOOP, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
+                // Draw the triangles as wireframe using gl.LINE_LOOP
+                for (let i = 0; i < renderModelGL.numTriangles!; i++) {
+                    const index = i * 3;
+                    gl.drawElements(gl.LINE_LOOP, 3, gl.UNSIGNED_SHORT, index * 2);
+                }
+                //gl.drawElements(gl.LINE_LOOP, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
             } else {
                 gl.drawElements(gl.TRIANGLES, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
             }

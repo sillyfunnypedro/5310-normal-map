@@ -6,6 +6,7 @@ import ControlComponent from './ControlComponent';
 import LocalServerStatus from './LocalServerStatus';
 import ObjFileLoader from './ObjFileLoader';
 import ModelGL from './ModelGL';
+import { render } from '@testing-library/react';
 
 const objLoader = ObjFileLoader.getInstance();
 
@@ -26,35 +27,25 @@ function App() {
   // it can be 'solid' or 'wireframe'
   const [renderMode, setRenderMode] = useState('solid');
 
-
-  const [modelString, setModelString] = useState('');
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
 
-  // get the value of the file input
-  objLoader.loadIntoCache(fileName); // it is okay to call this repeatedly since in most cases it is a no-op
 
 
-  function updateModelString(newString: string) {
-    if (newString !== modelString) {
-      setModelString(newString);
-      let newModelGL = new ModelGL();
-      newModelGL.parseModel(newString);
-      setModelGL(newModelGL);
-    }
-  }
 
-  // load the model string from the cache
+
+
+  // load the model the cache
   useEffect(() => {
+    objLoader.loadIntoCache(renderObject);
     // reping every 1/20th of a second until the newString is not ''
     // this is a hack to get around the fact that the ObjFileLoader
     // is not a react component and so it cannot use the useEffect hook
     // to update the modelString
     let interval = setInterval(() => {
 
-      let newString = objLoader.getFile(fileName);
-      if (newString !== '') {
-
-        updateModelString(newString);
+      let newModel = objLoader.getModel(renderObject);
+      if (newModel !== undefined) {
+        setModelGL(newModel);
         clearInterval(interval);
       }
     }, 50);

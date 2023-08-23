@@ -35,7 +35,7 @@ class ModelGL {
      */
     parseModel(model: string): void {
         let vertices: number[] = [];
-
+        console.log('starting to parse');
         let lines: string[] = model.split("\n");
         for (let line of lines) {
             // strip off any leading white space
@@ -63,6 +63,7 @@ class ModelGL {
         this.numVertices = vertices.length / 3;
         this.numIndices = this.tmpIndices.length;
         this.numTriangles = this.tmpIndices.length / 3;
+        console.log('done parsing');
     }
 
     /** 
@@ -81,8 +82,13 @@ class ModelGL {
         if (numVertices < 3) {
             throw new Error("A face must have at least 3 vertices");
         }
+        if (numVertices > 3) {
+            console.log("WARNING: more than three vertices.");
+            console.log(face);
+        }
         for (let i = 0; i < numVertices; i++) {
             // see if the vertex is specified as v or v/t/n
+
             let vertex: string = tokens[i + 1];
             let vertexTokens: string[] = vertex.split("/");
 
