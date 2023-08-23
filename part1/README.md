@@ -5,7 +5,9 @@
 > "Introducing the Stanford Bunny! Wait Stanford...how about a Husky?"
 
 # Resources to help
+
 <img align="right" src="./media/stanfordBunnyWire.jpg" alt="Stanford Bunny" width="200px"/>
+
 
 Some additional resources to help you through this lab assignment
 
@@ -87,7 +89,8 @@ You should see something like this
 The files will be potentially different, but what you see should match what is in the root directory of the ResourcesDirectory
 In my sample code i will be assuming that you have a http-server running from that directory.   If you run your server in a different place you will have to adjust the paths to your files accordingly.
 
-<img align="right" src="localhost:8080/media/serverrunning.jpg" alt="serverRunning" width="400px"/>
+<img align="right" src="./media/serverrunning.jpg" alt="serverRunning" width="200px"/>
+
 
 
 ### Task 1 - Model Loading
