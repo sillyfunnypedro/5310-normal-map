@@ -84,12 +84,22 @@ http-server -c-i --cors
 
 you can see if the server is running by opening a browser on your machine and going to http://localhost:8080
 
+<table>
+<th>
+<td>
+
 You should see something like this 
+</td>
+<td>
+<img align="right" src="./media/serverrunning.jpg" alt="serverRunning" width="300px"/>
+</td>
+</th>
+</table>
 
 The files will be potentially different, but what you see should match what is in the root directory of the ResourcesDirectory
 In my sample code i will be assuming that you have a http-server running from that directory.   If you run your server in a different place you will have to adjust the paths to your files accordingly.
 
-<img align="right" src="./media/serverrunning.jpg" alt="serverRunning" width="200px"/>
+
 
 
 
