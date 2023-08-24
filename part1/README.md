@@ -216,21 +216,22 @@ If you don't see a 3D model appearing on your screen after your attempt, here ar
 
 1. Try rendering in wire frame mode first to see if anything shows up (A quick google of 'how do I render wireframe in OpenGL' will show you how to do this) 
 2. Try loading a few different models (of different sizes) to see if your .obj loader works.
-3. Ensure that you are loading your buffers with the correct number of vertices and indices (i.e. A common mistake I see is the improper use of 'sizeof' which returns the data type size, not the actual number of elements in a collection. See std::vector.size() for example)
+3. Ensure that you are loading your buffers with the correct number of vertices and indices
 4. Try to write a 'console.log' function to display all the vertices and indices.
 	- The vertices and indices printed out should match the data you are parsing.
 6. If your bunny looks 'almost right', but a little bit scrambled -- Careful also with 'off by 1 errors'
-	- Remember, the face list in the .obj uses a 1-based index, whereas we as C++ programmers are used to a 0-based index.
+	- Remember, the face list in the .obj uses a 1-based index, whereas we as typescript programmers are used to a 0-based index.
 	- Thus, you have to 'subtract 1' from the index when parsing the .obj file and storing the data on your CPU.
 7. Sometimes folks mix up GL_ARRAY_BUFFER and GL_ELEMENT_ARRAY_BUFFER for where the vertices (the former), and indices (the latter GL_ELEMENT_ARRAY_BUFFER) should be used.
-8. I often see folks do this in their code `float verts[some_vector.size()]` 
-	- This is dangerous, as if some_vector.size() is a really big value, 'verts' which is a local variable (which is an array), and 'verts' is thus located on the stack which has a small amount of memory that may not be able to allocate for very large objects.
-
+8.
 ## How to compile and run your program
 
-1. Your solution should compile using the [build.py](./build.py) file. 
-	- That is, we will run your program by typing [python3 build.py](./build.py) and it should just work.
-2. After compiling your code, we will run the executable with an argument to a .obj model.
+1. In the project for this file you can either go to the run menu and run part 1
+2. In the root directory for part1 you can enter the command listed below.  This is what the menu entry for Run Part 1 does
+```
+npm start
+```
+
 
 # Submission/Deliverables
 
@@ -243,12 +244,17 @@ If you don't see a 3D model appearing on your screen after your attempt, here ar
 ### Deliverables
 
 - You should be able to load and display a bunny_centered.obj and monkey_centered.obj at the least
-	- The ./common/objects directory in your repository has some sample models.
-	- You can substitute these models with other .obj's you find if you like.
-- Your solution should be interactive, and utilize the keypresses as described in Part 1 Task 2
-
+	- The program i gave you allows you to select different objects.Some are not in the center of the screen and thus will not show yet.  
+	- You can substitute these models with other .obj's you find if you like, for this assignment this might be difficults since not all models are centered at the origin and are of a size that is less than 2 in x and y.
+- Your solution should respond to the input selectors in the React WebGL application that was provided for you.
 * You need to commit your code to this repository.
-* You need to use the build.py script provided. Anything else used is at your own risk--and you should provide complete documentation. If your program does not compile and run, you get a zero!
+* I will be issuing the following commands when I download your repository.  Your porgram should run 
+```sh
+cd <your project>/part1
+npm install
+npm start
+
+```
 
 
 # F.A.Q. (Instructor Anticipated Questions)
