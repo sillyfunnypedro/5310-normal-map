@@ -30,5 +30,12 @@
             "command": "npm test ModelGL",
             "cwd": "${workspaceFolder}/part1",
         },
+        {
+            "name": "Test Material Parser",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm test Material",
+            "cwd": "${workspaceFolder}/part1",
+        },
     ]
 }

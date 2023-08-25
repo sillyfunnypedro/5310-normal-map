@@ -67,6 +67,24 @@ describe('ModelGL', () => {
             expect(model.textureCoordinates).toEqual(new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]));
             expect(model.textureIndices).toEqual(new Uint16Array([0, 1, 2, 0, 2, 3]));
         });
+
+        it('it should parse the mtllib file', () => {
+            const modelData = `
+        mtllib square.mtl
+        v 0.0 0.0 0.0
+        v 1.0 0.0 0.0
+        v 1.0 1.0 0.0
+        v 0.0 1.0 0.0
+        vt 0.0 0.0
+        vt 1.0 0.0
+        vt 1.0 1.0
+        vt 0.0 1.0
+        f 1/1/1 2/2/2 3/3/3 
+        f 1/1/1 3/3/3 4/4/4
+      `;
+            model.parseModel(modelData);
+            expect(model.materialLibrary).toBe('square.mtl');
+        });
     });
 
 

@@ -5,13 +5,14 @@
  * @export ModelGL
  * @property {Float32Array} vertices
  * @property {Float32Array} textureCoordinates
- * @property {Uint16Array} indices
+ * @property {Uint16Array} vertexiIndices
+ * @property {Uint16Array} textureIndices
  * @property {number} [numVertices]
  * @property {number} [numIndices]
  * @property {number} [numTriangles]
+ * @property {string} [materialLibrary]
  */
 
-import { text } from "stream/consumers";
 
 
 class ModelGL {
@@ -20,6 +21,7 @@ class ModelGL {
 
     vertexiIndices: Uint16Array;
     textureIndices: Uint16Array;
+    materialLibrary?: string;
     numVertices?: number;
     numIndices?: number;
     numTriangles?: number;
@@ -33,6 +35,7 @@ class ModelGL {
         this.textureCoordinates = new Float32Array();
         this.vertexiIndices = new Uint16Array();
         this.textureIndices = new Uint16Array();
+        this.materialLibrary = "";
         this.numVertices = 0;
         this.numIndices = 0;
         this.numTriangles = 0;
@@ -65,7 +68,7 @@ class ModelGL {
             } else if (tokens[0] === "vn") {
                 // TODO: handle normals
             } else if (tokens[0] === "mtllib") {
-                // TODO: handle material library
+                this.materialLibrary = tokens[1];
             } else if (tokens[0] === "usemtl") {
                 // TODO: handle material
             }
