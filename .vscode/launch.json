@@ -30,12 +30,5 @@
             "command": "npm test ModelGL",
             "cwd": "${workspaceFolder}/part1",
         },
-        {
-            "name": "Run Part 2",
-            "type": "node-terminal",
-            "request": "launch",
-            "command": "npm start",
-            "cwd": "${workspaceFolder}/part2",
-        },
     ]
 }
