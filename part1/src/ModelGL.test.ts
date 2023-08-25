@@ -18,7 +18,7 @@ describe('ModelGL', () => {
       `;
             model.parseModel(modelData);
             expect(model.vertices).toEqual(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]));
-            expect(model.indices).toEqual(new Uint16Array([0, 1, 2]));
+            expect(model.vertexiIndices).toEqual(new Uint16Array([0, 1, 2]));
             expect(model.numVertices).toBe(3);
             expect(model.numIndices).toBe(3);
             expect(model.numTriangles).toBe(1);
@@ -42,6 +42,30 @@ describe('ModelGL', () => {
       `;
 
             expect(() => model.parseModel(modelData)).toThrowError('A vertex can only be specified as v, v/t, or v/t/n');
+        });
+
+        it('it should parse texture coordinates', () => {
+            const modelData = `
+        v 0.0 0.0 0.0
+        v 1.0 0.0 0.0
+        v 1.0 1.0 0.0
+        v 0.0 1.0 0.0
+        vt 0.0 0.0
+        vt 1.0 0.0
+        vt 1.0 1.0
+        vt 0.0 1.0
+        f 1/1/1 2/2/2 3/3/3 
+        f 1/1/1 3/3/3 4/4/4
+      `;
+            model.parseModel(modelData);
+            const vertices = model.vertices;
+            expect(model.vertices).toEqual(new Float32Array([0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0]));
+            expect(model.vertexiIndices).toEqual(new Uint16Array([0, 1, 2, 0, 2, 3]));
+            expect(model.numVertices).toBe(4);
+            expect(model.numIndices).toBe(6);
+            expect(model.numTriangles).toBe(2);
+            expect(model.textureCoordinates).toEqual(new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]));
+            expect(model.textureIndices).toEqual(new Uint16Array([0, 1, 2, 0, 2, 3]));
         });
     });
 

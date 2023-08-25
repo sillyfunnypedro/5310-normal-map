@@ -4,37 +4,49 @@
  * @interface ModelGL
  * @export ModelGL
  * @property {Float32Array} vertices
+ * @property {Float32Array} textureCoordinates
  * @property {Uint16Array} indices
  * @property {number} [numVertices]
  * @property {number} [numIndices]
  * @property {number} [numTriangles]
  */
 
+import { text } from "stream/consumers";
+
 
 class ModelGL {
     vertices: Float32Array;
-    indices: Uint16Array;
+    textureCoordinates: Float32Array;
+
+    vertexiIndices: Uint16Array;
+    textureIndices: Uint16Array;
     numVertices?: number;
     numIndices?: number;
     numTriangles?: number;
 
     private tmpIndices: number[] = []
+    private tmpTextureIndices: number[] = []
 
 
     constructor() {
         this.vertices = new Float32Array();
-        this.indices = new Uint16Array();
+        this.textureCoordinates = new Float32Array();
+        this.vertexiIndices = new Uint16Array();
+        this.textureIndices = new Uint16Array();
         this.numVertices = 0;
         this.numIndices = 0;
         this.numTriangles = 0;
         this.tmpIndices = [];
+        this.tmpTextureIndices = [];
+
     }
 
     /**
      * Parse a model in wavefront .obj format
      */
     parseModel(model: string): void {
-        let vertices: number[] = [];
+        let tmpVertices: number[] = [];
+        let tmpTextureCoordinates: number[] = [];
         console.log('starting to parse');
         let lines: string[] = model.split("\n");
         for (let line of lines) {
@@ -42,13 +54,14 @@ class ModelGL {
             line = line.trim();
             let tokens: string[] = line.split(" ");
             if (tokens[0] === "v") {
-                vertices.push(parseFloat(tokens[1]));
-                vertices.push(parseFloat(tokens[2]));
-                vertices.push(parseFloat(tokens[3]));
+                tmpVertices.push(parseFloat(tokens[1]));
+                tmpVertices.push(parseFloat(tokens[2]));
+                tmpVertices.push(parseFloat(tokens[3]));
             } else if (tokens[0] === "f") {
                 this.parseFace(line);
             } else if (tokens[0] === "vt") {
-                // TODO: handle texture coordinates
+                tmpTextureCoordinates.push(parseFloat(tokens[1]));
+                tmpTextureCoordinates.push(parseFloat(tokens[2]));
             } else if (tokens[0] === "vn") {
                 // TODO: handle normals
             } else if (tokens[0] === "mtllib") {
@@ -58,9 +71,12 @@ class ModelGL {
             }
         }
 
-        this.vertices = new Float32Array(vertices);
-        this.indices = new Uint16Array(this.tmpIndices);
-        this.numVertices = vertices.length / 3;
+        this.vertices = new Float32Array(tmpVertices);
+        this.textureCoordinates = new Float32Array(tmpTextureCoordinates);
+        this.vertexiIndices = new Uint16Array(this.tmpIndices);
+        this.textureIndices = new Uint16Array(this.tmpTextureIndices);
+
+        this.numVertices = tmpVertices.length / 3;
         this.numIndices = this.tmpIndices.length;
         this.numTriangles = this.tmpIndices.length / 3;
         console.log('done parsing');
@@ -100,7 +116,7 @@ class ModelGL {
             this.tmpIndices.push(parseInt(vertexTokens[0]) - 1);
 
             if (vertexTokens.length >= 2) {
-                // TODO: handle texture coordinates
+                this.tmpTextureIndices.push(parseInt(vertexTokens[1]) - 1);
             }
             if (vertexTokens.length === 3) {
                 // TODO: handle normal index

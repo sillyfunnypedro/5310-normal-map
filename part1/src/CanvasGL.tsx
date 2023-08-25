@@ -141,7 +141,7 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
 
 
             // pass the triangle's indices to the index buffer
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, renderModelGL.indices, gl.STATIC_DRAW);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, renderModelGL.vertexiIndices, gl.STATIC_DRAW);
 
             //
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(renderModelGL.vertices), gl.STATIC_DRAW);
@@ -193,7 +193,7 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
                 }
                 //gl.drawElements(gl.LINE_LOOP, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
             } else {
-                gl.drawElements(gl.TRIANGLES, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
+                gl.drawElements(gl.TRIANGLES, renderModelGL.vertexiIndices.length, gl.UNSIGNED_SHORT, 0);
             }
 
 
