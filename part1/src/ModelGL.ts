@@ -13,10 +13,45 @@
  * @property {string} [materialLibrary]
  */
 
+class VertexAccumulator {
+    private vertices: string[] = [];
+
+    constructor() {
+        this.vertices = [];
+
+    }
+
+    // add a vertex to the list of vertices
+    // if the vertex is already in the list, return the index of the vertex
+    // otherwise, add the vertex to the list and return the index of the vertex
+    // the first return value indicates whether the vertex was added or not
+    addVertex(vertex: string): [boolean, number] {
+        if (this.vertices.indexOf(vertex) === -1) {
+            this.vertices.push(vertex);
+            return [true, this.vertices.length - 1]
+        }
+        return [false, this.vertices.indexOf(vertex)];
+    }
+
+}
 
 
+/**
+ * ModelGL.ts
+ * @description ModelGL class
+ * @class ModelGL
+ * 
+ * This class will parse a model in wavefront .obj format
+ * 
+ * @property {Float32Array} vertices - the packed vertices of the model
+ * @property {Uint16Array} indices - the indices of the model one per vertex found in the face data
+ */
 class ModelGL {
-    vertices: Float32Array;
+    vertexBuffer: Float32Array;
+    indices: Uint16Array;
+
+
+
     textureCoordinates: Float32Array;
 
     vertexiIndices: Uint16Array;
@@ -24,14 +59,19 @@ class ModelGL {
     materialLibrary?: string;
     numVertices?: number;
     numIndices?: number;
-    numTriangles?: number;
+    numTriangles: number;
 
-    private tmpIndices: number[] = []
-    private tmpTextureIndices: number[] = []
+    private _packedIndices: number[] = []
+    private _vertices: number[] = [];
+    private _textureCoordinates: number[] = [];
+    private _normals: number[] = [];
+
+    private _vertexAccumulator: VertexAccumulator = new VertexAccumulator();
 
 
     constructor() {
-        this.vertices = new Float32Array();
+        this.vertexBuffer = new Float32Array();
+        this.indices = new Uint16Array();
         this.textureCoordinates = new Float32Array();
         this.vertexiIndices = new Uint16Array();
         this.textureIndices = new Uint16Array();
@@ -39,8 +79,7 @@ class ModelGL {
         this.numVertices = 0;
         this.numIndices = 0;
         this.numTriangles = 0;
-        this.tmpIndices = [];
-        this.tmpTextureIndices = [];
+        this._packedIndices = [];
 
     }
 
@@ -48,8 +87,7 @@ class ModelGL {
      * Parse a model in wavefront .obj format
      */
     parseModel(model: string): void {
-        let tmpVertices: number[] = [];
-        let tmpTextureCoordinates: number[] = [];
+
         console.log('starting to parse');
         let lines: string[] = model.split("\n");
         for (let line of lines) {
@@ -57,16 +95,18 @@ class ModelGL {
             line = line.trim();
             let tokens: string[] = line.split(" ");
             if (tokens[0] === "v") {
-                tmpVertices.push(parseFloat(tokens[1]));
-                tmpVertices.push(parseFloat(tokens[2]));
-                tmpVertices.push(parseFloat(tokens[3]));
+                this._vertices.push(parseFloat(tokens[1]));
+                this._vertices.push(parseFloat(tokens[2]));
+                this._vertices.push(parseFloat(tokens[3]));
             } else if (tokens[0] === "f") {
                 this.parseFace(line);
             } else if (tokens[0] === "vt") {
-                tmpTextureCoordinates.push(parseFloat(tokens[1]));
-                tmpTextureCoordinates.push(parseFloat(tokens[2]));
+                this._textureCoordinates.push(parseFloat(tokens[1]));
+                this._textureCoordinates.push(parseFloat(tokens[2]));
             } else if (tokens[0] === "vn") {
-                // TODO: handle normals
+                this._normals.push(parseFloat(tokens[1]));
+                this._normals.push(parseFloat(tokens[2]));
+                this._normals.push(parseFloat(tokens[3]));
             } else if (tokens[0] === "mtllib") {
                 this.materialLibrary = tokens[1];
             } else if (tokens[0] === "usemtl") {
@@ -74,14 +114,16 @@ class ModelGL {
             }
         }
 
-        this.vertices = new Float32Array(tmpVertices);
-        this.textureCoordinates = new Float32Array(tmpTextureCoordinates);
-        this.vertexiIndices = new Uint16Array(this.tmpIndices);
-        this.textureIndices = new Uint16Array(this.tmpTextureIndices);
+        // now that we have parsed the file, we need to 
+        // build the vertex buffer and index buffer
 
-        this.numVertices = tmpVertices.length / 3;
-        this.numIndices = this.tmpIndices.length;
-        this.numTriangles = this.tmpIndices.length / 3;
+        this.vertexBuffer = new Float32Array(this._vertices);
+        this.vertexiIndices = new Uint16Array(this._packedIndices);
+
+
+        this.numVertices = this.indices.length;
+        this.numIndices = this._packedIndices.length;
+        this.numTriangles = this._packedIndices.length / 3;
         console.log('done parsing');
     }
 
@@ -105,10 +147,16 @@ class ModelGL {
             console.log("WARNING: more than three vertices.");
             console.log(face);
         }
-        for (let i = 0; i < numVertices; i++) {
-            // see if the vertex is specified as v or v/t/n
 
-            let vertex: string = tokens[i + 1];
+        for (let i = 0; i < numVertices; i++) {
+            const vertex = tokens[i + 1];
+            const [needToAdd, vertexIndex] = this._vertexAccumulator.addVertex(vertex);
+
+            this._packedIndices.push(vertexIndex);
+            if (!needToAdd) {
+                continue;
+            }
+
             let vertexTokens: string[] = vertex.split("/");
 
             if (vertexTokens.length > 3) {
@@ -116,15 +164,43 @@ class ModelGL {
             }
 
             // The first value is the vertex index
-            this.tmpIndices.push(parseInt(vertexTokens[0]) - 1);
+            this._packedIndices.push(parseInt(vertexTokens[0]) - 1);
+            // get the vertex values
+            const x = this.vertexBuffer[parseInt(vertexTokens[0]) * 3];
+            const y = this.vertexBuffer[parseInt(vertexTokens[0]) * 3 + 1];
+            const z = this.vertexBuffer[parseInt(vertexTokens[0]) * 3 + 2];
 
-            if (vertexTokens.length >= 2) {
-                this.tmpTextureIndices.push(parseInt(vertexTokens[1]) - 1);
+            this._vertices.push(x);
+            this._vertices.push(y);
+            this._vertices.push(z);
+
+            // if there is only a vertex value then we are done
+            if (vertexTokens.length == 1) {
+                continue;
             }
-            if (vertexTokens.length === 3) {
-                // TODO: handle normal index
+
+            if (vertexTokens[1] !== "") {
+                const u = this.textureCoordinates[parseInt(vertexTokens[1]) * 2];
+                const v = this.textureCoordinates[parseInt(vertexTokens[1]) * 2 + 1];
+
+                this._vertices.push(u);
+                this._vertices.push(v);
+            }
+            if (vertexTokens[2] !== "") {
+                const nx = this._normals[parseInt(vertexTokens[2]) * 3];
+                const ny = this._normals[parseInt(vertexTokens[2]) * 3 + 1];
+                const nz = this._normals[parseInt(vertexTokens[2]) * 3 + 2];
+
+                this._vertices.push(nx);
+                this._vertices.push(ny);
+                this._vertices.push(nz);
 
             }
+
+
+
+
+
         }
     }
 }
