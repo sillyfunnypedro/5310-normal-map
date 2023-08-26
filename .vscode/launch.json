@@ -37,5 +37,19 @@
             "command": "npm test Material",
             "cwd": "${workspaceFolder}/part1",
         },
+        {
+            "name": "Test PPM",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm test PPM",
+            "cwd": "${workspaceFolder}/part1",
+        },
+        {
+            "name": "Run All Tests",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm test",
+            "cwd": "${workspaceFolder}/part1",
+        },
     ]
 }
