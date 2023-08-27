@@ -130,7 +130,7 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
             // bind the index buffer
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-            gl.bufferData(gl.ARRAY_BUFFER, renderModelGL.vertexBuffer, gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, renderModelGL.packedVertexBuffer, gl.STATIC_DRAW);
 
 
 
@@ -144,7 +144,7 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, renderModelGL.vertexiIndices, gl.STATIC_DRAW);
 
             //
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(renderModelGL.vertexBuffer), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(renderModelGL.packedVertexBuffer), gl.STATIC_DRAW);
 
 
             // get the position attribute location

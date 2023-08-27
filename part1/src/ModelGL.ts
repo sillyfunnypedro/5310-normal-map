@@ -47,21 +47,14 @@ class VertexAccumulator {
  * @property {Uint16Array} indices - the indices of the model one per vertex found in the face data
  */
 class ModelGL {
-    vertexBuffer: Float32Array;
-    indices: Uint16Array;
-
-
-
-    textureCoordinates: Float32Array;
-
+    packedVertexBuffer: Float32Array;
     vertexiIndices: Uint16Array;
-    textureIndices: Uint16Array;
-    materialLibrary?: string;
-    numVertices?: number;
-    numIndices?: number;
+    numVertices: number;
     numTriangles: number;
+    materialLibrary?: string;
 
     private _packedIndices: number[] = []
+    private _packedBuffer: number[] = [];
     private _vertices: number[] = [];
     private _textureCoordinates: number[] = [];
     private _normals: number[] = [];
@@ -70,16 +63,13 @@ class ModelGL {
 
 
     constructor() {
-        this.vertexBuffer = new Float32Array();
-        this.indices = new Uint16Array();
-        this.textureCoordinates = new Float32Array();
+        this.packedVertexBuffer = new Float32Array();
         this.vertexiIndices = new Uint16Array();
-        this.textureIndices = new Uint16Array();
         this.materialLibrary = "";
         this.numVertices = 0;
-        this.numIndices = 0;
         this.numTriangles = 0;
         this._packedIndices = [];
+        this._packedBuffer = [];
 
     }
 
@@ -117,12 +107,9 @@ class ModelGL {
         // now that we have parsed the file, we need to 
         // build the vertex buffer and index buffer
 
-        this.vertexBuffer = new Float32Array(this._vertices);
+        this.packedVertexBuffer = new Float32Array(this._packedBuffer);
         this.vertexiIndices = new Uint16Array(this._packedIndices);
-
-
-        this.numVertices = this.indices.length;
-        this.numIndices = this._packedIndices.length;
+        this.numVertices = this._packedIndices.length;
         this.numTriangles = this._packedIndices.length / 3;
         console.log('done parsing');
     }
@@ -150,29 +137,37 @@ class ModelGL {
 
         for (let i = 0; i < numVertices; i++) {
             const vertex = tokens[i + 1];
-            const [needToAdd, vertexIndex] = this._vertexAccumulator.addVertex(vertex);
+            const [needToAdd, vertexOutIndex] = this._vertexAccumulator.addVertex(vertex);
 
-            this._packedIndices.push(vertexIndex);
+            this._packedIndices.push(vertexOutIndex);
             if (!needToAdd) {
                 continue;
             }
 
+
+            // The current vertex was not found and thus we will need to add this vertex to the vertex buffer
+            // we parse the vertex coordinates, and texture coordinates, and normal coordinates
+            // This code presumes that all the vertices in the model have the same number of coordinates
             let vertexTokens: string[] = vertex.split("/");
 
-            if (vertexTokens.length > 3) {
-                throw new Error("A vertex can only be specified as v, v/t, or v/t/n");
+            if (vertexTokens.length === 2) {
+                throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
+
             }
-
-            // The first value is the vertex index
-            this._packedIndices.push(parseInt(vertexTokens[0]) - 1);
+            // the vertexTokens array will have 1 or 3
+            if (vertexTokens.length > 3) {
+                throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
+            }
             // get the vertex values
-            const x = this.vertexBuffer[parseInt(vertexTokens[0]) * 3];
-            const y = this.vertexBuffer[parseInt(vertexTokens[0]) * 3 + 1];
-            const z = this.vertexBuffer[parseInt(vertexTokens[0]) * 3 + 2];
+            const vertexIndex = parseInt(vertexTokens[0]) - 1;
+            const vertexOffset = vertexIndex * 3;
+            const x = this._vertices[vertexOffset];
+            const y = this._vertices[vertexOffset + 1];
+            const z = this._vertices[vertexOffset + 2];
 
-            this._vertices.push(x);
-            this._vertices.push(y);
-            this._vertices.push(z);
+            this._packedBuffer.push(x);
+            this._packedBuffer.push(y);
+            this._packedBuffer.push(z);
 
             // if there is only a vertex value then we are done
             if (vertexTokens.length == 1) {
@@ -180,20 +175,30 @@ class ModelGL {
             }
 
             if (vertexTokens[1] !== "") {
-                const u = this.textureCoordinates[parseInt(vertexTokens[1]) * 2];
-                const v = this.textureCoordinates[parseInt(vertexTokens[1]) * 2 + 1];
+                if (this._textureCoordinates.length === 0) {
+                    throw new Error("There are no texture coordinates defined");
+                }
+                const textureIndex = parseInt(vertexTokens[1]) - 1;
+                const textureOffset = textureIndex * 2;
+                const u = this._textureCoordinates[textureOffset];
+                const v = this._textureCoordinates[textureOffset + 1];
 
-                this._vertices.push(u);
-                this._vertices.push(v);
+                this._packedBuffer.push(u);
+                this._packedBuffer.push(v);
             }
             if (vertexTokens[2] !== "") {
-                const nx = this._normals[parseInt(vertexTokens[2]) * 3];
-                const ny = this._normals[parseInt(vertexTokens[2]) * 3 + 1];
-                const nz = this._normals[parseInt(vertexTokens[2]) * 3 + 2];
+                if (this._normals.length === 0) {
+                    throw new Error("There are no normals defined");
+                }
+                const normalIndex = parseInt(vertexTokens[2]) - 1;
+                const normalOffset = normalIndex * 3;
+                const nx = this._normals[normalOffset];
+                const ny = this._normals[normalOffset + 1];
+                const nz = this._normals[normalOffset + 2];
 
-                this._vertices.push(nx);
-                this._vertices.push(ny);
-                this._vertices.push(nz);
+                this._packedBuffer.push(nx);
+                this._packedBuffer.push(ny);
+                this._packedBuffer.push(nz);
 
             }
 
