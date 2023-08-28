@@ -65,6 +65,32 @@ describe('ModelGL', () => {
             expect(() => model.parseModel(modelData)).toThrowError('Inconsistent Vertex Format');
         });
 
+        it('vertex//normal should be followed by the same', () => {
+            const modelData = `
+                v 0.0 0.0 0.0
+                v 1.0 0.0 0.0
+                v 1.0 1.0 0.0
+                vt 1.0 0.5
+                vn 0.0 1.0 0.5
+
+                f 1//1 1 1
+            `;
+            expect(() => model.parseModel(modelData)).toThrowError('Inconsistent Vertex Format');
+        });
+
+        it('vertex/texture/normal should be followed by the same', () => {
+            const modelData = `
+                v 0.0 0.0 0.0
+                v 1.0 0.0 0.0
+                v 1.0 1.0 0.0
+                vt 1.0 0.5
+                vn 0.0 1.0 0.5
+
+                f 1/1/1 1/1/1 1//1
+            `;
+            expect(() => model.parseModel(modelData)).toThrowError('Inconsistent Vertex Format');
+        });
+
 
 
 
@@ -212,7 +238,41 @@ describe('ModelGL', () => {
 
 
     });
+
+    it('should have 4 vertices with textures and normal', () => {
+        const modelData = `
+                mtllib square.mtl
+                v 11 11 0
+                v 12 11 0
+                v 12 12 0
+                v 11 12 0
+                vt 0.0 0.0
+                vt 1.0 0.0
+                vt 1.0 1.0
+                vt 0.0 1.0
+                vt 1 0
+                vn 0.1 0.1 0.1
+                vn 0.2 0.2 0.2
+                vn 0.3 0.3 0.3
+                vn 0.4 0.4 0.4
+                f 1/1/1 2/2/2 3/3/3 
+                f 1/1/1 3/3/3 4/4/4
+
+              `;
+        model.parseModel(modelData);
+        expect(model.packedVertexBuffer).toEqual(new Float32Array(
+            [
+                11, 11, 0, 0, 0, 0.1, 0.1, 0.1, // vertex 1 index 0
+                12, 11, 0, 1, 0, 0.2, 0.2, 0.2, // vertex 2 index 1
+                12, 12, 0, 1, 1, 0.3, 0.3, 0.3, // vertex 3 index 2
+                11, 12, 0, 0, 1, 0.4, 0.4, 0.4  // vertex 4 index 3
+            ]));
+        expect(model.vertexiIndices).toEqual(new Uint16Array([0, 1, 2, 0, 2, 3]));
+    });
+
+
 });
+
 
 
 
