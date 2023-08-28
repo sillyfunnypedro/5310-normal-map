@@ -1,36 +1,93 @@
-/**
- * ModelGL.ts
- * @description ModelGL interface
- * @interface ModelGL
- * @export ModelGL
- * @property {Float32Array} vertices
- * @property {Float32Array} textureCoordinates
- * @property {Uint16Array} vertexiIndices
- * @property {Uint16Array} textureIndices
- * @property {number} [numVertices]
- * @property {number} [numIndices]
- * @property {number} [numTriangles]
- * @property {string} [materialLibrary]
- */
 
+/**
+ *  @class VertexAccumulator
+ *  @description VertexAccumulator class
+ * 
+ * Uses the strings in the Wavefront obj file to record whether or not
+ * a vertex has been recorded.  It only stores the string that represents the
+ * vertex in the face line of the obj file.
+ * 
+ * It also records the data of the first vertex it is given and then 
+ * checks other vertices to ensure the same data is being stored per
+ * vertex.
+ */
 class VertexAccumulator {
-    private vertices: string[] = [];
+    private _vertices: string[] = [];
+    private _expectedFormat: string[] = []
 
     constructor() {
-        this.vertices = [];
+        this._vertices = [];
 
     }
+
+    /**
+     * 
+     * @param vertex 
+     * 
+     * Check to see if the vertex is of the expected format
+     */
+    private checkVertexFormat(vertex: string) {
+
+        const tokens: string[] = vertex.split('/');
+
+        if (tokens.length === 2) {
+            throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
+
+        }
+        // the vertexTokens array will have 1 or 3
+        if (tokens.length > 3) {
+            throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
+        }
+
+        // if this is the first vertex store its format
+        if (this._expectedFormat.length === 0) {
+
+            if (tokens.length == 1) {
+                this._expectedFormat = ['+'] // expect one value
+            } else {
+                const expectVertex = '+'
+                let expectTexture = ''
+                let expectNormal = ''
+                if (tokens[1] !== '') {
+                    expectTexture = '+'
+                }
+                if (tokens[2] !== '') {
+                    expectNormal = '+'
+                }
+                this._expectedFormat = [expectVertex, expectTexture, expectNormal]
+            }
+        }
+
+        if (tokens.length !== this._expectedFormat.length) {
+            throw new Error("Inconsistent Vertex Format")
+        }
+
+        for (let i = 0; i < tokens.length; i++) {
+            const expected = this._expectedFormat[i].length;
+            const found = tokens[i].length === 0 ? 0 : 1;
+            if (expected !== found) {
+                throw new Error("Inconsistent Vertex Format")
+            }
+
+        }
+
+
+
+    }
+
 
     // add a vertex to the list of vertices
     // if the vertex is already in the list, return the index of the vertex
     // otherwise, add the vertex to the list and return the index of the vertex
     // the first return value indicates whether the vertex was added or not
     addVertex(vertex: string): [boolean, number] {
-        if (this.vertices.indexOf(vertex) === -1) {
-            this.vertices.push(vertex);
-            return [true, this.vertices.length - 1]
+        this.checkVertexFormat(vertex);
+        if (this._vertices.indexOf(vertex) === -1) {
+            this._vertices.push(vertex);
+            return [true, this._vertices.length - 1]
         }
-        return [false, this.vertices.indexOf(vertex)];
+
+        return [false, this._vertices.indexOf(vertex)];
     }
 
 }
@@ -43,8 +100,8 @@ class VertexAccumulator {
  * 
  * This class will parse a model in wavefront .obj format
  * 
- * @property {Float32Array} vertices - the packed vertices of the model
- * @property {Uint16Array} indices - the indices of the model one per vertex found in the face data
+ * @property {Float32Array} packedVertexBuffer - the packed vertices of the model
+ * @property {Uint16Array} vertexIndices - the indices of the model one per vertex found in the face data
  */
 class ModelGL {
     packedVertexBuffer: Float32Array;
@@ -150,14 +207,7 @@ class ModelGL {
             // This code presumes that all the vertices in the model have the same number of coordinates
             let vertexTokens: string[] = vertex.split("/");
 
-            if (vertexTokens.length === 2) {
-                throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
 
-            }
-            // the vertexTokens array will have 1 or 3
-            if (vertexTokens.length > 3) {
-                throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
-            }
             // get the vertex values
             const vertexIndex = parseInt(vertexTokens[0]) - 1;
             const vertexOffset = vertexIndex * 3;
