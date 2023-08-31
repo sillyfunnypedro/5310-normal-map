@@ -52,7 +52,13 @@ export class Material {
     }
 
 
-    parseMaterial(material: string): void {
+
+
+    /**
+     * 
+     * @param material - a string representation of the material
+     */
+    loadMaterialFromString(material: string): void {
         let lines: string[] = material.split("\n");
         for (let line of lines) {
             // strip off any leading white space
@@ -85,5 +91,27 @@ export class Material {
             }
         }
     }
+
+    /**
+     * 
+     * @returns a string representation of the material
+     */
+    toString(): string {
+        let result: string = '';
+        result += 'name: ' + this.name + '\n';
+        result += 'Ns: ' + this.Ns + '\n';
+        result += 'Ka: ' + this.Ka + '\n';
+        result += 'Kd: ' + this.Kd + '\n';
+        result += 'Ks: ' + this.Ks + '\n';
+        result += 'Ke: ' + this.Ke + '\n';
+        result += 'Ni: ' + this.Ni + '\n';
+        result += 'd: ' + this.d + '\n';
+        result += 'illum: ' + this.illum + '\n';
+        result += 'map_Kd: ' + this.map_Kd + '\n';
+        result += 'map_Bump: ' + this.map_Bump + '\n';
+        result += 'map_Ks: ' + this.map_Ks + '\n';
+        return result;
+    }
 }
 
+export default Material;

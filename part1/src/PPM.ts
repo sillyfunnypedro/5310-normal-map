@@ -14,15 +14,6 @@ class PPM {
     private _maxColorValue: number = 0;
     // define the data as 8 bit unsigned integers (bytes)
     private _data: Uint8Array = new Uint8Array(0);
-    /**
-     * Constructor loads a filename with the .ppm extension
-     * @param fileName - The name of the file to load
-     */
-    constructor() {
-
-    }
-
-
 
     public loadFileFromString(fileContents: string): void {
         let lines: string[] = fileContents.split('\n');

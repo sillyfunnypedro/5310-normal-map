@@ -5,8 +5,10 @@ import CanvasGL from './CanvasGL';
 import ControlComponent from './ControlComponent';
 import LocalServerStatus from './LocalServerStatus';
 import ObjFileLoader from './ObjFileLoader';
+import MaterialFileLoader from './MaterialFileLoader';
 import ModelGL from './ModelGL';
 import { render } from '@testing-library/react';
+import PPMFileLoader from './PPMFileLoader';
 
 const objLoader = ObjFileLoader.getInstance();
 
@@ -21,7 +23,7 @@ function App() {
   const [fileName, setFileName] = useState('square/square.obj');
 
   // the renderObject is the name of the object to render
-  const [renderObject, setRenderObject] = useState('square');
+  const [renderObject, setRenderObject] = useState('triangle');
 
   // the renderMode is the name of the mode to render
   // it can be 'solid' or 'wireframe'
@@ -30,22 +32,59 @@ function App() {
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
 
 
-
   /**
-   *  This function is called when the obj file is loaded into the cache.
+   * 
+   * Load the material that is specified in the mtl file that is specified in the model
+   * return a promise to the same model that was passed in
    */
-  function loadComplete() {
-    console.log('load complete');
-    const model = objLoader.getModel(renderObject)!;
-    setModelGL(model);
+  async function loadTexture(model: ModelGL, texture: string): Promise<ModelGL> {
+    const ppmFileLoader = PPMFileLoader.getInstance();
+    const modelPath = model.modelPath;
+    if (model.material === undefined) {
+      console.log('no material');
+      return model;
+    }
+
+    if (model.material.map_Kd === undefined) {
+      console.log('no diffuse texture');
+      return model;
+    }
+
+    const diffuseTextureName = model.material.map_Kd;
+
+    console.log(`diffuse texture name: ${diffuseTextureName}`);
+
+    // get the path to the directory that contains the model
+    const modelDirectory = modelPath.substring(0, modelPath.lastIndexOf('/'));
+    const texturePath = `${modelDirectory}/${diffuseTextureName}`;
+
+    await ppmFileLoader.loadIntoCache(texturePath);
+    return model;
+
   }
 
-  // load the model the cache
+
+
+
+
+
+  // load the obj file and then use the model in the promise to set the modelGL
   useEffect(() => {
-    objLoader.loadIntoCache(renderObject, loadComplete);
+    objLoader.getModel(renderObject)
+      .then((model) => {
+        if (!model) {
+          console.log('no model');
+          return;
+        }
+        const materialFileLoader = new MaterialFileLoader()
+        materialFileLoader.loadIntoModel(model).then((model) => {
+
+          loadTexture(model, "").then((model) => {
+            setModelGL(model);
+          });
+        });
+      });
   }, [renderObject]);
-
-
 
 
 

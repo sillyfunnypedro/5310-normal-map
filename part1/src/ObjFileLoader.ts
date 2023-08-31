@@ -38,17 +38,19 @@ class ObjFileLoader {
      * @param 
      * @memberof ObjFileLoader
      * @method load
+     * 
+     * @returns Promise<ModelGL>
      * @public
      * */
-    public async loadIntoCache(objectName: string, callback: Function) {
-        const path = objectFileMap.get(objectName)!;
-        if (this.modelCache.has(path)) {
-            console.log(`${path} already loaded`);
-            callback();
-            return;
+    public async getModel(object: string): Promise<ModelGL | undefined> {
+        const objectFilePath = objectFileMap.get(object)!;
+        if (this.modelCache.has(objectFilePath)) {
+            console.log(`${objectFilePath} already loaded`);
+            let model = this.modelCache.get(objectFilePath);
+            return model;
         }
         console.log('loading into cache');
-        const fullPath = this.URLPrefix + path;
+        const fullPath = this.URLPrefix + objectFilePath;
         console.log(fullPath);
         await fetch(fullPath)
             .then((response) => {
@@ -61,31 +63,15 @@ class ObjFileLoader {
             .then((response => response.text()))
             .then((data) => {
                 const model = new ModelGL();
-                model.parseModel(data);
-                this.modelCache.set(path, model);
-                callback();
+                model.parseModel(data, objectFilePath);
+                this.modelCache.set(objectFilePath, model);
+                return model;
             }
             )
             .catch((error) => {
                 console.log(error);
             }
             );
-    }
-
-    /**
-     * Get a model from the cache
-     * @param {string} ObjectName
-     * @returns ModelGL | undefined
-     * @memberof ObjFileLoader
-     * @method getModel
-     * @public
-     * */
-    public getModel(ObjectName: string): ModelGL | undefined {
-        const path = objectFileMap.get(ObjectName)!;
-        if (this.modelCache.has(path)) {
-            return this.modelCache.get(path);
-        }
-        return undefined;
     }
 
 }

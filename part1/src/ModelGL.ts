@@ -1,4 +1,4 @@
-
+import Material from "./Material";
 /**
  *  @class VertexAccumulator
  *  @description VertexAccumulator class
@@ -14,6 +14,7 @@
 class VertexAccumulator {
     private _vertices: string[] = [];
     private _expectedFormat: string[] = []
+
 
     constructor() {
         this._vertices = [];
@@ -108,7 +109,9 @@ class ModelGL {
     vertexiIndices: Uint16Array;
     numVertices: number;
     numTriangles: number;
-    materialLibrary?: string;
+    materialFile?: string;
+    material?: Material;
+    modelPath: string = '';
 
     private _packedIndices: number[] = []
     private _packedBuffer: number[] = [];
@@ -122,7 +125,7 @@ class ModelGL {
     constructor() {
         this.packedVertexBuffer = new Float32Array();
         this.vertexiIndices = new Uint16Array();
-        this.materialLibrary = "";
+        this.materialFile = "";
         this.numVertices = 0;
         this.numTriangles = 0;
         this._packedIndices = [];
@@ -133,9 +136,10 @@ class ModelGL {
     /**
      * Parse a model in wavefront .obj format
      */
-    parseModel(model: string): void {
-
-        console.log('starting to parse');
+    parseModel(model: string, modelPath: string): void {
+        this.modelPath = modelPath;
+        console.log(`modelPath: ${this.modelPath}`)
+        // split the model into lines
         let lines: string[] = model.split("\n");
         for (let line of lines) {
             // strip off any leading white space
@@ -155,7 +159,8 @@ class ModelGL {
                 this._normals.push(parseFloat(tokens[2]));
                 this._normals.push(parseFloat(tokens[3]));
             } else if (tokens[0] === "mtllib") {
-                this.materialLibrary = tokens[1];
+                this.materialFile = tokens[1];
+                console.log("Material file: " + this.materialFile);
             } else if (tokens[0] === "usemtl") {
                 // TODO: handle material
             }
@@ -168,7 +173,6 @@ class ModelGL {
         this.vertexiIndices = new Uint16Array(this._packedIndices);
         this.numVertices = this._packedIndices.length;
         this.numTriangles = this._packedIndices.length / 3;
-        console.log('done parsing');
     }
 
     /** 

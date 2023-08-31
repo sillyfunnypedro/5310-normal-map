@@ -1,6 +1,7 @@
 import PPM from './PPM';
 import { objectFileMap } from './ObjectFileMap';
 
+
 /**
  * PPMFileLoader.ts
     * @description PPMFileLoader class
@@ -10,7 +11,7 @@ import { objectFileMap } from './ObjectFileMap';
 class PPMFileLoader {
     // this is where you would put the URL to your server
     private URLPrefix: string = 'http://localhost:8080/objects/';
-    private modelCache: Map<string, ModelGL> = new Map();
+    private modelCache: Map<string, PPM> = new Map();
 
     private static instance: PPMFileLoader;
 
@@ -35,15 +36,15 @@ class PPMFileLoader {
      * @method load
      * @public
      * */
-    public async loadIntoCache(objectName: string, callback: Function) {
-        const path = objectFileMap.get(objectName)!;
-        if (this.modelCache.has(path)) {
-            console.log(`${path} already loaded`);
-            callback();
-            return;
+    public async loadIntoCache(textureFilePath: string): Promise<PPM | undefined> {
+
+        if (this.modelCache.has(textureFilePath)) {
+            console.log(`${textureFilePath} already loaded`);
+            const image = this.modelCache.get(textureFilePath);
+            return image;
         }
-        console.log('loading into cache');
-        const fullPath = this.URLPrefix + path;
+        console.log('>>>>>>>loading into cache' + textureFilePath,);
+        const fullPath = this.URLPrefix + textureFilePath;
         console.log(fullPath);
         await fetch(fullPath)
             .then((response) => {
@@ -57,8 +58,9 @@ class PPMFileLoader {
             .then((data) => {
                 const image = new PPM();
                 image.loadFileFromString(data);
-                this.modelCache.set(path, image);
-                callback();
+                this.modelCache.set(textureFilePath, image);
+                console.log('>>>>>>>loaded into cache ' + textureFilePath,);
+                return image;
             }
             )
             .catch((error) => {
@@ -67,21 +69,6 @@ class PPMFileLoader {
             );
     }
 
-    /**
-     * Get a model from the cache
-     * @param {string} ImageName
-     * @returns ModelGL | undefined
-     * @memberof ObjFileLoader
-     * @method getModel
-     * @public
-     * */
-    public getImage(ImageName: string): PPM | undefined {
-        const path = objectFileMap.get(ImageName)!;
-        if (this.modelCache.has(path)) {
-            return this.modelCache.get(path);
-        }
-        return undefined;
-    }
 
 }
 
