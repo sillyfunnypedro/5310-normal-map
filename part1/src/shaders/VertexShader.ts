@@ -5,15 +5,15 @@
  * Vertex shader for the 5310 Graphics course.
  *  This is a very simple shader that just passes the vertex position through.
  * */
-export const vertexShader =
+const vertexShader =
     `#version 300 es
     in vec3 position;
 
     void main() {
-        gl_Position =   vec4(position, 1.0f);
+        gl_Position =   vec4(position, 1.0);
     }
 `
-export const vertexTextureShader =
+const vertexTextureShader =
     `#version 300 es
     in vec3 position;
     in vec2 textureCoord;
@@ -21,10 +21,11 @@ export const vertexTextureShader =
     out vec2 textureCoordOut;
 
     void main() {
-        gl_Position =   vec4(position, 1.0f);
+        gl_Position =   vec4(position, 1.0);
         textureCoordOut = textureCoord;
     }
 `
-
-
-    ;
+const vertexShaderMap = new Map<string, string>();
+vertexShaderMap.set('vertexShader', vertexShader);
+vertexShaderMap.set('vertexTextureShader', vertexTextureShader);
+export default vertexShaderMap;

@@ -112,6 +112,8 @@ class ModelGL {
     materialFile?: string;
     material?: Material;
     modelPath: string = '';
+    vertexShader: string = '';
+    fragmentShader: string = '';
 
     textures: Map<string, string> = new Map<string, string>();
 
@@ -134,6 +136,10 @@ class ModelGL {
         this._packedBuffer = [];
 
     }
+
+    /**
+     * The data that the CanvasGL renderer will use to set up the draw call(s) for the model
+     */
 
     public get vertexStride(): number {
         // three floats for the position

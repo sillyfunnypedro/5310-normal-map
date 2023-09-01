@@ -1,8 +1,10 @@
 import React, { useRef, useEffect } from 'react';
-import { fragmentShader } from './shaders/FragmentShader'
-import { vertexShader } from './shaders/VertexShader'
+import fragmentShaderMap from './shaders/FragmentShader'
+import vertexShaderMap from './shaders/VertexShader'
 
 import ModelGL from './ModelGL';
+import PPMFileLoader from './PPMFileLoader';
+import PPM from './PPM';
 
 export { };
 /**
@@ -44,6 +46,10 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
         }
         const canvas = canvasRef.current;
         if (canvas) {
+
+            // ******************************************************
+            // get the WebGL context
+            // ******************************************************
             const gl = canvas.getContext('webgl2') || canvas.getContext('experimental-webgl') as WebGLRenderingContext;
             if (!gl) {
                 console.error('WebGL2 not supported');
@@ -53,17 +59,42 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
             console.log(`GLSL version supported: ${glslVersion}`);
             console.log((gl as WebGLRenderingContext).VERSION);
 
-            // see import at the top of this file
-            // the shaders are in ../shaders
-            // the vertex shader is in ../shaders/VertexShader.ts
-            // the fragment shader is in ../shaders/FragmentShader.ts
+            // ******************************************************
+            // decide whether or not to use the texture shader
+            // ******************************************************
+            let useTextureShader = true;
 
+            if (model.material === undefined) {
+                useTextureShader = false;
+            }
 
+            if (model.material!.map_Kd === "") {
+                useTextureShader = false;
+            }
+
+            if (model.vertexStride < 5) {
+                useTextureShader = false;
+            }
+
+            // ******************************************************
+            //
             // create a vertex shader
+            //
+            // ******************************************************
             const vertexShaderProgram = gl.createShader(gl.VERTEX_SHADER);
             if (!vertexShaderProgram) {
                 throw new Error('Failed to create vertex shader');
             }
+
+
+            // get the vertex shader source code from the shader map use the simplest one by default
+            let vertexShader = vertexShaderMap.get("vertexShader") as string;
+            if (useTextureShader) {
+                vertexShader = vertexShaderMap.get("vertexTextureShader") as string;
+            }
+
+            console.log('using shader:\n' + vertexShader);
+
 
             // attach the shader source code to the vertex shader
             gl.shaderSource(vertexShaderProgram, vertexShader);
@@ -78,11 +109,30 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                 return;
             }
 
+
+            // ******************************************************
+            //
             // create a fragment shader
+            //
+            // ******************************************************
             const fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
             if (!fragmentShaderObject) {
                 throw new Error('Failed to create fragment shader');
             }
+
+
+
+
+
+            // get the fragment shader source code from the shader map use the simplest one by default
+            let fragmentShader = fragmentShaderMap.get("fragmentShader") as string;
+
+
+            if (useTextureShader) {
+                fragmentShader = fragmentShaderMap.get("fragmentTextureShader") as string;
+            }
+
+            console.log('using shader:\n' + fragmentShader);
 
             // attach the shader source code to the fragment shader
             gl.shaderSource(fragmentShaderObject, fragmentShader);
@@ -102,6 +152,10 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
             if (!shaderProgram) {
                 throw new Error('Failed to create shader program');
             }
+
+            /**
+             * set up the texture for the model
+             */
 
             // attach the vertex shader to the shader program
             gl.attachShader(shaderProgram, vertexShaderProgram);
@@ -160,7 +214,60 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
             // colors per vertex
             gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, model.vertexStride, 0);
 
+            /** 
+             * if we are using a texture then set up the vertex information 
+             * */
 
+            if (useTextureShader) {
+                // get the texture coordinate attribute location
+                const texCoordLocation = gl.getAttribLocation(shaderProgram, 'textureCoord');
+                // check to see if we got the attribute location
+                if (texCoordLocation === -1) {
+                    console.log('Failed to get the storage location of texCoord');
+                }
+
+                // enable the texture coordinate attribute
+                gl.enableVertexAttribArray(texCoordLocation);
+
+                // tell the texture coordinate attribute how to get data out of the texture coordinate buffer
+                gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, model.vertexStride, model.textureOffset);
+
+                // create a texture
+                const texture = gl.createTexture();
+                if (!texture) {
+                    throw new Error('Failed to create texture');
+                }
+
+                // create a texture unit
+                const textureUnit = gl.TEXTURE0;
+
+                // bind the texture to the texture unit
+                gl.activeTexture(textureUnit);
+                gl.bindTexture(gl.TEXTURE_2D, texture);
+
+                // set the parameters for the texture
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+                // set the filtering for the texture
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+
+                const ppmIMG = PPMFileLoader.getInstance().loadIntoCache(model.material!.map_Kd!);
+
+                ppmIMG.then((ppmFile) => {
+                    if (ppmFile === undefined) {
+                        throw new Error("ppmFile is undefined");
+                    }
+                    // load the texture data into the texture
+                    if (ppmFile.data === undefined) {
+                        throw new Error("ppmFile.data is undefined");
+                    }
+
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmFile.width, ppmFile.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmFile.data);
+                });
+
+            }
 
             // Clear the whole canvas
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);

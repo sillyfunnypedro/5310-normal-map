@@ -3,7 +3,7 @@
 /**
  * A basic constant color fragment shader
  * */
-export const fragmentShader =
+const fragmentShader =
     `#version 300 es
     precision mediump float;
     out vec4 color;
@@ -19,16 +19,20 @@ export const fragmentShader =
  * A shader that uses a texture
  * 
  */
-export const fragmentTextureShader =
+const fragmentTextureShader =
     `#version 300 es
     precision mediump float;
-    in vec2 textureCoordIn;
+    in vec2 textureCoordOut;
     uniform sampler2D textureSampler;
     out vec4 color;
     void main() {
-        color = texture(textureSampler, textureCoordIn);
+        color = texture(textureSampler, textureCoordOut);
     }
     `;
 
 
 
+const fragmentShaderMap = new Map<string, string>();
+fragmentShaderMap.set('fragmentShader', fragmentShader);
+fragmentShaderMap.set('fragmentTextureShader', fragmentTextureShader);
+export default fragmentShaderMap;

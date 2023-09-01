@@ -23,7 +23,7 @@ function App() {
   const [fileName, setFileName] = useState('square/square.obj');
 
   // the renderObject is the name of the object to render
-  const [renderObject, setRenderObject] = useState('triangle');
+  const [renderObject, setRenderObject] = useState('tri-plain');
 
   // the renderMode is the name of the mode to render
   // it can be 'solid' or 'wireframe'
@@ -51,6 +51,10 @@ function App() {
     }
 
     const diffuseTextureName = model.material.map_Kd;
+    if (diffuseTextureName === '') {
+      console.log('no diffuse texture name');
+      return model;
+    }
 
     console.log(`diffuse texture name: ${diffuseTextureName}`);
 
