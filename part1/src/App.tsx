@@ -58,7 +58,13 @@ function App() {
     const modelDirectory = modelPath.substring(0, modelPath.lastIndexOf('/'));
     const texturePath = `${modelDirectory}/${diffuseTextureName}`;
 
-    await ppmFileLoader.loadIntoCache(texturePath);
+    await ppmFileLoader.loadIntoCache(texturePath).then((ppmFile) => {
+      if (model.material === undefined) {
+        console.log('no material');
+        return model;
+      }
+      model.material.map_Kd = texturePath; ////JUANCHO here 
+    });
     return model;
 
   }

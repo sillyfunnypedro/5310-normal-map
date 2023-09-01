@@ -43,7 +43,7 @@ class VertexAccumulator {
         // if this is the first vertex store its format
         if (this._expectedFormat.length === 0) {
 
-            if (tokens.length == 1) {
+            if (tokens.length === 1) {
                 this._expectedFormat = ['+'] // expect one value
             } else {
                 const expectVertex = '+'
@@ -113,6 +113,8 @@ class ModelGL {
     material?: Material;
     modelPath: string = '';
 
+    textures: Map<string, string> = new Map<string, string>();
+
     private _packedIndices: number[] = []
     private _packedBuffer: number[] = [];
     private _vertices: number[] = [];
@@ -132,6 +134,42 @@ class ModelGL {
         this._packedBuffer = [];
 
     }
+
+    public get vertexStride(): number {
+        // three floats for the position
+        let stride = 3;
+        // two floats for the texture coordinates
+        if (this._textureCoordinates.length > 0) {
+            stride += 2;
+        }
+        // three floats for the normal
+        if (this._normals.length > 0) {
+            stride += 3;
+        }
+        console.log(`stride: ${stride}`)
+        // the stride is the number of bytes that it needs to skip
+        // multiply by the size of a float32
+
+        return stride * Float32Array.BYTES_PER_ELEMENT;
+    }
+
+    public get vertexOffset(): number {
+        return 0;
+    }
+
+    public get textureOffset(): number {
+        return 3 * Float32Array.BYTES_PER_ELEMENT;
+    }
+
+    public get normalOffset(): number {
+        let offset = 3 * Float32Array.BYTES_PER_ELEMENT;
+        if (this._textureCoordinates.length > 0) {
+            offset = 5 * Float32Array.BYTES_PER_ELEMENT;
+        }
+        return offset;
+    }
+
+
 
     /**
      * Parse a model in wavefront .obj format
@@ -224,7 +262,7 @@ class ModelGL {
             this._packedBuffer.push(z);
 
             // if there is only a vertex value then we are done
-            if (vertexTokens.length == 1) {
+            if (vertexTokens.length === 1) {
                 continue;
             }
 

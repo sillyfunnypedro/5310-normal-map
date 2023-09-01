@@ -24,22 +24,22 @@ interface CanvasGLProps {
 }
 
 
-function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLProps) {
+function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
 
     const [shouldRender, setShouldRender] = React.useState(false);
 
     useEffect(() => {
         setShouldRender(true);
-    }, [renderModelGL]);
+    }, [model]);
 
-    if (!renderModelGL) {
+    if (!model) {
         console.log('The model is null');
     }
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
-        if (!shouldRender || !renderModelGL) {
+        if (!shouldRender || !model) {
             return;
         }
         const canvas = canvasRef.current;
@@ -130,7 +130,7 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
             // bind the index buffer
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-            gl.bufferData(gl.ARRAY_BUFFER, renderModelGL.packedVertexBuffer, gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, model.packedVertexBuffer, gl.STATIC_DRAW);
 
 
 
@@ -141,10 +141,10 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
 
 
             // pass the triangle's indices to the index buffer
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, renderModelGL.vertexiIndices, gl.STATIC_DRAW);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, model.vertexiIndices, gl.STATIC_DRAW);
 
             //
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(renderModelGL.packedVertexBuffer), gl.STATIC_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.packedVertexBuffer), gl.STATIC_DRAW);
 
 
             // get the position attribute location
@@ -158,7 +158,7 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
             // tell the position attribute how to get data out of the position buffer
             // the position attribute is a vec3 (3 values per vertex) and then there are three
             // colors per vertex
-            gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
+            gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, model.vertexStride, 0);
 
 
 
@@ -187,13 +187,13 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
 
             if (renderMode === "wireframe") {
                 // Draw the triangles as wireframe using gl.LINE_LOOP
-                for (let i = 0; i < renderModelGL.numTriangles!; i++) {
+                for (let i = 0; i < model.numTriangles!; i++) {
                     const index = i * 3;
                     gl.drawElements(gl.LINE_LOOP, 3, gl.UNSIGNED_SHORT, index * 2);
                 }
                 //gl.drawElements(gl.LINE_LOOP, renderModelGL.indices.length, gl.UNSIGNED_SHORT, 0);
             } else {
-                gl.drawElements(gl.TRIANGLES, renderModelGL.vertexiIndices.length, gl.UNSIGNED_SHORT, 0);
+                gl.drawElements(gl.TRIANGLES, model.vertexiIndices.length, gl.UNSIGNED_SHORT, 0);
             }
 
 
@@ -201,7 +201,7 @@ function CanvasGL({ width, height, model: renderModelGL, renderMode }: CanvasGLP
             gl.finish();
 
         }
-    }, [shouldRender, renderModelGL, width, height, renderMode]);
+    }, [shouldRender, model, width, height, renderMode]);
 
     return <canvas ref={canvasRef} width={width} height={height} />;
 }
