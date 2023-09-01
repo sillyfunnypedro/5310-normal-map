@@ -253,19 +253,19 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
 
-                const ppmIMG = PPMFileLoader.getInstance().loadIntoCache(model.material!.map_Kd!);
+                const ppmIMG = PPMFileLoader.getInstance().loadFile(model.material!.map_Kd!);
 
-                ppmIMG.then((ppmFile) => {
-                    if (ppmFile === undefined) {
-                        throw new Error("ppmFile is undefined");
-                    }
-                    // load the texture data into the texture
-                    if (ppmFile.data === undefined) {
-                        throw new Error("ppmFile.data is undefined");
-                    }
 
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmFile.width, ppmFile.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmFile.data);
-                });
+                if (ppmIMG === undefined) {
+                    throw new Error("ppmFile is undefined");
+                }
+                // load the texture data into the texture
+                if (ppmIMG.data === undefined) {
+                    throw new Error("ppmFile.data is undefined");
+                }
+
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmIMG.width, ppmIMG.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmIMG.data);
+
 
             }
 
