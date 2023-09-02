@@ -46,28 +46,30 @@ class PPMFileLoader {
         console.log('>>>>>>>loading into cache' + textureFilePath,);
         const fullPath = this.URLPrefix + textureFilePath;
         console.log(fullPath);
-        await fetch(fullPath)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response;
+        const image = new PPM();
+        try {
+            const response = await fetch(fullPath);
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-            )
-            .then((response => response.text()))
-            .then((data) => {
-                const image = new PPM();
-                image.loadFileFromString(data);
-                this.modelCache.set(textureFilePath, image);
-                console.log('>>>>>>>loaded into cache ' + textureFilePath,);
-                return image;
-            }
-            )
-            .catch((error) => {
-                console.log(error);
-            }
-            );
+            const data = await response.text()
+
+
+
+            image.loadFileFromString(data);
+            this.modelCache.set(textureFilePath, image);
+            console.log('>>>>>>>loaded into cache ' + textureFilePath,);
+        } catch (error) {
+            console.error('There has been a problem with your fetch operation:', error);
+            return new PPM(); // return an empty image
+        }
+
+
+        return image;
     }
+
+
     public loadFile(textureFilePath: string): PPM | undefined {
         if (this.modelCache.has(textureFilePath)) {
             console.log(`${textureFilePath} already loaded`);

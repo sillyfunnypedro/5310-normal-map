@@ -34,8 +34,7 @@ function App() {
 
   /**
    * 
-   * Load the material that is specified in the mtl file that is specified in the model
-   * return a promise to the same model that was passed in
+   * Load the teture for the model
    */
   async function loadTexture(model: ModelGL, texture: string): Promise<ModelGL> {
     const ppmFileLoader = PPMFileLoader.getInstance();

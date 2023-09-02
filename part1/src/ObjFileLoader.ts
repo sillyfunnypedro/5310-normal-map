@@ -1,6 +1,7 @@
 import ModelGL from './ModelGL';
 import { objectFileMap } from './ObjectFileMap';
 import Material from './Material';
+import PPMFileLoader from './PPMFileLoader';
 
 /**
  * ObjFileLoader.ts
@@ -55,6 +56,10 @@ class ObjFileLoader {
             let model = this.modelCache.get(objectFilePath);
             return model;
         }
+
+        /**
+         * If the model is not in the cache, then load it.
+         */
         console.log('loading into cache');
         const fullPath = this.URLPrefix + objectFilePath;
         console.log(fullPath);
@@ -75,6 +80,17 @@ class ObjFileLoader {
                 // now load the material file into the model
                 let populatedModel = this.loadMaterialIntoModel(model);
                 populatedModel.then((model) => {
+                    // see if there are any textures to load.
+                    // diffuse texture
+                    if (model.material !== undefined) {
+                        if (model.material.map_Kd !== '') {
+                            this.loadTextures(model).then((model) => {
+                                return model;
+                            });;
+                        }
+                    }
+
+
                     return model;
                 });
             }
@@ -102,10 +118,10 @@ class ObjFileLoader {
 
         const modelFullPath = model.modelPath;
         console.log(`modelFullPath: ${modelFullPath}`)
-        const material = model.materialFile;
+        const materialFile = model.materialFile;
 
         // If the model does not have a material then we are done.
-        if (material === "") {
+        if (materialFile === "") {
             return model;
         }
 
@@ -114,33 +130,101 @@ class ObjFileLoader {
             return model;
         }
 
-        // If the model has a material, but it is not loaded, then load it.
-        if (model.material === undefined) {
-            // get the path to the material file
-            const modelDirectory = modelFullPath.substring(0, modelFullPath.lastIndexOf('/'));
-            console.log(`modelDirectory: ${modelDirectory}`);
-            const materialPath = this.URLPrefix + modelDirectory + '/' + material;
-            console.log(materialPath);
 
-            await fetch(materialPath)
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response;
-                }).then((response => response.text()))
-                .then((data) => {
-                    const material = new Material();
-                    material.loadMaterialFromString(data);
-                    model.material = material;
-                    return model;
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
+        // get the path to the material file
+        const modelDirectory = modelFullPath.substring(0, modelFullPath.lastIndexOf('/'));
+        console.log(`modelDirectory: ${modelDirectory}`);
+        const materialPath = this.URLPrefix + modelDirectory + '/' + materialFile;
+        console.log(materialPath);
+
+        try {
+
+            const response = await fetch(materialPath)
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.text();
+
+            const material = new Material();
+            material.loadMaterialFromString(data);
+            model.material = material;
+        } catch (error) {
+            console.log(error);
         }
         return model
+
     }
+
+    private async loadTextures(model: ModelGL): Promise<ModelGL> {
+        const modelPath = model.modelPath;
+        // check to see what textures need to be loaded
+        if (model.material === undefined) {
+            console.log('no material');
+            return model;
+        }
+        let loaders = [];
+
+        if (model.material.map_Kd === undefined || model.material.map_Kd === '') {
+            console.log('no diffuse texture');
+        } else {
+
+            const diffuseTextureName = model.material.map_Kd;
+            const diffuseTextureLoader = this.loadTexture(model, diffuseTextureName, "map_Kd");
+            console.log('diffuseTextureLoader: ' + diffuseTextureName);
+            loaders.push(diffuseTextureLoader);
+        }
+
+        if (model.material.map_Bump === undefined || model.material.map_Bump === '') {
+            console.log('no normal texture');
+        } else {
+            const normalTextureName = model.material.map_Bump;
+            const normalTextureLoader = this.loadTexture(model, normalTextureName, "map_Bump");
+            console.log('normalTextureLoader: ' + normalTextureName)
+            loaders.push(normalTextureLoader);
+        }
+
+        if (model.material.map_Ks === undefined || model.material.map_Ks === '') {
+            console.log('no specular texture');
+        } else {
+            const specularTextureName = model.material.map_Ks;
+            const specularTextureLoader = this.loadTexture(model, specularTextureName, "map_Ks");
+            console.log('specularTextureLoader: ' + specularTextureName)
+            loaders.push(specularTextureLoader);
+        }
+
+        const models = await Promise.all(loaders)
+
+        return models[0];
+    }
+
+
+
+    private async loadTexture(model: ModelGL, textureName: string, textureType: string): Promise<ModelGL> {
+        const ppmFileLoader = PPMFileLoader.getInstance();
+        const modelPath = model.modelPath;
+
+
+        console.log(`loadiing texture name: ${textureName}`);
+
+        // get the path to the directory that contains the model
+        const modelDirectory = modelPath.substring(0, modelPath.lastIndexOf('/'));
+        const texturePath = `${modelDirectory}/${textureName}`;
+
+        const ppmFile = await ppmFileLoader.loadIntoCache(texturePath);
+
+        if (model.material !== undefined) {
+            model.textures.set(textureType, texturePath);
+        } else {
+            throw new Error('model.material is undefined');
+        }
+        return model;
+
+    }
+
+
+
 
 
 }
