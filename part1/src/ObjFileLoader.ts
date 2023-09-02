@@ -63,42 +63,36 @@ class ObjFileLoader {
         console.log('loading into cache');
         const fullPath = this.URLPrefix + objectFilePath;
         console.log(fullPath);
-        await fetch(fullPath)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response;
-            }
-            )
-            .then((response => response.text()))
-            .then((data) => {
-                const model = new ModelGL();
-                model.parseModel(data, objectFilePath);
-                this.modelCache.set(objectFilePath, model);
-
-                // now load the material file into the model
-                let populatedModel = this.loadMaterialIntoModel(model);
-                populatedModel.then((model) => {
-                    // see if there are any textures to load.
-                    // diffuse texture
-                    if (model.material !== undefined) {
-                        if (model.material.map_Kd !== '') {
-                            this.loadTextures(model).then((model) => {
-                                return model;
-                            });;
-                        }
-                    }
 
 
-                    return model;
-                });
+        try {
+            const response = await fetch(fullPath)
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-            )
-            .catch((error) => {
-                console.log(error);
+
+            const data = await response.text();
+
+
+            let model = new ModelGL();
+            model.parseModel(data, objectFilePath);
+            this.modelCache.set(objectFilePath, model);
+
+            // now load the material file into the model
+            model = await this.loadMaterialIntoModel(model);
+
+            if (model.material !== undefined) {
+                model = await this.loadTextures(model);
+                return model;
             }
-            );
+
+
+            return model;
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
 

@@ -86,9 +86,7 @@ function App() {
           return;
         }
 
-        loadTexture(model, "").then((model) => {
-          setModelGL(model);
-        });
+        setModelGL(model);
 
       });
   }, [renderObject]);
