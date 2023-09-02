@@ -86,13 +86,11 @@ function App() {
           console.log('no model');
           return;
         }
-        const materialFileLoader = new MaterialFileLoader()
-        materialFileLoader.loadIntoModel(model).then((model) => {
 
-          loadTexture(model, "").then((model) => {
-            setModelGL(model);
-          });
+        loadTexture(model, "").then((model) => {
+          setModelGL(model);
         });
+
       });
   }, [renderObject]);
 

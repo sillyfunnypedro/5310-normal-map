@@ -1,5 +1,6 @@
 import ModelGL from './ModelGL';
 import { objectFileMap } from './ObjectFileMap';
+import Material from './Material';
 
 /**
  * ObjFileLoader.ts
@@ -19,6 +20,9 @@ class ObjFileLoader {
 
     private static instance: ObjFileLoader;
 
+    /** because this class caches the models we only want one copy
+    * of the class. This is a singleton pattern
+    */
     private constructor() {
         // do nothing
     }
@@ -29,6 +33,8 @@ class ObjFileLoader {
         }
         return ObjFileLoader.instance;
     }
+
+
     /**
      * Load a file from a given path, and store it in the cache
      * the function does not return anything.
@@ -65,7 +71,12 @@ class ObjFileLoader {
                 const model = new ModelGL();
                 model.parseModel(data, objectFilePath);
                 this.modelCache.set(objectFilePath, model);
-                return model;
+
+                // now load the material file into the model
+                let populatedModel = this.loadMaterialIntoModel(model);
+                populatedModel.then((model) => {
+                    return model;
+                });
             }
             )
             .catch((error) => {
@@ -73,6 +84,64 @@ class ObjFileLoader {
             }
             );
     }
+
+
+    /**
+     * Load the material file from the model
+     * the function does not return anything. it simply copies the material into the Model
+     * @param {string} path
+     * Call back function to indicate model is ready
+     * @param {Function} callback
+     * @param 
+     * @memberof MaterialFileLoader
+     * @method load
+     * @returns Promise<Material|undefined>
+     * @public
+     * */
+    private async loadMaterialIntoModel(model: ModelGL): Promise<ModelGL> {
+
+        const modelFullPath = model.modelPath;
+        console.log(`modelFullPath: ${modelFullPath}`)
+        const material = model.materialFile;
+
+        // If the model does not have a material then we are done.
+        if (material === "") {
+            return model;
+        }
+
+        // If the model has a material, but it is already loaded, then we are done.
+        if (model.material !== undefined) {
+            return model;
+        }
+
+        // If the model has a material, but it is not loaded, then load it.
+        if (model.material === undefined) {
+            // get the path to the material file
+            const modelDirectory = modelFullPath.substring(0, modelFullPath.lastIndexOf('/'));
+            console.log(`modelDirectory: ${modelDirectory}`);
+            const materialPath = this.URLPrefix + modelDirectory + '/' + material;
+            console.log(materialPath);
+
+            await fetch(materialPath)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response;
+                }).then((response => response.text()))
+                .then((data) => {
+                    const material = new Material();
+                    material.loadMaterialFromString(data);
+                    model.material = material;
+                    return model;
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+        return model
+    }
+
 
 }
 
