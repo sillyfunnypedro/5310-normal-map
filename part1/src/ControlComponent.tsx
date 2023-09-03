@@ -11,7 +11,7 @@ interface ControlComponentProps {
     renderMode: string;
 
     // the callback functions to update the object and mode
-    updateRenderObject: (newObject: string, newFile: string) => void;
+    updateRenderObject: (newObject: string) => void;
     updateRenderMode: (newMode: string) => void;
 }
 
@@ -48,14 +48,14 @@ function makeModeButtons(strings: string[], value: string, callback: (arg: strin
  * 
  * @returns HTML component with as many buttons as there are strings in the array
  */
-function makeObjectButtons(value: string, callback: (model: string, file: string) => void) {
+function makeObjectButtons(value: string, callback: (model: string) => void) {
     const strings = Array.from(objectFileMap.keys());
     return (
         <div>
             {strings.map((string) => (
                 <button
                     key={string}
-                    onClick={() => callback(string, objectFileMap.get(string) as string)}
+                    onClick={() => callback(string)}
                     style={{
                         backgroundColor: value === string ? 'red' : 'white',
                     }}

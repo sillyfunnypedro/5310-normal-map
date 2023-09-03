@@ -19,6 +19,7 @@ export { };
 
 
 interface CanvasGLProps {
+    key: string;
     width: number;
     height: number;
     model: ModelGL | null;

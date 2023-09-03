@@ -20,7 +20,7 @@ function App() {
   // path to the file from the public directory that is served
   // by the local server
   // 
-  const [fileName, setFileName] = useState('square/square.obj');
+
 
   // the renderObject is the name of the object to render
   const [renderObject, setRenderObject] = useState('tri-plain');
@@ -32,84 +32,47 @@ function App() {
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
 
 
-  /**
-   * 
-   * Load the teture for the model
-   */
-  async function loadTexture(model: ModelGL, texture: string): Promise<ModelGL> {
-    const ppmFileLoader = PPMFileLoader.getInstance();
-    const modelPath = model.modelPath;
-    if (model.material === undefined) {
-      console.log('no material');
-      return model;
-    }
-
-    if (model.material.map_Kd === undefined) {
-      console.log('no diffuse texture');
-      return model;
-    }
-
-    const diffuseTextureName = model.material.map_Kd;
-    if (diffuseTextureName === '') {
-      console.log('no diffuse texture name');
-      return model;
-    }
-
-    console.log(`diffuse texture name: ${diffuseTextureName}`);
-
-    // get the path to the directory that contains the model
-    const modelDirectory = modelPath.substring(0, modelPath.lastIndexOf('/'));
-    const texturePath = `${modelDirectory}/${diffuseTextureName}`;
-
-    await ppmFileLoader.loadIntoCache(texturePath).then((ppmFile) => {
-      if (model.material === undefined) {
-        console.log('no material');
-        return model;
-      }
-      model.material.map_Kd = texturePath; ////JUANCHO here 
-    });
-    return model;
-
-  }
 
 
-
-
+  useEffect(() => {
+    setRenderObject('tri-plain');
+    setRenderMode('solid');
+  }, []);
 
 
   // load the obj file and then use the model in the promise to set the modelGL
   useEffect(() => {
-    objLoader.getModel(renderObject)
-      .then((model) => {
-        if (!model) {
-          console.log('no model');
-          return;
-        }
+    let objPromise = objLoader.getModel(renderObject)
+    objPromise.then((model) => {
+      if (!model) {
+        console.log('no model');
+        return;
+      }
 
-        setModelGL(model);
+      setModelGL(model);
 
-      });
+    });
   }, [renderObject]);
 
 
 
   // force a re-render of CanvasGL when the demo changes
-  useEffect(() => {
-    setRenderObject(renderObject);
+  // useEffect(() => {
+  //   setRenderObject(renderObject);
+  // }, [renderObject]);
 
-  }, [renderObject]);
 
-
+  // these two functions are passed to the ControlComponent
+  // and are called when the user changes the render mode or
+  // the render object
   function updateRenderMode(nemMode: string) {
     setRenderMode(nemMode);
   }
 
-  function updateRenderObject(newObject: string, newFile: string) {
+  function updateRenderObject(newObject: string) {
     if (newObject === renderObject) {
       return;
     }
-
-    setFileName(newFile);
 
     setRenderObject(newObject);
   }
@@ -119,7 +82,7 @@ function App() {
       <div>
         <LocalServerStatus />
       </div>
-      <CanvasGL width={800} height={500} model={modelGL} renderMode={renderMode} />
+      <CanvasGL key={renderObject} width={800} height={500} model={modelGL} renderMode={renderMode} />
       <ControlComponent
         renderObject={renderObject}
         renderMode={renderMode}

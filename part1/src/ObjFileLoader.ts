@@ -70,6 +70,8 @@ class ObjFileLoader {
 
             if (!response.ok) {
                 throw new Error('Network response was not ok');
+            } else {
+                console.log('response was ok');
             }
 
             const data = await response.text();
@@ -186,6 +188,11 @@ class ObjFileLoader {
             const specularTextureLoader = this.loadTexture(model, specularTextureName, "map_Ks");
             console.log('specularTextureLoader: ' + specularTextureName)
             loaders.push(specularTextureLoader);
+        }
+
+        if (loaders.length === 0) {
+            console.log('no textures to load');
+            return model;
         }
 
         const models = await Promise.all(loaders)
