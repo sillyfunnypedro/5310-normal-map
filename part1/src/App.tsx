@@ -55,7 +55,12 @@ function App() {
   }, [renderObject]);
 
 
-
+  function updateTranslate(x: number, y: number) {
+    if (!modelGL) {
+      return;
+    }
+    console.log(`updateTranslate: ${x}, ${y}`);
+  }
   // force a re-render of CanvasGL when the demo changes
   // useEffect(() => {
   //   setRenderObject(renderObject);
@@ -87,7 +92,8 @@ function App() {
         renderObject={renderObject}
         renderMode={renderMode}
         updateRenderObject={updateRenderObject}
-        updateRenderMode={updateRenderMode} />
+        updateRenderMode={updateRenderMode}
+        updateTranslate={updateTranslate} />
     </header>
 
   </div>
