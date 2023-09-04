@@ -25,7 +25,40 @@ const vertexTextureShader =
         textureCoordOut = textureCoord;
     }
 `
+
+const vertexShaderRotation =
+    `#version 300 es
+    in vec3 position;
+    in vec2 textureCoord;
+
+    uniform mat4 modelMatrix;
+
+    out vec2 textureCoordOut;
+
+    void main() {
+        gl_Position =   modelMatrix * vec4(position, 1.0);
+        textureCoordOut = textureCoord;
+    }
+`
+const vertexShaderTransformation =
+    `#version 300 es
+    in vec3 position;
+    in vec2 textureCoord;
+
+    uniform mat4 modelMatrix;
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
+
+    out vec2 textureCoordOut;
+
+    void main() {
+        gl_Position =   projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+        textureCoordOut = textureCoord;
+    }
+`
 const vertexShaderMap = new Map<string, string>();
 vertexShaderMap.set('vertexShader', vertexShader);
 vertexShaderMap.set('vertexTextureShader', vertexTextureShader);
+vertexShaderMap.set('vertexShaderRotation', vertexShaderRotation);
+vertexShaderMap.set('vertexShaderTransformation', vertexShaderTransformation);
 export default vertexShaderMap;

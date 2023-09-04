@@ -16,14 +16,19 @@ interface ControlComponentProps {
     updateRenderObject: (newObject: string) => void;
     updateRenderMode: (newMode: string) => void;
     updateTranslate: (x: number, y: number) => void;
+    updateRotate: (x: number, y: number, z: number) => void;
 }
 
 
 // define the ControlComponent
-function ControlComponent({ renderObject, renderMode, updateRenderObject, updateRenderMode, updateTranslate }: ControlComponentProps) {
+function ControlComponent({ renderObject, renderMode, updateRenderObject, updateRenderMode, updateTranslate, updateRotate }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
+    const [rotateX, setRotateX] = useState(0);
+    const [rotateY, setRotateY] = useState(0);
+    const [rotateZ, setRotateZ] = useState(0);
+
 
     /**
      * 
@@ -48,6 +53,23 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
             </div>
         );
     }
+    function handleSlideChangeRotX(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = event.target.value;
+        setRotateX(parseInt(value));
+        updateRotate(rotateX, rotateY, rotateZ);
+    }
+
+    function handleSlideChangeRotY(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = event.target.value;
+        setRotateY(parseInt(value));
+        updateRotate(rotateX, rotateY, rotateZ);
+    }
+
+    function handleSlideChangeRotZ(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = event.target.value;
+        setRotateZ(parseInt(value));
+        updateRotate(rotateX, rotateY, rotateZ);
+    }
     function handleSliderChangeX(event: React.ChangeEvent<HTMLInputElement>) {
         const value = event.target.value;
         setTranslateX(parseInt(value));
@@ -62,10 +84,20 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
     function makeTranslateSliders() {
         return (
             <div>
-                x
+                <label htmlFor="myRangeX">X:</label>
                 <input name="x" type="range" min="-50" max="50" value={translateX} className="slider" onChange={handleSliderChangeX} id="myRangeX"></input>
-                <br />y
+                <br></br>
+                <label htmlFor="myRangeY">Y:</label>
                 <input name="x" type="range" min="-50" max="50" value={translateY} className="slider" onChange={handleSliderChangeY} id="myRangeY"></input>
+                <br></br>
+                <label htmlFor="rotateZ">X:</label>
+                <input name="rotz" type="range" min="0" max="360" value={rotateX} className="slider" onChange={handleSlideChangeRotX} id="rotateX"></input>
+                <br></br>
+                <label htmlFor="rotateZ">Y:</label>
+                <input name="rotz" type="range" min="0" max="360" value={rotateY} className="slider" onChange={handleSlideChangeRotY} id="rotateY"></input>
+                <br></br>
+                <label htmlFor="rotateZ">Z:</label>
+                <input name="rotz" type="range" min="0" max="360" value={rotateZ} className="slider" onChange={handleSlideChangeRotZ} id="rotate"></input>
             </div>
         );
     }

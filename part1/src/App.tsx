@@ -61,6 +61,13 @@ function App() {
     }
     console.log(`updateTranslate: ${x}, ${y}`);
   }
+
+  function updateRotate(x: number, y: number, z: number) {
+    if (!modelGL) {
+      return;
+    }
+    console.log(`updateRotate: ${x}, ${y}, ${z}`);
+  }
   // force a re-render of CanvasGL when the demo changes
   // useEffect(() => {
   //   setRenderObject(renderObject);
@@ -93,7 +100,8 @@ function App() {
         renderMode={renderMode}
         updateRenderObject={updateRenderObject}
         updateRenderMode={updateRenderMode}
-        updateTranslate={updateTranslate} />
+        updateTranslate={updateTranslate}
+        updateRotate={updateRotate} />
     </header>
 
   </div>

@@ -1,4 +1,5 @@
 import Material from "./Material";
+
 /**
  *  @class VertexAccumulator
  *  @description VertexAccumulator class
@@ -114,6 +115,8 @@ class ModelGL {
     modelPath: string = '';
     vertexShader: string = '';
     fragmentShader: string = '';
+
+
 
     textures: Map<string, string> = new Map<string, string>();
 
