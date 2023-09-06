@@ -81,6 +81,16 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
         updateTranslate(translateX, translateY);
     }
 
+    function resetAllSliders() {
+        setTranslateX(0);
+        setTranslateY(0);
+        updateTranslate(0, 0);
+        setRotateX(0);
+        setRotateY(0);
+        setRotateZ(0);
+        updateRotate(0, 0, 0);
+    }
+
     function makeTranslateSliders() {
         return (
             <div>
@@ -90,14 +100,16 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
                 <label htmlFor="myRangeY">Y:</label>
                 <input name="x" type="range" min="-50" max="50" value={translateY} className="slider" onChange={handleSliderChangeY} id="myRangeY"></input>
                 <br></br>
-                <label htmlFor="rotateZ">X:</label>
+                <label htmlFor="rotateZ">Rotate X:</label>
                 <input name="rotz" type="range" min="0" max="360" value={rotateX} className="slider" onChange={handleSlideChangeRotX} id="rotateX"></input>
                 <br></br>
-                <label htmlFor="rotateZ">Y:</label>
+                <label htmlFor="rotateZ">Rotate Y:</label>
                 <input name="rotz" type="range" min="0" max="360" value={rotateY} className="slider" onChange={handleSlideChangeRotY} id="rotateY"></input>
                 <br></br>
-                <label htmlFor="rotateZ">Z:</label>
+                <label htmlFor="rotateZ">Rotate Z:</label>
                 <input name="rotz" type="range" min="0" max="360" value={rotateZ} className="slider" onChange={handleSlideChangeRotZ} id="rotate"></input>
+                <br></br>
+                <button onClick={resetAllSliders}>Reset</button>
             </div>
         );
     }

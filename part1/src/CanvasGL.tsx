@@ -24,10 +24,13 @@ interface CanvasGLProps {
     height: number;
     model: ModelGL | null;
     renderMode: string;
+    rotateX: number;
+    rotateY: number;
+    rotateZ: number;
 }
 
 
-function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
+function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ }: CanvasGLProps) {
 
     const [shouldRender, setShouldRender] = React.useState(false);
 
@@ -37,6 +40,7 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
 
     if (!model) {
         console.log('The model is null');
+
     }
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,7 +50,7 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
 
 
     useEffect(() => {
-        if (!shouldRender || !model) {
+        if (/*!shouldRender ||*/ !model) {
             return;
         }
         const canvas = canvasRef.current;
@@ -288,15 +292,11 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                 }
 
                 if (rotation) {
-                    // create a rotation matrix that spins around the z axis
-                    const rotationMatrix = mat4.create();
-                    // get the time in seconds
-                    const now = Date.now() / 1000;
-                    const nowMod60 = now % 60;
-                    // rotate by 10 degree per second
-                    const rotationInRadians = nowMod60 * Math.PI / 3;
 
-                    mat4.rotateZ(rotationMatrix, rotationMatrix, rotationInRadians);
+                    const rotationMatrix = mat4.create();
+                    mat4.rotateX(rotationMatrix, rotationMatrix, rotateX * Math.PI / 180);
+                    mat4.rotateY(rotationMatrix, rotationMatrix, rotateY * Math.PI / 180);
+                    mat4.rotateZ(rotationMatrix, rotationMatrix, rotateZ * Math.PI / 180);
                     mat4.scale(rotationMatrix, rotationMatrix, [0.5, 0.5, 0.5]);
 
                     // get the rotation matrix location
@@ -331,7 +331,8 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                 gl.viewport(xOffset, yOffset, squareSize, squareSize);
 
 
-
+                // enable the z-buffer
+                gl.enable(gl.DEPTH_TEST);
                 if (renderMode === "wireframe") {
                     // Draw the triangles as wireframe using gl.LINE_LOOP
                     for (let i = 0; i < model.numTriangles!; i++) {
@@ -347,12 +348,12 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                 gl.flush();
                 gl.finish();
                 // start the animation loop
-                requestAnimationFrame(render);
+                //requestAnimationFrame(render);
             }
             requestAnimationFrame(render);
 
         }
-    }, [shouldRender, model, width, height, renderMode]);
+    }, [shouldRender, model, width, height, renderMode, rotateX, rotateY, rotateZ]);
 
     return (<canvas ref={canvasRef} width={width} height={height} />);
 }

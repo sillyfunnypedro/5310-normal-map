@@ -31,6 +31,12 @@ function App() {
 
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
 
+  const [translateX, setTranslateX] = useState(0);
+  const [translateY, setTranslateY] = useState(0);
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [rotateZ, setRotateZ] = useState(0);
+
 
 
 
@@ -59,6 +65,8 @@ function App() {
     if (!modelGL) {
       return;
     }
+    setTranslateX(x);
+    setTranslateY(y);
     console.log(`updateTranslate: ${x}, ${y}`);
   }
 
@@ -66,6 +74,10 @@ function App() {
     if (!modelGL) {
       return;
     }
+    setRotateX(x);
+    setRotateY(y);
+    setRotateZ(z);
+
     console.log(`updateRotate: ${x}, ${y}, ${z}`);
   }
   // force a re-render of CanvasGL when the demo changes
@@ -94,7 +106,11 @@ function App() {
       <div>
         <LocalServerStatus />
       </div>
-      <CanvasGL key={renderObject} width={800} height={500} model={modelGL} renderMode={renderMode} />
+      <CanvasGL key={renderObject}
+        width={800} height={500}
+        model={modelGL} renderMode={renderMode}
+        rotateX={rotateX} rotateY={rotateY}
+        rotateZ={rotateZ} />
       <ControlComponent
         renderObject={renderObject}
         renderMode={renderMode}
