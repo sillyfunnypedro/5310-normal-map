@@ -39,7 +39,6 @@ class PPMFileLoader {
     public async loadIntoCache(textureFilePath: string): Promise<PPM | undefined> {
 
         if (this.modelCache.has(textureFilePath)) {
-            console.log(`${textureFilePath} already loaded`);
             const image = this.modelCache.get(textureFilePath);
             return image;
         }
@@ -72,7 +71,6 @@ class PPMFileLoader {
 
     public loadFile(textureFilePath: string): PPM | undefined {
         if (this.modelCache.has(textureFilePath)) {
-            console.log(`${textureFilePath} already loaded`);
             const image = this.modelCache.get(textureFilePath);
             return image;
         }

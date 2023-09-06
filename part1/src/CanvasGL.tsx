@@ -61,8 +61,7 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                 return;
             }
             const glslVersion = (gl as WebGLRenderingContext).getParameter((gl as WebGLRenderingContext).SHADING_LANGUAGE_VERSION);
-            console.log(`GLSL version supported: ${glslVersion}`);
-            console.log((gl as WebGLRenderingContext).VERSION);
+
 
 
 
@@ -107,8 +106,6 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
 
 
 
-                console.log('using shader:\n' + vertexShader);
-
 
                 // attach the shader source code to the vertex shader
                 gl.shaderSource(vertexShaderProgram, vertexShader);
@@ -146,7 +143,7 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                     fragmentShader = fragmentShaderMap.get("fragmentTextureShader") as string;
                 }
 
-                console.log('using shader:\n' + fragmentShader);
+
 
                 // attach the shader source code to the fragment shader
                 gl.shaderSource(fragmentShaderObject, fragmentShader);
@@ -298,7 +295,9 @@ function CanvasGL({ width, height, model, renderMode }: CanvasGLProps) {
                     const nowMod60 = now % 60;
                     // rotate by 10 degree per second
                     const rotationInRadians = nowMod60 * Math.PI / 3;
+
                     mat4.rotateZ(rotationMatrix, rotationMatrix, rotationInRadians);
+                    mat4.scale(rotationMatrix, rotationMatrix, [0.5, 0.5, 0.5]);
 
                     // get the rotation matrix location
                     const rotationMatrixLocation = gl.getUniformLocation(shaderProgram, 'modelMatrix');

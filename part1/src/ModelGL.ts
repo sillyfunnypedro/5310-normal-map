@@ -155,9 +155,6 @@ class ModelGL {
         if (this._normals.length > 0) {
             stride += 3;
         }
-        console.log(`stride: ${stride}`)
-        // the stride is the number of bytes that it needs to skip
-        // multiply by the size of a float32
 
         return stride * Float32Array.BYTES_PER_ELEMENT;
     }
