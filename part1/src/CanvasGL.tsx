@@ -99,10 +99,11 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
 
             const rotation: boolean = true;
 
-            let vertexShaderName = "vertexShader";
+            let vertexShaderName = "vertexFullTransformationShader";
 
             if (rotation && !useTextureShader) {
                 vertexShaderName = "vertexShaderRotation";
+                vertexShaderName = "vertexFullTransformationShader";
             }
 
             if (useTextureShader) {
@@ -129,6 +130,9 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
             // check if the vertex shader compiled successfully
             const vertexShaderCompiled = gl.getShaderParameter(vertexShaderProgram, gl.COMPILE_STATUS);
             if (!vertexShaderCompiled) {
+                console.log(vertexShader)
+                console.log('tried to compile ' + vertexShaderName);
+                console.log(gl.getShaderInfoLog(vertexShaderProgram));
                 console.error('Failed to compile vertex shader');
                 return;
             }
@@ -281,7 +285,8 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
 
             }
 
-            if (vertexShaderName === "vertexTextureFullTransformationShader") {
+            if (vertexShaderName === "vertexTextureFullTransformationShader"
+                || vertexShaderName === "vertexFullTransformationShader") {
                 // calculate the projection matrix
                 const projectionMatrix = mat4.create();
                 if (projectionMode === "perspective") {
