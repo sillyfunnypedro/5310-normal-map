@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import './ControlComponent.css'
 
 
 
@@ -41,39 +42,18 @@ const LocalServerStatus = () => {
     }, []);
 
     // return the status
-    return <div>Local server status: {status}</div>;
+    return (
+        <table className="tableWidth">
+            <tbody>
+                <tr>
+                    <td className="leftAlign">Local server status</td>
+                    <td className="rightAlign">{status}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    )
 }
 
 export default LocalServerStatus;
 
-
-// const LocalServerStatus = () => {
-//     const [status, setStatus] = useState('offline');
-
-//     function updateStatus() {
-//         fetch('http://localhost:8080/status.json', { mode: 'no-cors' })
-//             .then((response) => response.json())
-//             .then((data) => {
-//                 console.log(data);
-//                 setStatus(data.status);
-//             })
-//             .catch((error) => {
-//                 setStatus('offline' + error);
-//             });
-//     }
-
-//     useEffect(() => {
-//         const interval = setInterval(() => {
-//             updateStatus();
-//             console.log("dkfdlfssf");
-//         }, 500);
-//         return () => clearInterval(interval);
-//     }, []);
-
-
-
-
-//     return <div>Local server status: {status}</div>;
-// };
-
-// export default LocalServerStatus;

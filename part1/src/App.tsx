@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import CanvasGL from './CanvasGL';
 import ControlComponent from './ControlComponent';
-import LocalServerStatus from './LocalServerStatus';
 import ObjFileLoader from './ObjFileLoader';
 import MaterialFileLoader from './MaterialFileLoader';
 import ModelGL from './ModelGL';
@@ -104,9 +103,7 @@ function App() {
 
   return (<div className="App">
     <header className="App-header">
-      <div>
-        <LocalServerStatus />
-      </div>
+
       <CanvasGL key={renderObject}
         width={800} height={500}
         model={modelGL} renderMode={renderMode}

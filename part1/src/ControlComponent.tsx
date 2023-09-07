@@ -1,5 +1,6 @@
 import { objectFileMap } from './ObjectFileMap';
 import React, { useState } from 'react';
+import LocalServerStatus from './LocalServerStatus';
 import './ControlComponent.css';
 
 /** two buttons for the first part of the assignment */
@@ -239,21 +240,35 @@ function ControlComponent({ renderObject, renderMode, projectionMode, updateRend
 
     return (
         <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th className="leftAlign">
+                            <hr className="lineWidth" />
+                            <LocalServerStatus />
+                            <hr className="lineWidth" />
+                            {makeObjectButtons("Objects:", renderObject, updateRenderObject)}
+                            <hr className="lineWidth" />
 
-            {makeObjectButtons("Objects:", renderObject, updateRenderObject)}
-            <hr className="lineWidth" />
+                            {makeModeButtons("Render mode:", ["solid", "wireframe"], renderMode, updateRenderMode)}
+                            <hr className="lineWidth" />
 
-            {makeModeButtons("Render mode:", ["solid", "wireframe"], renderMode, updateRenderMode)}
-            <hr className="lineWidth" />
+                            {makeModeButtons("Projection mode:", ["perspective", "orthographic"], projectionMode, updateProjectionMode)}
+                            <hr className="lineWidth" />
+                        </th>
+                        <th className="rightAlign">
+                            <hr className="lineWidth" />
+                            {makeTranslateSliders()}
+                            <hr className="lineWidth" />
+                            {makeRotationSliders()}
+                            <hr className="lineWidth" />
+                            {makeControlButtons()}
+                            <hr className="lineWidth" />
+                        </th>
+                    </tr>
 
-            {makeModeButtons("Projection mode:", ["perspective", "orthographic"], projectionMode, updateProjectionMode)}
-            <hr className="lineWidth" />
-            {makeTranslateSliders()}
-            <hr className="lineWidth" />
-            {makeRotationSliders()}
-            <hr className="lineWidth" />
-            {makeControlButtons()}
-            <hr className="lineWidth" />
+                </thead>
+            </table>
         </div>
 
 
