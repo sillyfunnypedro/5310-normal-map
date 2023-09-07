@@ -23,14 +23,17 @@ interface CanvasGLProps {
     width: number;
     height: number;
     model: ModelGL | null;
+
     renderMode: string;
+    projectionMode: string;
     rotateX: number;
     rotateY: number;
     rotateZ: number;
+    cameraDistance: number;
 }
 
 
-function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ }: CanvasGLProps) {
+function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, rotateY, rotateZ, cameraDistance }: CanvasGLProps) {
 
     const [shouldRender, setShouldRender] = React.useState(false);
 
@@ -96,18 +99,25 @@ function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ 
 
             const rotation: boolean = true;
 
-            let vertexShader = vertexShaderMap.get("vertexShader") as string;
+            let vertexShaderName = "vertexShader";
 
             if (rotation && !useTextureShader) {
-                vertexShader = vertexShaderMap.get("vertexShaderRotation") as string;
+                vertexShaderName = "vertexShaderRotation";
             }
 
             if (useTextureShader) {
-                vertexShader = vertexShaderMap.get("vertexTextureShader") as string;
+                vertexShaderName = "vertexTextureShader";
                 if (rotation) {
-                    vertexShader = vertexShaderMap.get("vertexShaderRotation") as string;
+                    vertexShaderName = "vertexShaderRotation";
+                    vertexShaderName = "vertexTextureFullTransformationShader";
                 }
             }
+
+            // get the vertex shader source code from the shader map
+            const vertexShader = vertexShaderMap.get(vertexShaderName) as string;
+
+
+
 
             // Now that we have the code let's compile it compile it
             // attach the shader source code to the vertex shader
@@ -271,6 +281,34 @@ function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ 
 
             }
 
+            if (vertexShaderName === "vertexTextureFullTransformationShader") {
+                // calculate the projection matrix
+                const projectionMatrix = mat4.create();
+                if (projectionMode === "perspective") {
+                    mat4.perspective(projectionMatrix, 45 * Math.PI / 180, width / height, 0.1, 100.0);
+                } else {
+                    mat4.ortho(projectionMatrix, -1, 1, -1, 1, 0.1, 100.0);
+                }
+
+                // get the projection matrix location
+                const projectionMatrixLocation = gl.getUniformLocation(shaderProgram, 'projectionMatrix');
+
+                // set the projection matrix
+                gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
+
+
+                // calculate the view matrix
+                const viewMatrix = mat4.create();
+                mat4.translate(viewMatrix, viewMatrix, [0, 0, -cameraDistance]);
+
+                // get the view matrix location
+                const viewMatrixLocation = gl.getUniformLocation(shaderProgram, 'viewMatrix');
+
+                // set the view matrix
+                gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
+            }
+
+
             const modelMatrix = mat4.create();  // create a matrix to hold the rotation matrix
             if (rotation) {
                 mat4.rotateX(modelMatrix, modelMatrix, rotateX * Math.PI / 180);
@@ -297,19 +335,25 @@ function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ 
             gl.clearColor(.6, .2, .6, 1);
             gl.clear(gl.COLOR_BUFFER_BIT);
 
-            // calculate the square that fits in the canvas make that the viewport
-            let squareSize = gl.canvas.width;
-            if (gl.canvas.width > gl.canvas.height) {
-                squareSize = gl.canvas.height;
+            if (projectionMode == "orthographic") {
+                // calculate the square that fits in the canvas make that the viewport
+                let squareSize = gl.canvas.width;
+                if (gl.canvas.width > gl.canvas.height) {
+                    squareSize = gl.canvas.height;
+                }
+                // calculate the offset for the square  
+                const xOffset = (gl.canvas.width - squareSize) / 2;
+                const yOffset = (gl.canvas.height - squareSize) / 2;
+
+
+                gl.viewport(xOffset, yOffset, squareSize, squareSize);
+            } else {
+                gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
             }
 
 
-            // calculate the offset for the square  
-            const xOffset = (gl.canvas.width - squareSize) / 2;
-            const yOffset = (gl.canvas.height - squareSize) / 2;
 
 
-            gl.viewport(xOffset, yOffset, squareSize, squareSize);
 
 
             // enable the z-buffer
@@ -332,7 +376,8 @@ function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ 
             gl.finish();
 
         }
-    }, [shouldRender, model, width, height, renderMode, rotateX, rotateY, rotateZ]);
+    }, [shouldRender, model, width, height, renderMode, projectionMode, cameraDistance,
+        rotateX, rotateY, rotateZ]);
 
     return (<canvas ref={canvasRef} width={width} height={height} />);
 }

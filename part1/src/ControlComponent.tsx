@@ -1,6 +1,7 @@
 import { objectFileMap } from './ObjectFileMap';
 import React, { useState } from 'react';
 import LocalServerStatus from './LocalServerStatus';
+
 import './ControlComponent.css';
 
 /** two buttons for the first part of the assignment */
@@ -14,23 +15,28 @@ interface ControlComponentProps {
     renderMode: string;
     projectionMode: string;
 
+
+
     // the callback functions to update the object and mode
     updateRenderObject: (newObject: string) => void;
     updateRenderMode: (newMode: string) => void;
     updateProjectionMode: (newMode: string) => void;
     updateTranslate: (x: number, y: number) => void;
     updateRotate: (x: number, y: number, z: number) => void;
+    updateCameraDistance: (distance: number) => void;
 }
 
 
 // define the ControlComponent
-function ControlComponent({ renderObject, renderMode, projectionMode, updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate }: ControlComponentProps) {
+function ControlComponent({ renderObject, renderMode, projectionMode,
+    updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate, updateCameraDistance }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
     const [rotateX, setRotateX] = useState(0);
     const [rotateY, setRotateY] = useState(0);
     const [rotateZ, setRotateZ] = useState(0);
+    const [eyeDistance, setEyeDistance] = useState(2);
 
 
 
@@ -70,6 +76,12 @@ function ControlComponent({ renderObject, renderMode, projectionMode, updateRend
         setRotateY(0);
         setRotateZ(0);
         updateRotate(0, 0, 0);
+    }
+
+    function handleSlideChangeEyeDistance(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = event.target.value;
+        setEyeDistance(parseInt(value));
+        updateCameraDistance(eyeDistance);
     }
 
     /**
@@ -159,6 +171,28 @@ function ControlComponent({ renderObject, renderMode, projectionMode, updateRend
                                     onChange={handleSlideChangeRotZ} id="rotate"></input>
                             </th>
                         </tr>
+                    </thead>
+                </table>
+            </div>
+        );
+    }
+
+    function makeCameraSliders() {
+        return (
+            <div>
+                <table className="tableWidth">
+                    <thead>
+                        <tr>
+                            <th className="leftAlign">Camera</th>
+                            <th className="rightAlign">
+                                <label htmlFor="distance">D:</label>
+                                <input name="distance" type="range" min="1" max="12" step="0.01"
+                                    value={eyeDistance} className="slider"
+                                    onChange={handleSlideChangeEyeDistance} id="distance"></input>
+                                <br />
+                            </th>
+                        </tr>
+
                     </thead>
                 </table>
             </div>
@@ -257,6 +291,8 @@ function ControlComponent({ renderObject, renderMode, projectionMode, updateRend
                             <hr className="lineWidth" />
                         </th>
                         <th className="rightAlign">
+                            <hr className="lineWidth" />
+                            {makeCameraSliders()}
                             <hr className="lineWidth" />
                             {makeTranslateSliders()}
                             <hr className="lineWidth" />

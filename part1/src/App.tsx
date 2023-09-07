@@ -36,6 +36,7 @@ function App() {
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [rotateZ, setRotateZ] = useState(0);
+  const [cameraDistance, setCameraDistance] = useState(2);
 
 
 
@@ -80,6 +81,15 @@ function App() {
 
     console.log(`updateRotate: ${x}, ${y}, ${z}`);
   }
+
+  function updateCameraDistance(distance: number) {
+    if (!modelGL) {
+      return;
+    }
+    setCameraDistance(distance);
+  }
+
+
   // force a re-render of CanvasGL when the demo changes
   // useEffect(() => {
   //   setRenderObject(renderObject);
@@ -107,8 +117,10 @@ function App() {
       <CanvasGL key={renderObject}
         width={800} height={500}
         model={modelGL} renderMode={renderMode}
+        projectionMode={projectionMode}
         rotateX={rotateX} rotateY={rotateY}
-        rotateZ={rotateZ} />
+        rotateZ={rotateZ}
+        cameraDistance={cameraDistance} />
       <ControlComponent
         renderObject={renderObject}
         renderMode={renderMode}
@@ -117,7 +129,8 @@ function App() {
         updateRenderMode={updateRenderMode}
         updateProjectionMode={setProjectionMode}
         updateTranslate={updateTranslate}
-        updateRotate={updateRotate} />
+        updateRotate={updateRotate}
+        updateCameraDistance={updateCameraDistance} />
     </header>
 
   </div>

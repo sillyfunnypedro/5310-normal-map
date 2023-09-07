@@ -55,7 +55,9 @@ const vertexTextureRotationShader =
         textureCoordOut = textureCoord;
     }
 `
-const vertexTransformationShader =
+
+
+const vertexTextureFullTransformationShader =
     `#version 300 es
     in vec3 position;
     in vec2 textureCoord;
@@ -76,5 +78,5 @@ vertexShaderMap.set('vertexShader', vertexShader);
 vertexShaderMap.set('vertexShaderRotation', vertexRotationShader);
 vertexShaderMap.set('vertexTextureShader', vertexTextureShader);
 vertexShaderMap.set('vertexTextureRotationShader', vertexTextureRotationShader);
-vertexShaderMap.set('vertexTransformationShader', vertexTransformationShader);
+vertexShaderMap.set('vertexTextureFullTransformationShader', vertexTextureFullTransformationShader);
 export default vertexShaderMap;
