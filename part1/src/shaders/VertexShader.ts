@@ -13,6 +13,12 @@ const vertexShader =
         gl_Position =   vec4(position, 1.0);
     }
 `
+
+/**
+ * Vertex shader for the 5310 Graphics course.
+ * 
+ * This shader applies a full transformation to the vertex position.
+ */
 const vertexFullTransformationShader =
     `#version 300 es
     in vec3 position;
@@ -27,7 +33,11 @@ const vertexFullTransformationShader =
     }
 `
 
-
+/**
+ * Vertex shader for the 5310 Graphics course.
+ * 
+ * This shader applies a rotation to the vertex position.
+ */
 const vertexRotationShader =
     `#version 300 es
     in vec3 position;
@@ -42,6 +52,13 @@ const vertexRotationShader =
         textureCoordOut = textureCoord;
     }
 `
+
+/**
+ * Vertex shader for the 5310 Graphics course.
+ * 
+ * This shader applies a rotation to the vertex position.
+ * It also passes the texture coordinate through.
+ */
 const vertexTextureShader =
     `#version 300 es
     in vec3 position;
@@ -55,6 +72,12 @@ const vertexTextureShader =
     }
 `
 
+/**
+ * Vertex shader for the 5310 Graphics course.
+ * 
+ * This shader applies a rotation to the vertex position.
+ * It also passes the texture coordinate through.
+  */
 const vertexTextureRotationShader =
     `#version 300 es
     in vec3 position;
@@ -70,7 +93,12 @@ const vertexTextureRotationShader =
     }
 `
 
-
+/**
+ * Vertex shader for the 5310 Graphics course.
+ * 
+ * This shader applies a full transformation to the vertex position.
+ * It also passes the texture coordinate through.
+ */
 const vertexTextureFullTransformationShader =
     `#version 300 es
     in vec3 position;

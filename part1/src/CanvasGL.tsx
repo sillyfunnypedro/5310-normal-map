@@ -97,21 +97,16 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
                 throw new Error('Failed to create vertex shader');
             }
 
-            const rotation: boolean = true;
+
 
             let vertexShaderName = "vertexFullTransformationShader";
 
-            if (rotation && !useTextureShader) {
-                vertexShaderName = "vertexShaderRotation";
-                vertexShaderName = "vertexFullTransformationShader";
-            }
+
 
             if (useTextureShader) {
-                vertexShaderName = "vertexTextureShader";
-                if (rotation) {
-                    vertexShaderName = "vertexShaderRotation";
-                    vertexShaderName = "vertexTextureFullTransformationShader";
-                }
+
+                vertexShaderName = "vertexTextureFullTransformationShader";
+
             }
 
             // get the vertex shader source code from the shader map
@@ -315,12 +310,12 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
 
 
             const modelMatrix = mat4.create();  // create a matrix to hold the rotation matrix
-            if (rotation) {
-                mat4.rotateX(modelMatrix, modelMatrix, rotateX * Math.PI / 180);
-                mat4.rotateY(modelMatrix, modelMatrix, rotateY * Math.PI / 180);
-                mat4.rotateZ(modelMatrix, modelMatrix, rotateZ * Math.PI / 180);
-                mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
-            }
+
+            mat4.rotateX(modelMatrix, modelMatrix, rotateX * Math.PI / 180);
+            mat4.rotateY(modelMatrix, modelMatrix, rotateY * Math.PI / 180);
+            mat4.rotateZ(modelMatrix, modelMatrix, rotateZ * Math.PI / 180);
+            mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
+
 
             // get the rotation matrix location
             const rotationMatrixLocation = gl.getUniformLocation(shaderProgram, 'modelMatrix');
