@@ -98,6 +98,10 @@ function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ 
 
             let vertexShader = vertexShaderMap.get("vertexShader") as string;
 
+            if (rotation && !useTextureShader) {
+                vertexShader = vertexShaderMap.get("vertexShaderRotation") as string;
+            }
+
             if (useTextureShader) {
                 vertexShader = vertexShaderMap.get("vertexTextureShader") as string;
                 if (rotation) {
@@ -282,7 +286,9 @@ function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ 
             gl.uniformMatrix4fv(rotationMatrixLocation, false, modelMatrix);
 
 
-
+            // ******************************************************
+            // Ok we are good to go.   Lets make some graphics
+            // ****************************************************** 
             // Clear the whole canvas
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
@@ -296,6 +302,7 @@ function CanvasGL({ width, height, model, renderMode, rotateX, rotateY, rotateZ 
             if (gl.canvas.width > gl.canvas.height) {
                 squareSize = gl.canvas.height;
             }
+
 
             // calculate the offset for the square  
             const xOffset = (gl.canvas.width - squareSize) / 2;

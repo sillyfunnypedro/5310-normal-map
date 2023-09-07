@@ -28,6 +28,7 @@ function App() {
   // the renderMode is the name of the mode to render
   // it can be 'solid' or 'wireframe'
   const [renderMode, setRenderMode] = useState('solid');
+  const [projectionMode, setProjectionMode] = useState('perspective');
 
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
 
@@ -114,8 +115,10 @@ function App() {
       <ControlComponent
         renderObject={renderObject}
         renderMode={renderMode}
+        projectionMode={projectionMode}
         updateRenderObject={updateRenderObject}
         updateRenderMode={updateRenderMode}
+        updateProjectionMode={setProjectionMode}
         updateTranslate={updateTranslate}
         updateRotate={updateRotate} />
     </header>

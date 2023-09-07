@@ -1,5 +1,5 @@
 import { objectFileMap } from './ObjectFileMap';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import './ControlComponent.css';
 
 /** two buttons for the first part of the assignment */
@@ -11,17 +11,19 @@ interface ControlComponentProps {
     // the current object and mode
     renderObject: string;
     renderMode: string;
+    projectionMode: string;
 
     // the callback functions to update the object and mode
     updateRenderObject: (newObject: string) => void;
     updateRenderMode: (newMode: string) => void;
+    updateProjectionMode: (newMode: string) => void;
     updateTranslate: (x: number, y: number) => void;
     updateRotate: (x: number, y: number, z: number) => void;
 }
 
 
 // define the ControlComponent
-function ControlComponent({ renderObject, renderMode, updateRenderObject, updateRenderMode, updateTranslate, updateRotate }: ControlComponentProps) {
+function ControlComponent({ renderObject, renderMode, projectionMode, updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
@@ -30,29 +32,7 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
     const [rotateZ, setRotateZ] = useState(0);
 
 
-    /**
-     * 
-     * @param string[]
-     * 
-     * @returns HTML component with as many buttons as there are strings in the array
-     */
-    function makeModeButtons(strings: string[], value: string, callback: (arg: string) => void) {
-        return (
-            <div>
-                {strings.map((string) => (
-                    <button
-                        key={string}
-                        onClick={() => callback(string)}
-                        style={{
-                            backgroundColor: value === string ? 'red' : 'white',
-                        }}
-                    >
-                        {string}
-                    </button>
-                ))}
-            </div>
-        );
-    }
+
     function handleSlideChangeRotX(event: React.ChangeEvent<HTMLInputElement>) {
         const value = event.target.value;
         setRotateX(parseInt(value));
@@ -91,54 +71,164 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
         updateRotate(0, 0, 0);
     }
 
-    function makeTranslateSliders() {
-        return (
-            <div>
-                <label htmlFor="myRangeX">X:</label>
-                <input name="x" type="range" min="-50" max="50" value={translateX} className="slider" onChange={handleSliderChangeX} id="myRangeX"></input>
-                <br></br>
-                <label htmlFor="myRangeY">Y:</label>
-                <input name="x" type="range" min="-50" max="50" value={translateY} className="slider" onChange={handleSliderChangeY} id="myRangeY"></input>
-                <br></br>
-                <label htmlFor="rotateZ">Rotate X:</label>
-                <input name="rotz" type="range" min="0" max="360" value={rotateX} className="slider" onChange={handleSlideChangeRotX} id="rotateX"></input>
-                <br></br>
-                <label htmlFor="rotateZ">Rotate Y:</label>
-                <input name="rotz" type="range" min="0" max="360" value={rotateY} className="slider" onChange={handleSlideChangeRotY} id="rotateY"></input>
-                <br></br>
-                <label htmlFor="rotateZ">Rotate Z:</label>
-                <input name="rotz" type="range" min="0" max="360" value={rotateZ} className="slider" onChange={handleSlideChangeRotZ} id="rotate"></input>
-                <br></br>
-                <button onClick={resetAllSliders}>Reset</button>
-            </div>
-        );
-    }
-
     /**
      * 
      * @param string[]
      * 
      * @returns HTML component with as many buttons as there are strings in the array
      */
-    function makeObjectButtons(value: string, callback: (model: string) => void) {
-        const strings = Array.from(objectFileMap.keys());
+    function makeModeButtons(title: string, strings: string[], value: string, callback: (arg: string) => void) {
         return (
             <div>
-                {strings.map((string) => (
-                    <button
-                        key={string}
-                        onClick={() => callback(string)}
-                        style={{
-                            backgroundColor: value === string ? 'red' : 'white',
-                        }}
-                    >
-                        {string}
-                    </button>
-                ))}
+                <table className="tableWidth">
+                    <thead>
+                        <tr>
+                            <th className="leftAlign">
+                                {title}
+                            </th>
+                            <th className="rightAlign">
+                                {strings.map((string) => (
+                                    <button
+                                        key={string}
+                                        onClick={() => callback(string)}
+                                        style={{
+                                            backgroundColor: value === string ? 'green' : 'gray',
+                                        }}
+                                    >
+                                        {string}
+                                    </button>
+                                ))}
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
         );
     }
 
+    function makeTranslateSliders() {
+        return (
+            <div>
+                <table className="tableWidth">
+                    <thead>
+                        <tr>
+                            <th className="leftAlign">
+                                Translate
+                            </th>
+                            <th className="rightAlign">
+                                <label htmlFor="myRangeX">X:</label>
+                                <input name="x" type="range" min="-50" max="50"
+                                    value={translateX} className="slider"
+                                    onChange={handleSliderChangeX} id="myRangeX"></input>
+                                <br />
+                                <label htmlFor="myRangeY">Y:</label>
+                                <input name="x" type="range" min="-50" max="50"
+                                    value={translateY} className="slider"
+                                    onChange={handleSliderChangeY} id="myRangeY"></input>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        );
+    }
+
+
+    function makeRotationSliders() {
+        return (
+            <div>
+                <table className="tableWidth">
+                    <thead>
+                        <tr>
+                            <th className="leftAlign">Rotate</th>
+                            <th className="rightAlign">
+                                <label htmlFor="rotateX">X:</label>
+                                <input name="rotz" type="range" min="0" max="360"
+                                    value={rotateX} className="slider"
+                                    onChange={handleSlideChangeRotX} id="rotateX"></input>
+                                <br />
+                                <label htmlFor="rotateY">Y:</label>
+                                <input name="rotz" type="range" min="0" max="360"
+                                    value={rotateY} className="slider"
+                                    onChange={handleSlideChangeRotY} id="rotateY"></input>
+                                <br />
+                                <label htmlFor="rotateZ">Z:</label>
+                                <input name="rotz" type="range" min="0" max="360"
+                                    value={rotateZ} className="slider"
+                                    onChange={handleSlideChangeRotZ} id="rotate"></input>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        );
+    }
+    /**
+     * 
+     * @param string[]
+     * 
+     * @returns HTML component with as many buttons as there are strings in the array
+     */
+    function makeObjectButtons(title: string, value: string, callback: (model: string) => void) {
+        const strings = Array.from(objectFileMap.keys());
+        let buttonCount = 0;
+        // put three buttons on a row
+        function makeRow() {
+            buttonCount += 1;
+            if (buttonCount % 7 === 0) {
+                return <br />;
+            }
+        }
+
+        return (
+            <div>
+                <table className="tableWidth">
+                    <thead>
+                        <tr>
+                            <th className="leftAlign">{title}</th>
+                            <th className="rightAlign">
+                                {strings.map((string) => (
+                                    <React.Fragment key={string}>
+                                        <button
+                                            key={string}
+                                            onClick={() => callback(string)}
+                                            style={{
+                                                backgroundColor: value === string ? 'blue' : 'gray',
+                                            }}
+                                        >
+                                            {string}
+                                        </button>
+                                        {makeRow()}
+                                    </React.Fragment>
+
+                                ))}
+
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        );
+    }
+
+    function makeControlButtons() {
+        return (
+            <div>
+                <table className="tableWidth">
+                    <thead>
+                        <tr>
+                            <th className="leftAlign">
+                                Control
+                            </th>
+                            <th className="rightAlign">
+                                <button onClick={resetAllSliders}>Reset</button>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        );
+    }
 
 
     // make a panel with two rows of buttons.
@@ -149,12 +239,21 @@ function ControlComponent({ renderObject, renderMode, updateRenderObject, update
 
     return (
         <div>
-            Select an object:
-            {makeObjectButtons(renderObject, updateRenderObject)}
-            Select a render mode:
-            {makeModeButtons(["solid", "wireframe"], renderMode, updateRenderMode)}
-            Move the object:
+
+            {makeObjectButtons("Objects:", renderObject, updateRenderObject)}
+            <hr className="lineWidth" />
+
+            {makeModeButtons("Render mode:", ["solid", "wireframe"], renderMode, updateRenderMode)}
+            <hr className="lineWidth" />
+
+            {makeModeButtons("Projection mode:", ["perspective", "orthographic"], projectionMode, updateProjectionMode)}
+            <hr className="lineWidth" />
             {makeTranslateSliders()}
+            <hr className="lineWidth" />
+            {makeRotationSliders()}
+            <hr className="lineWidth" />
+            {makeControlButtons()}
+            <hr className="lineWidth" />
         </div>
 
 

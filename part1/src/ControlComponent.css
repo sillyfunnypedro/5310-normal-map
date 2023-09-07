@@ -1,4 +1,28 @@
+:root {
+    --table-width: 600px;
+    --line-width: var(--table-width);
+}
+
 .slider {
     width: 400px;
     background-color: rgb(206, 43, 43);
+}
+
+.tableWidth {
+    width: var(--table-width);
+}
+
+.rightAlign {
+    text-align: right;
+    font-size: 18px;
+
+}
+
+.leftAlign {
+    text-align: left;
+    font-size: 18px;
+}
+
+.lineWidth {
+    width: var(--line-width);
 }
