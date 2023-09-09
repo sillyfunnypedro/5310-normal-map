@@ -219,29 +219,17 @@ class ModelGL {
         this.numTriangles = this._packedIndices.length / 3;
     }
 
-    /** 
-     * parse face
-     * @param {string} face
-     * @returns Uint16Array
-     * @memberof ModelGL
-     * @method parseFace
-     * @private
-     * 
-     * store the indices in this.tmpIndices so they can be converted to int16 later
-     * */
-    private parseFace(face: string) {
-        let tokens: string[] = face.split(" ");
-        let numVertices = tokens.length - 1;
-        if (numVertices < 3) {
-            throw new Error("A face must have at least 3 vertices");
-        }
-        if (numVertices > 3) {
-            console.log("WARNING: more than three vertices.");
-            console.log(face);
-        }
+    /**
+     * Parse a triangle from the face data
+     * @param {string[]} triangle
 
-        for (let i = 0; i < numVertices; i++) {
-            const vertex = tokens[i + 1];
+     * @memberof ModelGL
+     * @method parseTriangle
+     * @private
+     */
+    private parseTriangle(triangle: string[]) {
+        for (let i = 0; i < 3; i++) {
+            const vertex = triangle[i];
             const [needToAdd, vertexOutIndex] = this._vertexAccumulator.addVertex(vertex);
 
             this._packedIndices.push(vertexOutIndex);
@@ -299,12 +287,106 @@ class ModelGL {
                 this._packedBuffer.push(nz);
 
             }
-
-
-
-
-
         }
+    }
+
+    /** 
+     * parse face
+     * @param {string} face
+     * @returns Uint16Array
+     * @memberof ModelGL
+     * @method parseFace
+     * @private
+     * 
+     * store the indices in this.tmpIndices so they can be converted to int16 later
+     * */
+    private parseFace(face: string) {
+        let tokens: string[] = face.split(" ");
+        let numVertices = tokens.length - 1;
+        if (numVertices < 3) {
+            throw new Error("A face must have at least 3 vertices");
+        }
+        if (numVertices > 3) {
+            console.log("WARNING: more than three vertices.");
+            console.log(face);
+        }
+
+        /**
+         * the face is a triangle, if we find 4 vertices we assume it is a fan
+         */
+        let triangles = [[tokens[1], tokens[2], tokens[3]]];
+        if (numVertices === 4) {
+            triangles = [[tokens[1], tokens[2], tokens[3]], [tokens[1], tokens[3], tokens[4]]];
+        }
+
+        for (let triangle of triangles) {
+            this.parseTriangle(triangle);
+        }
+        // for (let i = 0; i < numVertices; i++) {
+        //     const vertex = tokens[i + 1];
+        //     const [needToAdd, vertexOutIndex] = this._vertexAccumulator.addVertex(vertex);
+
+        //     this._packedIndices.push(vertexOutIndex);
+        //     if (!needToAdd) {
+        //         continue;
+        //     }
+
+
+        //     // The current vertex was not found and thus we will need to add this vertex to the vertex buffer
+        //     // we parse the vertex coordinates, and texture coordinates, and normal coordinates
+        //     // This code presumes that all the vertices in the model have the same number of coordinates
+        //     let vertexTokens: string[] = vertex.split("/");
+
+
+        //     // get the vertex values
+        //     const vertexIndex = parseInt(vertexTokens[0]) - 1;
+        //     const vertexOffset = vertexIndex * 3;
+        //     const x = this._vertices[vertexOffset];
+        //     const y = this._vertices[vertexOffset + 1];
+        //     const z = this._vertices[vertexOffset + 2];
+
+        //     this._packedBuffer.push(x);
+        //     this._packedBuffer.push(y);
+        //     this._packedBuffer.push(z);
+
+        //     // if there is only a vertex value then we are done
+        //     if (vertexTokens.length === 1) {
+        //         continue;
+        //     }
+
+        //     if (vertexTokens[1] !== "") {
+        //         if (this._textureCoordinates.length === 0) {
+        //             throw new Error("There are no texture coordinates defined");
+        //         }
+        //         const textureIndex = parseInt(vertexTokens[1]) - 1;
+        //         const textureOffset = textureIndex * 2;
+        //         const u = this._textureCoordinates[textureOffset];
+        //         const v = this._textureCoordinates[textureOffset + 1];
+
+        //         this._packedBuffer.push(u);
+        //         this._packedBuffer.push(v);
+        //     }
+        //     if (vertexTokens[2] !== "") {
+        //         if (this._normals.length === 0) {
+        //             throw new Error("There are no normals defined");
+        //         }
+        //         const normalIndex = parseInt(vertexTokens[2]) - 1;
+        //         const normalOffset = normalIndex * 3;
+        //         const nx = this._normals[normalOffset];
+        //         const ny = this._normals[normalOffset + 1];
+        //         const nz = this._normals[normalOffset + 2];
+
+        //         this._packedBuffer.push(nx);
+        //         this._packedBuffer.push(ny);
+        //         this._packedBuffer.push(nz);
+
+        //     }
+
+
+
+
+
+        // }
     }
 }
 

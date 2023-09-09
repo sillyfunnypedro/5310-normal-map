@@ -116,6 +116,33 @@ const vertexTextureFullTransformationShader =
     }
 `
 
+/**
+ * Vertex shader for the 5310 Graphics course.
+ * 
+ * This shader applies a full transformation to the vertex position.
+ * It also passes the texture coordinate through.
+ * It also passes the normal through.
+ */
+const vertexTextureNormalFullTransformationShader =
+    `#version 300 es
+    in vec3 position;
+    in vec2 textureCoord;
+    in vec3 normal;
+
+    uniform mat4 modelMatrix;
+    uniform mat4 viewMatrix;
+    uniform mat4 projectionMatrix;
+
+    out vec2 textureCoordOut;
+    out vec3 normalOut;
+    
+    void main() {
+        gl_Position =   projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+        
+        textureCoordOut = textureCoord;
+        normalOut = normal;
+    }
+`
 
 const vertexShaderMap = new Map<string, string>();
 vertexShaderMap.set('vertexShader', vertexShader);
@@ -124,4 +151,5 @@ vertexShaderMap.set('vertexShaderRotation', vertexRotationShader);
 vertexShaderMap.set('vertexTextureShader', vertexTextureShader);
 vertexShaderMap.set('vertexTextureRotationShader', vertexTextureRotationShader);
 vertexShaderMap.set('vertexTextureFullTransformationShader', vertexTextureFullTransformationShader);
+vertexShaderMap.set('vertexTextureNormalFullTransformationShader', vertexTextureNormalFullTransformationShader);
 export default vertexShaderMap;

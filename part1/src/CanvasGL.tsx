@@ -106,6 +106,10 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
             if (useTextureShader) {
 
                 vertexShaderName = "vertexTextureFullTransformationShader";
+                // check to see if there are normals defined
+                if (model.vertexStride === 8 * 4) {
+                    vertexShaderName = "vertexTextureNormalFullTransformationShader";
+                }
 
             }
 
@@ -147,6 +151,11 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
 
             if (useTextureShader) {
                 fragmentShader = fragmentShaderMap.get("fragmentTextureShader") as string;
+                if (vertexShaderName === "vertexTextureNormalFullTransformationShader") {
+                    fragmentShader = fragmentShaderMap.get("fragmentTextureNormalShader") as string;
+                    console.log("using fragmentTextureNormalShader")
+                }
+
             }
 
             // attach the shader source code to the fragment shader
@@ -280,8 +289,21 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
 
             }
 
+            if (vertexShaderName === "vertexTextureNormalFullTransformationShader") {
+                // get the normal attribute location
+                const normalLocation = gl.getAttribLocation(shaderProgram, 'normal');
+
+                // enable the normal attribute
+
+                gl.enableVertexAttribArray(normalLocation);
+
+                // tell the normal attribute how to get data out of the normal buffer
+                gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, model.vertexStride, model.normalOffset);
+            }
+
             if (vertexShaderName === "vertexTextureFullTransformationShader"
-                || vertexShaderName === "vertexFullTransformationShader") {
+                || vertexShaderName === "vertexFullTransformationShader" ||
+                vertexShaderName === "vertexTextureNormalFullTransformationShader") {
                 // calculate the projection matrix
                 const projectionMatrix = mat4.create();
                 if (projectionMode === "perspective") {
@@ -335,7 +357,7 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
             gl.clearColor(.6, .2, .6, 1);
             gl.clear(gl.COLOR_BUFFER_BIT);
 
-            if (projectionMode == "orthographic") {
+            if (projectionMode === "orthographic") {
                 // calculate the square that fits in the canvas make that the viewport
                 let squareSize = gl.canvas.width;
                 if (gl.canvas.width > gl.canvas.height) {
