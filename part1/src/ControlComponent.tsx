@@ -186,7 +186,7 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                             <th className="leftAlign">Camera</th>
                             <th className="rightAlign">
                                 <label htmlFor="distance">D:</label>
-                                <input name="distance" type="range" min="1" max="12" step="0.01"
+                                <input name="distance" type="range" min="1" max="20" step="0.5"
                                     value={eyeDistance} className="slider"
                                     onChange={handleSlideChangeEyeDistance} id="distance"></input>
                                 <br />

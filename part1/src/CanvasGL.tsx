@@ -286,6 +286,7 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
                 }
 
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmIMG.width, ppmIMG.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmIMG.data);
+                gl.generateMipmap(gl.TEXTURE_2D);
 
             }
 

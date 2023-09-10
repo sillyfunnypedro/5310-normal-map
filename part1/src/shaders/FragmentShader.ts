@@ -25,8 +25,10 @@ const fragmentTextureShader =
     in vec2 textureCoordOut;
     uniform sampler2D textureSampler;
     out vec4 color;
+
     void main() {
-        color = texture(textureSampler, textureCoordOut);
+        vec2 textureCoord = vec2(textureCoordOut.x, 1.0 - textureCoordOut.y);
+        color = texture(textureSampler, textureCoord);
     }
     `;
 
@@ -37,7 +39,7 @@ const fragmentTextureShader =
  *  */
 const fragmentTextureNormalShader =
     `#version 300 es
-    precision mediump float;
+    precision highp float;
     in vec2 textureCoordOut;
     in vec3 normalOut;
     uniform sampler2D textureSampler;
@@ -48,8 +50,9 @@ const fragmentTextureNormalShader =
         vec3 lightDirection = normalize(vec3(1.0, 1.0, 1.0));
         float lightIntensity = dot(normal, lightDirection);
         float specular = pow(lightIntensity, 2.0);
-        vec4 textureColor = texture(textureSampler, textureCoordOut);
-        color = specular * vec4(1.0, 0.0, 0.0, 1.0);
+        vec2 textureCoord = vec2(textureCoordOut.x, 1.0 - textureCoordOut.y);
+        vec4 textureColor = texture(textureSampler, textureCoord);
+        color = textureColor;
        
     }
     `;

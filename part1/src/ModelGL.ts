@@ -306,10 +306,6 @@ class ModelGL {
         if (numVertices < 3) {
             throw new Error("A face must have at least 3 vertices");
         }
-        if (numVertices > 3) {
-            console.log("WARNING: more than three vertices.");
-            console.log(face);
-        }
 
         /**
          * the face is a triangle, if we find 4 vertices we assume it is a fan

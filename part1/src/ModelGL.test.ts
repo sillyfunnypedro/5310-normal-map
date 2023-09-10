@@ -168,6 +168,30 @@ describe('ModelGL', () => {
             expect(model.materialFile).toBe('square.mtl');
         });
 
+        it('should produce two triangles from a square', () => {
+            const modelData = `
+            mtllib square.mtl
+            v 14 14 1
+            v 15 14 1
+            v 15 15 1
+            v 14 15 1
+            vt 0.0 0.0
+            vt 1.0 0.0
+            vt 1.0 1.0
+            vt 0.0 1.0
+            f 1/1/ 2/2/ 3/3/ 4/4/
+            `;
+            model.parseModel(modelData, 'triangle/triangle.obj');
+            expect(model.packedVertexBuffer).toEqual(new Float32Array(
+                [
+                    14, 14, 1, 0, 0, // vertex 1 index 0
+                    15, 14, 1, 1, 0, // vertex 2 index 1
+                    15, 15, 1, 1, 1, // vertex 3 index 2
+                    14, 15, 1, 0, 1  // vertex 4 index 3
+                ]));
+            expect(model.vertexiIndices).toEqual(new Uint16Array([0, 1, 2, 0, 2, 3]));
+        });
+
         it('should interleave the vertex and texture', () => {
             const modelData = `
                 mtllib square.mtl
