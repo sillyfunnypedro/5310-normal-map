@@ -207,10 +207,10 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
     function makeObjectButtons(title: string, value: string, callback: (model: string) => void) {
         const strings = Array.from(objectFileMap.keys());
         let buttonCount = 0;
-        // put three buttons on a row
+        // put five buttons on a row
         function makeRow() {
             buttonCount += 1;
-            if (buttonCount % 7 === 0) {
+            if (buttonCount % 5 === 0) {
                 return <br />;
             }
         }
