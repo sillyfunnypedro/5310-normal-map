@@ -253,6 +253,8 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
                     throw new Error('Failed to create texture');
                 }
 
+
+
                 // create a texture unit
                 const textureUnit = gl.TEXTURE0;
 
@@ -285,6 +287,11 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
                     return;
                 }
 
+                // set the value of the uniorm sampler to the texture unit
+                let textureLocation = gl.getUniformLocation(shaderProgram, 'textureSampler');
+                gl.uniform1i(textureLocation, 0);
+
+                // bind the data to the texture
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmIMG.width, ppmIMG.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmIMG.data);
                 gl.generateMipmap(gl.TEXTURE_2D);
 
