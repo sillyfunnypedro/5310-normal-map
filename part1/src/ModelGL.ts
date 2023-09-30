@@ -32,10 +32,7 @@ class VertexAccumulator {
 
         const tokens: string[] = vertex.split('/');
 
-        if (tokens.length === 2) {
-            throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
 
-        }
         // the vertexTokens array will have 1 or 3
         if (tokens.length > 3) {
             throw new Error("A vertex in a face must be of format v or v/t or v//n or v/t/n");
@@ -46,6 +43,8 @@ class VertexAccumulator {
 
             if (tokens.length === 1) {
                 this._expectedFormat = ['+'] // expect one value
+            } if (tokens.length === 2) {
+                this._expectedFormat = ['+', '+'] // expect two values
             } else {
                 const expectVertex = '+'
                 let expectTexture = ''
@@ -139,6 +138,13 @@ class ModelGL {
         this._packedBuffer = [];
 
     }
+
+
+
+
+
+
+
 
     /**
      * The data that the CanvasGL renderer will use to set up the draw call(s) for the model
@@ -272,7 +278,7 @@ class ModelGL {
                 this._packedBuffer.push(u);
                 this._packedBuffer.push(v);
             }
-            if (vertexTokens[2] !== "") {
+            if (vertexTokens.length === 3 && vertexTokens[2] !== "") {
                 if (this._normals.length === 0) {
                     throw new Error("There are no normals defined");
                 }

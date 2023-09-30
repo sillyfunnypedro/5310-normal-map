@@ -36,6 +36,9 @@ function App() {
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [rotateZ, setRotateZ] = useState(0);
+  const [scaleX, setScaleX] = useState(1);
+  const [scaleY, setScaleY] = useState(1);
+  const [scaleZ, setScaleZ] = useState(1);
   const [cameraDistance, setCameraDistance] = useState(2);
 
 
@@ -82,6 +85,18 @@ function App() {
     console.log(`updateRotate: ${x}, ${y}, ${z}`);
   }
 
+  function updateScale(x: number, y: number, z: number) {
+    if (!modelGL) {
+      return;
+    }
+    setScaleX(x);
+    setScaleY(y);
+    setScaleZ(z);
+
+    console.log(`updateScale (APP)_: ${x}, ${y}, ${z}`);
+  }
+
+
   function updateCameraDistance(distance: number) {
     if (!modelGL) {
       return;
@@ -120,6 +135,7 @@ function App() {
         projectionMode={projectionMode}
         rotateX={rotateX} rotateY={rotateY}
         rotateZ={rotateZ}
+        scaleX={scaleX} scaleY={scaleY} scaleZ={scaleZ}
         cameraDistance={cameraDistance} />
       <ControlComponent
         renderObject={renderObject}
@@ -130,6 +146,7 @@ function App() {
         updateProjectionMode={setProjectionMode}
         updateTranslate={updateTranslate}
         updateRotate={updateRotate}
+        updateScale={updateScale}
         updateCameraDistance={updateCameraDistance} />
     </header>
 

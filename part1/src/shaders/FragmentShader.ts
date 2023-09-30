@@ -45,6 +45,7 @@ const fragmentTextureNormalShader =
     uniform sampler2D textureSampler;
 
     out vec4 color;
+
     void main() {
         vec3 normal = normalize(normalOut);
         vec3 lightDirection = normalize(vec3(1.0, 1.0, 1.0));
@@ -56,6 +57,12 @@ const fragmentTextureNormalShader =
        
     }
     `;
+
+
+
+
+
+
 
 
 

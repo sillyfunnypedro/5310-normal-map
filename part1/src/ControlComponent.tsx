@@ -24,49 +24,85 @@ interface ControlComponentProps {
     updateTranslate: (x: number, y: number) => void;
     updateRotate: (x: number, y: number, z: number) => void;
     updateCameraDistance: (distance: number) => void;
+    updateScale: (x: number, y: number, z: number) => void;
 }
 
-
+const scaleSteps = 50;
 // define the ControlComponent
 function ControlComponent({ renderObject, renderMode, projectionMode,
-    updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate, updateCameraDistance }: ControlComponentProps) {
+    updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate, updateCameraDistance, updateScale }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
     const [rotateX, setRotateX] = useState(0);
     const [rotateY, setRotateY] = useState(0);
     const [rotateZ, setRotateZ] = useState(0);
+    const [scaleX, setScaleX] = useState(0.5);
+    const [scaleY, setScaleY] = useState(0.5);
+    const [scaleZ, setScaleZ] = useState(0.5);
+    const [uniformScale, setUniformScale] = useState(true);
+
     const [eyeDistance, setEyeDistance] = useState(2);
 
 
 
-    function handleSlideChangeRotX(event: React.ChangeEvent<HTMLInputElement>) {
-        const value = event.target.value;
-        setRotateX(parseInt(value));
+    function handleSlideChangeRot(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
+        const valueString = event.target.value;
+        const value = parseFloat(valueString);
+
+        switch (axis) {
+            case "x":
+                setRotateX(value);
+                break;
+            case "y":
+                setRotateY(value);
+                break;
+            case "z":
+                setRotateZ(value);
+                break;
+        }
         updateRotate(rotateX, rotateY, rotateZ);
     }
 
-    function handleSlideChangeRotY(event: React.ChangeEvent<HTMLInputElement>) {
-        const value = event.target.value;
-        setRotateY(parseInt(value));
-        updateRotate(rotateX, rotateY, rotateZ);
-    }
 
-    function handleSlideChangeRotZ(event: React.ChangeEvent<HTMLInputElement>) {
-        const value = event.target.value;
-        setRotateZ(parseInt(value));
-        updateRotate(rotateX, rotateY, rotateZ);
-    }
+
     function handleSliderChangeX(event: React.ChangeEvent<HTMLInputElement>) {
         const value = event.target.value;
-        setTranslateX(parseInt(value));
+        setTranslateX(parseFloat(value));
         updateTranslate(translateX, translateY);
     }
     function handleSliderChangeY(event: React.ChangeEvent<HTMLInputElement>) {
         const value = event.target.value;
-        setTranslateY(parseInt(value));
+        setTranslateY(parseFloat(value));
         updateTranslate(translateX, translateY);
     }
+
+    function handleSlideChangeScale(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
+        // convert the string value to a number
+        const value = event.target.value;
+        const numValue = parseFloat(value);
+
+        if (uniformScale) {
+            setScaleX(numValue);
+            setScaleY(numValue);
+            setScaleZ(numValue);
+        } else {
+            switch (axis) {
+                case "x":
+                    setScaleX(parseFloat(value));
+                    break;
+                case "y":
+                    setScaleY(parseFloat(value));
+                    break;
+                case "z":
+                    setScaleZ(parseFloat(value));
+                    break;
+            }
+        }
+        updateScale(scaleX, scaleY, scaleZ);
+    }
+
+
 
     function resetAllSliders() {
         setTranslateX(0);
@@ -76,11 +112,17 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
         setRotateY(0);
         setRotateZ(0);
         updateRotate(0, 0, 0);
+        setScaleX(0.5);
+        setScaleY(0.5);
+        setScaleZ(0.5);
+        updateScale(0.5, 0.5, 0.5);
+        setEyeDistance(2);
+        updateCameraDistance(2);
     }
 
     function handleSlideChangeEyeDistance(event: React.ChangeEvent<HTMLInputElement>) {
         const value = event.target.value;
-        setEyeDistance(parseInt(value));
+        setEyeDistance(parseFloat(value));
         updateCameraDistance(eyeDistance);
     }
 
@@ -130,14 +172,18 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                             </th>
                             <th className="rightAlign">
                                 <label htmlFor="myRangeX">X:</label>
-                                <input name="x" type="range" min="-50" max="50"
+                                <input name="x" type="range" min="-50" max="50" step="any"
                                     value={translateX} className="slider"
-                                    onChange={handleSliderChangeX} id="myRangeX"></input>
+                                    onChange={handleSliderChangeX} id="myRangeX">
+
+                                </input>
                                 <br />
                                 <label htmlFor="myRangeY">Y:</label>
-                                <input name="x" type="range" min="-50" max="50"
+                                <input name="x" type="range" min="-50" max="50" step="any"
                                     value={translateY} className="slider"
-                                    onChange={handleSliderChangeY} id="myRangeY"></input>
+                                    onChange={handleSliderChangeY} id="myRangeY">
+
+                                </input>
                             </th>
                         </tr>
                     </thead>
@@ -145,6 +191,54 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
             </div>
         );
     }
+
+    /**
+     * 
+     * @returns three sliders for scale plus a check box for uniform scaling
+     */
+    function makeScaleSliders() {
+        return (
+            <div>
+                <table className="tableWidth">
+                    <thead>
+                        <tr>
+                            <th className="leftAlign">Scale</th>
+                            <th className="rightAlign">
+                                <input type="checkbox" id="uniformScale" name="uniformScale"
+                                    checked={uniformScale} onChange={() => setUniformScale(!uniformScale)}>
+
+                                </input>
+                                <label htmlFor="uniformScale">Uniform</label>
+                            </th>
+                            <th className="rightAlign">
+                                <label htmlFor="scaleX">X:</label>
+                                <input name="scaleX" type="range" min="0.1" max="2" step="any"
+                                    value={scaleX} className="slider"
+                                    onChange={(event) => handleSlideChangeScale(event, "x")} id="scaleX">
+
+                                </input>
+                                <br />
+                                <label htmlFor="scaleY">Y:</label>
+                                <input name="scaleY" type="range" min="0.1" max="2" step="any"
+                                    value={scaleY} className="slider"
+                                    onChange={(event) => handleSlideChangeScale(event, "y")} id="scaleY">
+
+                                </input>
+                                <br />
+                                <label htmlFor="scaleZ">Z:</label>
+                                <input name="scaleZ" type="range" min="0.1" max="2" step="any"
+                                    value={scaleZ} className="slider"
+                                    onChange={(event) => handleSlideChangeScale(event, "z")} id="scaleZ">
+
+                                </input>
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        );
+    }
+
 
 
     function makeRotationSliders() {
@@ -156,19 +250,22 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                             <th className="leftAlign">Rotate</th>
                             <th className="rightAlign">
                                 <label htmlFor="rotateX">X:</label>
-                                <input name="rotz" type="range" min="0" max="360"
+                                <input name="rotz" type="range" min="0" max="360" step="any"
                                     value={rotateX} className="slider"
-                                    onChange={handleSlideChangeRotX} id="rotateX"></input>
+                                    onChange={(event) => handleSlideChangeRot(event, "x")} id="rotateX">
+                                </input>
                                 <br />
                                 <label htmlFor="rotateY">Y:</label>
-                                <input name="rotz" type="range" min="0" max="360"
+                                <input name="rotz" type="range" min="0" max="360" step="any"
                                     value={rotateY} className="slider"
-                                    onChange={handleSlideChangeRotY} id="rotateY"></input>
+                                    onChange={(event) => handleSlideChangeRot(event, "y")} id="rotateY">
+                                </input>
                                 <br />
                                 <label htmlFor="rotateZ">Z:</label>
-                                <input name="rotz" type="range" min="0" max="360"
+                                <input name="rotz" type="range" min="0" max="360" step="any"
                                     value={rotateZ} className="slider"
-                                    onChange={handleSlideChangeRotZ} id="rotate"></input>
+                                    onChange={(event) => handleSlideChangeRot(event, "z")} id="rotate">
+                                </input>
                             </th>
                         </tr>
                     </thead>
@@ -186,7 +283,7 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                             <th className="leftAlign">Camera</th>
                             <th className="rightAlign">
                                 <label htmlFor="distance">D:</label>
-                                <input name="distance" type="range" min="1" max="20" step="0.5"
+                                <input name="distance" type="range" min="1" max="20" step="any"
                                     value={eyeDistance} className="slider"
                                     onChange={handleSlideChangeEyeDistance} id="distance"></input>
                                 <br />
@@ -297,6 +394,8 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                             {makeTranslateSliders()}
                             <hr className="lineWidth" />
                             {makeRotationSliders()}
+                            <hr className="lineWidth" />
+                            {makeScaleSliders()}
                             <hr className="lineWidth" />
                             {makeControlButtons()}
                             <hr className="lineWidth" />

@@ -29,11 +29,14 @@ interface CanvasGLProps {
     rotateX: number;
     rotateY: number;
     rotateZ: number;
+    scaleX: number;
+    scaleY: number;
+    scaleZ: number;
     cameraDistance: number;
 }
 
 
-function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, rotateY, rotateZ, cameraDistance }: CanvasGLProps) {
+function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, rotateY, rotateZ, scaleX, scaleY, scaleZ, cameraDistance }: CanvasGLProps) {
 
     const [shouldRender, setShouldRender] = React.useState(false);
 
@@ -339,12 +342,15 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
             }
 
 
-            const modelMatrix = mat4.create();  // create a matrix to hold the rotation matrix
+            const modelMatrix = mat4.create();  // create a matrix to hold the model matrix
 
             mat4.rotateX(modelMatrix, modelMatrix, rotateX * Math.PI / 180);
             mat4.rotateY(modelMatrix, modelMatrix, rotateY * Math.PI / 180);
             mat4.rotateZ(modelMatrix, modelMatrix, rotateZ * Math.PI / 180);
-            mat4.scale(modelMatrix, modelMatrix, [0.5, 0.5, 0.5]);
+            console.log(`scale (GLCanvas): ${scaleX}, ${scaleY}, ${scaleZ}`)
+            mat4.scale(modelMatrix, modelMatrix, [scaleX, scaleY, scaleZ]);
+
+
 
 
             // get the rotation matrix location
@@ -381,11 +387,6 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
                 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
             }
 
-
-
-
-
-
             // enable the z-buffer
             gl.enable(gl.DEPTH_TEST);
 
@@ -398,6 +399,7 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
                 }
 
             } else {
+
                 gl.drawElements(gl.TRIANGLES, model.vertexiIndices.length, gl.UNSIGNED_SHORT, 0);
             }
 
@@ -407,7 +409,7 @@ function CanvasGL({ width, height, model, renderMode, projectionMode, rotateX, r
 
         }
     }, [shouldRender, model, width, height, renderMode, projectionMode, cameraDistance,
-        rotateX, rotateY, rotateZ]);
+        rotateX, rotateY, rotateZ, scaleX, scaleY, scaleZ]);
 
     return (<canvas ref={canvasRef} width={width} height={height} />);
 }

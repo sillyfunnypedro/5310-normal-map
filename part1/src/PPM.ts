@@ -15,6 +15,8 @@ class PPM {
     // define the data as 8 bit unsigned integers (bytes)
     private _data: Uint8Array = new Uint8Array(0);
 
+
+
     public loadFileFromString(fileContents: string): void {
         let lines: string[] = fileContents.split('\n');
         let lineIndex: number = 0;
@@ -58,9 +60,6 @@ class PPM {
             this._data[i] = numbers[i + 3];
         }
     }
-
-
-
 
     /**
      * 
