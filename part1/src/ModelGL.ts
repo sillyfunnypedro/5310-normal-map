@@ -41,21 +41,26 @@ class VertexAccumulator {
         // if this is the first vertex store its format
         if (this._expectedFormat.length === 0) {
 
-            if (tokens.length === 1) {
-                this._expectedFormat = ['+'] // expect one value
-            } if (tokens.length === 2) {
-                this._expectedFormat = ['+', '+'] // expect two values
-            } else {
-                const expectVertex = '+'
-                let expectTexture = ''
-                let expectNormal = ''
-                if (tokens[1] !== '') {
-                    expectTexture = '+'
-                }
-                if (tokens[2] !== '') {
-                    expectNormal = '+'
-                }
-                this._expectedFormat = [expectVertex, expectTexture, expectNormal]
+            switch (tokens.length) {
+                case 1:// format is n
+                    this._expectedFormat = ['+'] // expect one value
+                    break;
+                case 2:// format is v/t
+                    this._expectedFormat = ['+', '+'] // expect two values
+                    break;
+                case 3:// format is v/t/n or v//n or v/t/ 
+                    this._expectedFormat = ['+', '+', '+'] // expect three values
+                    const expectVertex = '+'
+                    let expectTexture = ''
+                    let expectNormal = ''
+                    if (tokens[1] !== '') {
+                        expectTexture = '+'
+                    }
+                    if (tokens[2] !== '') {
+                        expectNormal = '+'
+                    }
+                    this._expectedFormat = [expectVertex, expectTexture, expectNormal];
+                    break;
             }
         }
 

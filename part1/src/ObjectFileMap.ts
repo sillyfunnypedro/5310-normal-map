@@ -11,7 +11,6 @@ export const objectFileMap: Map<string, string> = new Map([
     ["lion", "lion/lion_centered_triangulated.obj"],
     ["lion-2%", "lion/lion_2_percent_of_triangles.obj"],
     ["capsule", "capsule/capsule.obj"],
-    ["room", "room/room.obj"],
     //["clown_fish", "clown_fish/13008_Clown_Goby_Citrinis_v1_l3.obj"],
     // ["capsule", "capsule/capsule.obj"],
     // ["chapel", "chapel/chapel_obj.obj"],
