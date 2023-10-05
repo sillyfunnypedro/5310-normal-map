@@ -280,7 +280,7 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                                 <label htmlFor="rotateZ">Z:</label>
                                 <input name="rotz" type="range" min="0" max="360" step="any"
                                     value={rotateZ} className="slider"
-                                    onChange={(event) => handleSlideChangeRot(event, "z")} id="rotate">
+                                    onChange={(event) => handleSlideChangeRot(event, "z")} id="rotateZ">
                                 </input>
                             </th>
                         </tr>

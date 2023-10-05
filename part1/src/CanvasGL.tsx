@@ -345,25 +345,28 @@ function CanvasGL({ width, height, model, renderMode, projectionMode,
 
                 // set the view matrix
                 gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
+
             }
+            console.log(` vertexShader name = ${vertexShaderName} fragmentShader name = ${fragmentShader} `);
 
 
             const modelMatrix = mat4.create();  // create a matrix to hold the model matrix
+
+
             mat4.translate(modelMatrix, modelMatrix, [translateX, translateY, translateZ]);
+
             mat4.rotateX(modelMatrix, modelMatrix, rotateX * Math.PI / 180);
             mat4.rotateY(modelMatrix, modelMatrix, rotateY * Math.PI / 180);
             mat4.rotateZ(modelMatrix, modelMatrix, rotateZ * Math.PI / 180);
-            console.log(`scale (GLCanvas): ${scaleX}, ${scaleY}, ${scaleZ}`)
+
             mat4.scale(modelMatrix, modelMatrix, [scaleX, scaleY, scaleZ]);
 
 
 
-
-
-            // get the rotation matrix location
+            // get the model matrix location
             const rotationMatrixLocation = gl.getUniformLocation(shaderProgram, 'modelMatrix');
 
-            // set the rotation matrix
+            // set the model matrix
             gl.uniformMatrix4fv(rotationMatrixLocation, false, modelMatrix);
 
 
