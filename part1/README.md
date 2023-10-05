@@ -173,6 +173,8 @@ I have provided the unit tests that i used to write my code.   YOu can use these
 It is totally fine to provide your own school appropriate Textured 3D .obj files for this assignment. Some notes that may save you time debugging:
 
 - Make sure you push the model, texture(s), and material file to the repository.
+- add your models in your resource directory in a file of their own.  (look at the other models)  
+- Issue a pull request so that i can review the model.
 - If you use blender3D to export your own .obj model, make sure to scale it to about the size of a unit cube in Blender3D. This will save you time from moving the camera around a lot.
 - Triangulate the faces within the blender3D (there is an option when you export)
 - Check your material file to make sure it is loading .ppm images which we know how to handle. Use a program like [GIMP](https://www.gimp.org/) to convert them to ASCII format .ppm images otherwise.
@@ -180,9 +182,7 @@ It is totally fine to provide your own school appropriate Textured 3D .obj files
 
 ### Task 3 - Interactive Graphics
 
-CanvasGL.tsx will be provided with a parameter to choose perpective or orthographic projection.  Make sure your code handles this.
-
-A resource for performing keyboard input with SDL is provided here: http://lazyfoo.net/tutorials/SDL/04_key_presses/index.php
+When you rotate an object or scale it, the position of the object should not move you have to get the transforms in the right order.
 
 ### Task 4 - Perspective Camera
 
