@@ -1,6 +1,12 @@
 # Assignment 4 - Render a Textured .obj model
+In this assigment we will be displaying 
+### A house
+![foo](./media/house.jpg)
+### A windmill
+In this image you see the testharness that you will be working in.  This is provided for you.   You will be enhancing the parsing of your .obj file to store the texture values, and you will be packing the VBO with the minimal vertex data needed to render these images.
+![Assignment4](./media/Assignment4.jpg)
 
-<img align="right" src="./media/house.jpg" width="400px" alt="picture">
+
 
 > A texture is worth at least a thousand words!
 > 
@@ -9,27 +15,6 @@
 # Resources to help
 
 Some additional resources to help you through this lab assignment
-
-| SDL2 related links                                    | Description                       |
-| --------------------------------------------------    | --------------------------------- |
-| [SDL API Wiki](https://wiki.libsdl.org/APIByCategory) | Useful guide to all things SDL2   |
-| [My SDL2 Youtube Playlist](https://www.youtube.com/playlist?list=PLvv0ScY6vfd-p1gSnbQhY7vMe2rng0IL0) | My Guide for using SDL2 in video form.   |
-| [Lazy Foo](http://lazyfoo.net/tutorials/SDL/)         | Great page with written tutorials for learning SDL2. Helpful setup tutorials for each platform. |
-| [Lazy Foo - Handling Key Presses](https://lazyfoo.net/tutorials/SDL/04_key_presses/index.php) | Useful tutorial for learning how to handle key presses | 
-
-| OpenGL related links                                | Description                       |
-| --------------------------------------------------  | --------------------------------- |
-| [My OpenGL Youtube Series](https://www.youtube.com/playlist?list=PLvv0ScY6vfd9zlZkIIqGDeG5TUWswkMox) | My video series for learning OpenGL |
-| [docs.gl](http://docs.gl)                           | Excellent documentation to search for OpenGL commands with examples and description of function parameters   |
-| [learnopengl.com](https://learnopengl.com)          | OpenGL 3.3+ related tutorial and main free written resource for the course   |
-
-
-| C++ related links                                   | Description                       |
-| --------------------------------------------------  | --------------------------------- |
-| [My C++ Youtube Series](https://www.youtube.com/playlist?list=PLvv0ScY6vfd8j-tlhYVPYgiIyXduu6m-L) | My video series playlist for learning C++ |
-| [cppreference](https://en.cppreference.com/w/)      | Definitive, more encyclopedic guide to C++ (less beginner focused, but excellent technically) |
-| [cplusplus.com](http://www.cplusplus.com)           | Nice website with examples and tutorials geared more for beginners, reference has lots of examples, and the tutorial page is a great starting point |
-| [learncpp.com](https://www.learncpp.com/)           | Handy page for learning C++ in tutorial form   |
 
 
 - Assignment Related
@@ -53,89 +38,13 @@ This assignment requires some amount of thinking. The actual amount of lines of 
 
 Here are my recommendations if you are unsure of where to start:
 
-1. Make use of our previous lab regarding how to load a texture as starter code so that you know you have a BufferLayout that supports vertex and texture data.
+1.I have provided a starter code that will load the files from the server, and i have provided my implementation of PPM file loading.
 	- That is, the vertex layout will take in positions, normals, and texture coordinates.
 	- Consider adding to the labs 'Object.hpp' class the functionality to load .obj models **or** to your previous assignment the ability to load in texture data. 
 
-## Task 1 - Object-Oriented Programming Strategies (C++ refresh)
 
-I want to continue to give a little bit more background on C++ and thinking about data. There is no deliverable for task 1, but it will be useful to at the very least think about and understand these concepts.
 
-### Program arguments
-
-In order to speed up iteration time, it can be useful to read in a data from program arguments. For our .obj loader, this is what we will do. Here is an example of reading in program arguments in C++
-
-```cpp
-// clang++ args.cpp -o args
-// ./args "./../../common/objects/capsule/capsule.obj"
-
-#include <iostream>
-
-int main(int argc, char** argv){
-
-    std::cout << "My argument is: " << argv[1] << "\n";
-
-    return 0;
-}
-```
-
-### Structs
-
-structs in C++ while functionally the same as a class (except for the default access modifier level) are typically used as plain old datatypes--i.e. a way to create a composite data type.
-
-Shown below is an example of a struct in C++
-```cpp
-
-struct VertexData{
-	float x,y,z; // position of vertex
-	float s,t;   // Texture coordinate
-};
-
-```
-It is further important to note the order of our variables in the VertexData struct. In memory, they will be arranged as x,y,z,s,t in that order. This is potentially convenient as in our current buffer data strategy we have been laying out values of the first vertices x,y,z,s,t,etc. in a specific order defined by our vertex layout.
-
-It may further be useful to add a constructor to our struct for convenience.
-
-```cpp
-
-struct VertexData{
-	float x,y,z;
-	float s,t;
-
-	// Our constructor.
-	// Note: The below is using an 'initializer list' to set the value of 'x' to '_x' . z
-	//       This is equivalent to also just doing x = _x; in the body of the constructor.
-	VertexData(float _x, float _y, float _z, float _s, float _t): x(_x),y(_y),z(_z),s(_s),t(_t) { }
-};
-
-```
-
-Often with structs, because they are a datatype, it can be helpful to define mathematical operators with them. Below a test showing how to test for equality is done.
-
-```cpp
-
-struct VertexData{
-	float x,y,z;
-	float s,t;
-
-	VertexData(float _x, float _y, float _z, float _s, float _t): x(_x),y(_y),z(_z),s(_s),t(_t) { }
-	
-	// Tests if two VertexData are equal
-	bool operator== (const VertexData &rhs){
-		if( (x == rhs.x) && (y == rhs.y) && (z == rhs.z) && (s == rhs.s) && (t == rhs.t) ){
-			return true;
-		}
-		return false;
-	}
-};
-
-```
-
-More information on structs can be found here: 
-- http://www.cplusplus.com/doc/tutorial/structures/
-- https://www.learncpp.com/cpp-tutorial/47-structs/
-
-## Task 2 - Rendering a Textured Model (.obj and Texture Coordinates)
+## Task 1 - Rendering a Textured Model (.obj and Texture Coordinates)
 
 <img src="./media/textured.gif" width="400px" align="right" alt="Spinning textured house">
 
@@ -256,6 +165,9 @@ I will provide my explanation of the algorithm, but you will need to think about
 6. Also understand you can print out the values and compare them with what you see in the actual .obj file (open up the .obj in a text editor).
 	- Also, as demonstrated in the first portion of this readme, defining a custom vertexData struct and overloading the operator== can be useful for testing for equality when determining whether or not you need to create a new index, or can otherwise reuse one.
 
+### ModelGL.test.ts
+I have provided the unit tests that i used to write my code.   YOu can use these unit tests to guide your development or you can write your own should you want.  
+
 ### Loading your own models for this assignment
 
 It is totally fine to provide your own school appropriate Textured 3D .obj files for this assignment. Some notes that may save you time debugging:
@@ -268,9 +180,7 @@ It is totally fine to provide your own school appropriate Textured 3D .obj files
 
 ### Task 3 - Interactive Graphics
 
-The tasks for interactivity in this assignment are the following:
-- Pressing the <kbd>w</kbd> key toggles drawing your scene in wireframe mode or textured polygon mode.
-- Pressing the <kbd>q</kbd> key exits the application.
+CanvasGL.tsx will be provided with a parameter to choose perpective or orthographic projection.  Make sure your code handles this.
 
 A resource for performing keyboard input with SDL is provided here: http://lazyfoo.net/tutorials/SDL/04_key_presses/index.php
 
@@ -297,9 +207,14 @@ My suggested strategy for this project is:
 
 ## How to run your program
 
-Your solution should compile using the [build.py](./build.py) file. That is, we will run your program by typing [python3 build.py](./build.py) and it should just work.
+ I will not be running your unit tests in the evalulation of this assignment.  I will be downloading your code with a git pull of your repo then i will do
+```
+cd <into your directory>
+npm install
+```
+Then i will start visual studio code and will use the menu in the upper right to run the code.   
 
-Your program should then run by typing in: `./lab "./../../common/objects/chapel/chapel_obj.obj"`
+You can test your code by pulling your repo into a new directory and then trying to run your code as instructed above.  Please make sure that i can run the program in this way.  
 
 # Submission/Deliverables
 
@@ -312,7 +227,8 @@ Your program should then run by typing in: `./lab "./../../common/objects/chapel
 ### Deliverables
 
 - You should be able to display a triangulated .obj 3D textured model (several are provided).
-	- If you would like you can make it spin, move around, or load multiple models. Please just document this in this readme.
+- The objects should be able to be spun using the sliders,  the camera distance should work and the scale values should also work.
+	
 
 * You need to commit your code to this repository.
 * You need to use the build.py script provided. Anything else used is at your own risk--and you should provide complete documentation. If your program does not compile and run, you get a zero!
@@ -327,14 +243,13 @@ Your program should then run by typing in: `./lab "./../../common/objects/chapel
 * Q: Why are my texture coordinates messed up? The geometry looks right?
   * A: Try a different model first to confirm. Then you may have to flip the texture in a modeling program or within your .ppm loader depending on how the coordinates were assigned. 
 * Q: What other common errors/debugging can I do?
-	1. Try to output (i.e. saveObj(std::string filename) the .obj file and ensure that it matches the file that you are loading
-	2. Most of the problems tend to be not allocating enough memory when creating the buffer (i.e. passing in wrong values in CreateBufferTextureLayout() as you have mentioned). Try printing out the size of indices and vertices. And make sure if you are using vectors, you are doing .size() and not sizeof(myVector) as sizeof only describes the data structure size, not the actual amount of elements and bytes needed. To get total bytes of information (i.e. our vertices) we would use vertices.size()*sizeof(GLFloat) for example.
-	3. Another common mistake is to pass in the 'vertices' vector when we want to pass in the data. To do that, we should use: vertices.data() to get access to the raw array.
+	1. Use your chrome debugger to step through your loading code when you are running in the interactive mode.
+	2. 
 
 * Q: My geometry looks like it is off by 1
 	* A: The purpose of the assignment is to be able to parse unique collections of x,y,z and s,t (and the normals) of data. You are essentially building the 'vbo' object, and then indexing into your own collection of xyzst data.
 * Q: My object is inside out?
-	* A: Did you enable the z-buffer? (`glEnable(GL_DEPTH_TEST);`)
+	* A: Did you enable the z-buffer? (`gl.Enable(GL_DEPTH_TEST);`)
   
 # Found a bug?
 

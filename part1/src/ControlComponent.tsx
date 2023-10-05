@@ -21,7 +21,7 @@ interface ControlComponentProps {
     updateRenderObject: (newObject: string) => void;
     updateRenderMode: (newMode: string) => void;
     updateProjectionMode: (newMode: string) => void;
-    updateTranslate: (x: number, y: number) => void;
+    updateTranslate: (x: number, y: number, z: number) => void;
     updateRotate: (x: number, y: number, z: number) => void;
     updateCameraDistance: (distance: number) => void;
     updateScale: (x: number, y: number, z: number) => void;
@@ -34,6 +34,7 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
 
     const [translateX, setTranslateX] = useState(0);
     const [translateY, setTranslateY] = useState(0);
+    const [translateZ, setTranslateZ] = useState(0);
     const [rotateX, setRotateX] = useState(0);
     const [rotateY, setRotateY] = useState(0);
     const [rotateZ, setRotateZ] = useState(0);
@@ -66,16 +67,23 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
 
 
 
-    function handleSliderChangeX(event: React.ChangeEvent<HTMLInputElement>) {
+    function handleSliderChangeTranslate(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
         const value = event.target.value;
-        setTranslateX(parseFloat(value));
-        updateTranslate(translateX, translateY);
+        switch (axis) {
+            case "x":
+                setTranslateX(parseFloat(value));
+                break;
+            case "y":
+                setTranslateY(parseFloat(value));
+                break;
+            case "z":
+                setTranslateZ(parseFloat(value));
+                break;
+        }
+        console.log(`handleSliderChangeTranslate: ${translateX}, ${translateY}, ${translateZ}`);
+        updateTranslate(translateX, translateY, translateZ);
     }
-    function handleSliderChangeY(event: React.ChangeEvent<HTMLInputElement>) {
-        const value = event.target.value;
-        setTranslateY(parseFloat(value));
-        updateTranslate(translateX, translateY);
-    }
+
 
     function handleSlideChangeScale(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
         // convert the string value to a number
@@ -107,7 +115,8 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
     function resetAllSliders() {
         setTranslateX(0);
         setTranslateY(0);
-        updateTranslate(0, 0);
+        setTranslateZ(0);
+        updateTranslate(0, 0, 0);
         setRotateX(0);
         setRotateY(0);
         setRotateZ(0);
@@ -174,14 +183,21 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                                 <label htmlFor="myRangeX">X:</label>
                                 <input name="x" type="range" min="-50" max="50" step="any"
                                     value={translateX} className="slider"
-                                    onChange={handleSliderChangeX} id="myRangeX">
+                                    onChange={(event) => handleSliderChangeTranslate(event, "x")} id="myRangeX">
 
                                 </input>
                                 <br />
                                 <label htmlFor="myRangeY">Y:</label>
-                                <input name="x" type="range" min="-50" max="50" step="any"
+                                <input name="y" type="range" min="-50" max="50" step="any"
                                     value={translateY} className="slider"
-                                    onChange={handleSliderChangeY} id="myRangeY">
+                                    onChange={(event) => handleSliderChangeTranslate(event, "y")} id="myRangeY">
+
+                                </input>
+                                <br />
+                                <label htmlFor="myRangeZ">Z:</label>
+                                <input name="z" type="range" min="-50" max="50" step="any"
+                                    value={translateZ} className="slider"
+                                    onChange={(event) => handleSliderChangeTranslate(event, "z")} id="myRangeZ">
 
                                 </input>
                             </th>

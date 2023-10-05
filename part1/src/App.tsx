@@ -33,6 +33,7 @@ function App() {
 
   const [translateX, setTranslateX] = useState(0);
   const [translateY, setTranslateY] = useState(0);
+  const [translateZ, setTranslateZ] = useState(0);
   const [rotateX, setRotateX] = useState(0);
   const [rotateY, setRotateY] = useState(0);
   const [rotateZ, setRotateZ] = useState(0);
@@ -65,13 +66,14 @@ function App() {
   }, [renderObject]);
 
 
-  function updateTranslate(x: number, y: number) {
+  function updateTranslate(x: number, y: number, z: number) {
     if (!modelGL) {
       return;
     }
     setTranslateX(x);
     setTranslateY(y);
-    console.log(`updateTranslate: ${x}, ${y}`);
+    setTranslateZ(z);
+    console.log(`updateTranslate: ${x}, ${y}, ${z}`);
   }
 
   function updateRotate(x: number, y: number, z: number) {
@@ -135,6 +137,7 @@ function App() {
         projectionMode={projectionMode}
         rotateX={rotateX} rotateY={rotateY}
         rotateZ={rotateZ}
+        translateX={translateX} translateY={translateY} translateZ={translateZ}
         scaleX={scaleX} scaleY={scaleY} scaleZ={scaleZ}
         cameraDistance={cameraDistance} />
       <ControlComponent

@@ -14,7 +14,8 @@ import Material from "./Material";
  */
 class VertexAccumulator {
     private _vertices: string[] = [];
-    private _expectedFormat: string[] = []
+    private _expectedFormat: string[] = [];
+    private _expectedFormatMessage: string = "";
 
 
     constructor() {
@@ -46,6 +47,7 @@ class VertexAccumulator {
                     this._expectedFormat = ['+'] // expect one value
                     break;
                 case 2:// format is v/t
+
                     this._expectedFormat = ['+', '+'] // expect two values
                     break;
                 case 3:// format is v/t/n or v//n or v/t/ 

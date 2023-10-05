@@ -106,44 +106,58 @@ describe('ModelGL', () => {
 
 
 
-        it('should throw an error for a vertex in a face with only one /', () => {
+        it('should throw an error if the vertices are inconsistent /', () => {
             const modelData = `
                     v 0.0 0.0 0.0
                     v 1.0 0.0 0.0
                     v 0.0 1.0 0.0
+                    vt 1.0 0.5
+                    vt 0.0 1.0
+                    vt 0.0 1.0
+                    vn 0.0 1.0 0.5
+                    vn 0.0 1.0 0.5
+                    vn 0.0 1.0 0.5
                     f 1/2 2/2/3 2/3/3
                 `;
-            expect(() => model.parseModel(modelData, 'triangle/triangle.obj')).toThrowError("A vertex in a face must be of format v or v/t or v//n or v/t/n");
+            // get the error message
+            const errorMessage = "Inconsistent Vertex Format";
+            // expect the error message to be thrown
+            try {
+                model.parseModel(modelData, 'triangle/triangle.obj');
+            } catch (e: unknown) {
+                expect((e as Error).message).toBe(errorMessage);
+            }
+            expect(() => model.parseModel(modelData, 'triangle/triangle.obj')).toThrowError(errorMessage);
         });
 
         it('should throw an error for a vertex in a face with more than 3 values', () => {
             const modelData = `
-            v 0.0 0.0 0.0
-            v 1.0 0.0 0.0
-            v 1.0 1.0 0.0
-            f 1/2/3/4 2/3/4 3/4/5
-          `;
+                v 0.0 0.0 0.0
+                v 1.0 0.0 0.0
+                v 1.0 1.0 0.0
+                f 1/2/3/4 2/3/4 3/4/5
+              `;
             expect(() => model.parseModel(modelData, 'triangle/triangle.obj')).toThrowError("A vertex in a face must be of format v or v/t or v//n or v/t/n");
         });
 
         it('should throw an error for a vertex with a texture reference if not texture is defined', () => {
             const modelData = `
-            v 0.0 0.0 0.0
-            v 1.0 0.0 0.0
-            v 1.0 1.0 0.0
-            f 1/2/ 2/2/ 3/3/
-          `;
+                v 0.0 0.0 0.0
+                v 1.0 0.0 0.0
+                v 1.0 1.0 0.0
+                f 1/2/ 2/2/ 3/3/
+              `;
 
             expect(() => model.parseModel(modelData, 'triangle/triangle.obj')).toThrowError("There are no texture coordinates defined");
         });
 
         it('should throw an error for a vertex with a normal reference if no normals are defined', () => {
             const modelData = `
-            v 0.0 0.0 0.0
-            v 1.0 0.0 0.0
-            v 1.0 1.0 0.0
-            f 1//2 2//2 3//3
-          `;
+                v 0.0 0.0 0.0
+                v 1.0 0.0 0.0
+                v 1.0 1.0 0.0
+                f 1//2 2//2 3//3
+              `;
 
             expect(() => model.parseModel(modelData, 'triangle/triangle.obj')).toThrowError("There are no normals defined");
         });
@@ -152,35 +166,35 @@ describe('ModelGL', () => {
 
         it('it should parse the mtllib file', () => {
             const modelData = `
-            mtllib square.mtl
-            v 14 14 1
-            v 15 14 1
-            v 15 15 1
-            v 14 15 1
-            vt 0.0 0.0
-            vt 1.0 0.0
-            vt 1.0 1.0
-            vt 0.0 1.0
-            f 1 2 3
-            f 1 3 4
-          `;
+                mtllib square.mtl
+                v 14 14 1
+                v 15 14 1
+                v 15 15 1
+                v 14 15 1
+                vt 0.0 0.0
+                vt 1.0 0.0
+                vt 1.0 1.0
+                vt 0.0 1.0
+                f 1 2 3
+                f 1 3 4
+              `;
             model.parseModel(modelData, 'triangle/triangle.obj');
             expect(model.materialFile).toBe('square.mtl');
         });
 
         it('should produce two triangles from a square', () => {
             const modelData = `
-            mtllib square.mtl
-            v 14 14 1
-            v 15 14 1
-            v 15 15 1
-            v 14 15 1
-            vt 0.0 0.0
-            vt 1.0 0.0
-            vt 1.0 1.0
-            vt 0.0 1.0
-            f 1/1/ 2/2/ 3/3/ 4/4/
-            `;
+                mtllib square.mtl
+                v 14 14 1
+                v 15 14 1
+                v 15 15 1
+                v 14 15 1
+                vt 0.0 0.0
+                vt 1.0 0.0
+                vt 1.0 1.0
+                vt 0.0 1.0
+                f 1/1/ 2/2/ 3/3/ 4/4/
+                `;
             model.parseModel(modelData, 'triangle/triangle.obj');
             expect(model.packedVertexBuffer).toEqual(new Float32Array(
                 [
@@ -194,17 +208,17 @@ describe('ModelGL', () => {
 
         it('should interleave the vertex and texture', () => {
             const modelData = `
-                mtllib square.mtl
-                v 11 11 0
-                v 12 11 0
-                v 12 12 0
-                vt 0.0 0.0
-                vt 1.0 0.0
-                vt 1.0 1.0
-                vt 0.0 1.0
-                f 1/1/ 2/2/ 3/3/ 
+                    mtllib square.mtl
+                    v 11 11 0
+                    v 12 11 0
+                    v 12 12 0
+                    vt 0.0 0.0
+                    vt 1.0 0.0
+                    vt 1.0 1.0
+                    vt 0.0 1.0
+                    f 1/1/ 2/2/ 3/3/ 
 
-              `;
+                  `;
             model.parseModel(modelData, 'triangle/triangle.obj');
             expect(model.packedVertexBuffer).toEqual(new Float32Array(
                 [
@@ -218,20 +232,20 @@ describe('ModelGL', () => {
 
         it('should reuse a packed vertex', () => {
             const modelData = `
-            mtllib square.mtl
-            v 11 11 0
-            v 12 11 0
-            v 12 12 0
-            v 11 12 0
-            vt 0.0 0.0
-            vt 1.0 0.0
-            vt 1.0 1.0
-            vt 0.0 1.0
-            vt 1 0
-            f 1/1/ 2/2/ 3/3/ 
-            f 1/1/ 3/3/ 4/4/
+                mtllib square.mtl
+                v 11 11 0
+                v 12 11 0
+                v 12 12 0
+                v 11 12 0
+                vt 0.0 0.0
+                vt 1.0 0.0
+                vt 1.0 1.0
+                vt 0.0 1.0
+                vt 1 0
+                f 1/1/ 2/2/ 3/3/ 
+                f 1/1/ 3/3/ 4/4/
 
-          `;
+              `;
             model.parseModel(modelData, 'triangle/triangle.obj');
             expect(model.packedVertexBuffer).toEqual(new Float32Array(
                 [
@@ -245,20 +259,20 @@ describe('ModelGL', () => {
 
         it('should have 6 vertices', () => {
             const modelData = `
-                mtllib square.mtl
-                v 11 11 0
-                v 12 11 0
-                v 12 12 0
-                v 11 12 0
-                vt 0.0 0.0
-                vt 1.0 0.0
-                vt 1.0 1.0
-                vt 0.0 1.0
-                vt 1 0
-                f 1/1/ 2/2/ 3/3/ 
-                f 1/2/ 3/2/ 4/4/
+                    mtllib square.mtl
+                    v 11 11 0
+                    v 12 11 0
+                    v 12 12 0
+                    v 11 12 0
+                    vt 0.0 0.0
+                    vt 1.0 0.0
+                    vt 1.0 1.0
+                    vt 0.0 1.0
+                    vt 1 0
+                    f 1/1/ 2/2/ 3/3/ 
+                    f 1/2/ 3/2/ 4/4/
 
-              `;
+                  `;
             model.parseModel(modelData, 'triangle/triangle.obj');
             expect(model.packedVertexBuffer).toEqual(new Float32Array(
                 [
@@ -277,24 +291,24 @@ describe('ModelGL', () => {
 
     it('should have 4 vertices with textures and normal', () => {
         const modelData = `
-                mtllib square.mtl
-                v 11 11 0
-                v 12 11 0
-                v 12 12 0
-                v 11 12 0
-                vt 0.0 0.0
-                vt 1.0 0.0
-                vt 1.0 1.0
-                vt 0.0 1.0
-                vt 1 0
-                vn 0.1 0.1 0.1
-                vn 0.2 0.2 0.2
-                vn 0.3 0.3 0.3
-                vn 0.4 0.4 0.4
-                f 1/1/1 2/2/2 3/3/3 
-                f 1/1/1 3/3/3 4/4/4
+                    mtllib square.mtl
+                    v 11 11 0
+                    v 12 11 0
+                    v 12 12 0
+                    v 11 12 0
+                    vt 0.0 0.0
+                    vt 1.0 0.0
+                    vt 1.0 1.0
+                    vt 0.0 1.0
+                    vt 1 0
+                    vn 0.1 0.1 0.1
+                    vn 0.2 0.2 0.2
+                    vn 0.3 0.3 0.3
+                    vn 0.4 0.4 0.4
+                    f 1/1/1 2/2/2 3/3/3 
+                    f 1/1/1 3/3/3 4/4/4
 
-              `;
+                  `;
         model.parseModel(modelData, 'triangle/triangle.obj');
         expect(model.packedVertexBuffer).toEqual(new Float32Array(
             [
