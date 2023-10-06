@@ -119,10 +119,7 @@ class ModelGL {
     materialFile?: string;
     material?: Material;
     modelPath: string = '';
-    vertexShader: string = '';
-    fragmentShader: string = '';
-
-
+    shaderName: string = '';
 
     textures: Map<string, string> = new Map<string, string>();
 
@@ -331,71 +328,7 @@ class ModelGL {
         for (let triangle of triangles) {
             this.parseTriangle(triangle);
         }
-        // for (let i = 0; i < numVertices; i++) {
-        //     const vertex = tokens[i + 1];
-        //     const [needToAdd, vertexOutIndex] = this._vertexAccumulator.addVertex(vertex);
 
-        //     this._packedIndices.push(vertexOutIndex);
-        //     if (!needToAdd) {
-        //         continue;
-        //     }
-
-
-        //     // The current vertex was not found and thus we will need to add this vertex to the vertex buffer
-        //     // we parse the vertex coordinates, and texture coordinates, and normal coordinates
-        //     // This code presumes that all the vertices in the model have the same number of coordinates
-        //     let vertexTokens: string[] = vertex.split("/");
-
-
-        //     // get the vertex values
-        //     const vertexIndex = parseInt(vertexTokens[0]) - 1;
-        //     const vertexOffset = vertexIndex * 3;
-        //     const x = this._vertices[vertexOffset];
-        //     const y = this._vertices[vertexOffset + 1];
-        //     const z = this._vertices[vertexOffset + 2];
-
-        //     this._packedBuffer.push(x);
-        //     this._packedBuffer.push(y);
-        //     this._packedBuffer.push(z);
-
-        //     // if there is only a vertex value then we are done
-        //     if (vertexTokens.length === 1) {
-        //         continue;
-        //     }
-
-        //     if (vertexTokens[1] !== "") {
-        //         if (this._textureCoordinates.length === 0) {
-        //             throw new Error("There are no texture coordinates defined");
-        //         }
-        //         const textureIndex = parseInt(vertexTokens[1]) - 1;
-        //         const textureOffset = textureIndex * 2;
-        //         const u = this._textureCoordinates[textureOffset];
-        //         const v = this._textureCoordinates[textureOffset + 1];
-
-        //         this._packedBuffer.push(u);
-        //         this._packedBuffer.push(v);
-        //     }
-        //     if (vertexTokens[2] !== "") {
-        //         if (this._normals.length === 0) {
-        //             throw new Error("There are no normals defined");
-        //         }
-        //         const normalIndex = parseInt(vertexTokens[2]) - 1;
-        //         const normalOffset = normalIndex * 3;
-        //         const nx = this._normals[normalOffset];
-        //         const ny = this._normals[normalOffset + 1];
-        //         const nz = this._normals[normalOffset + 2];
-
-        //         this._packedBuffer.push(nx);
-        //         this._packedBuffer.push(ny);
-        //         this._packedBuffer.push(nz);
-
-        //     }
-
-
-
-
-
-        // }
     }
 }
 

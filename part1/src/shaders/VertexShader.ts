@@ -61,8 +61,8 @@ const vertexRotationShader =
  */
 const vertexTextureShader =
     `#version 300 es
-    in vec3 position;
-    in vec2 textureCoord;
+    layout(location=0)in vec3 position;
+    layout(location=1)in vec2 textureCoord;
 
     out vec2 textureCoordOut;
 
@@ -80,8 +80,8 @@ const vertexTextureShader =
   */
 const vertexTextureRotationShader =
     `#version 300 es
-    in vec3 position;
-    in vec2 textureCoord;
+    layout(location=0) in vec3 position;
+    layout(location=1) in vec2 textureCoord;
 
     uniform mat4 modelMatrix;
 
@@ -101,8 +101,8 @@ const vertexTextureRotationShader =
  */
 const vertexTextureFullTransformationShader =
     `#version 300 es
-    in vec3 position;
-    in vec2 textureCoord;
+    layout(location=0) in vec3 position;
+    layout(location=1) in vec2 textureCoord;
 
     uniform mat4 modelMatrix;
     uniform mat4 viewMatrix;
@@ -125,9 +125,9 @@ const vertexTextureFullTransformationShader =
  */
 const vertexTextureNormalFullTransformationShader =
     `#version 300 es
-    in vec3 position;
-    in vec2 textureCoord;
-    in vec3 normal;
+    layout(location=0) in vec3 position;
+    layout(location=1) in vec2 textureCoord;
+    layout(location=2) in vec3 normal;
 
     uniform mat4 modelMatrix;
     uniform mat4 viewMatrix;
