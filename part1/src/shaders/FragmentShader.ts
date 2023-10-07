@@ -53,6 +53,7 @@ const fragmentTextureNormalShader =
         float specular = pow(lightIntensity, 2.0);
         vec2 textureCoord = vec2(textureCoordOut.x, 1.0 - textureCoordOut.y);
         vec4 textureColor = texture(textureSampler, textureCoord);
+        //color = vec4(textureColor.rgb * lightIntensity + specular, textureColor.a);
         color = textureColor;
        
     }

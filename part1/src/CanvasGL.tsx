@@ -4,7 +4,8 @@ import vertexShaderMap from './shaders/VertexShader'
 
 import ModelGL from './ModelGL';
 import PPMFileLoader from './PPMFileLoader';
-import { mat4 } from 'gl-matrix';
+import { mat4, vec3 } from 'gl-matrix';
+import Camera from './Camera';
 
 export { };
 /**
@@ -35,14 +36,16 @@ interface CanvasGLProps {
     scaleX: number;
     scaleY: number;
     scaleZ: number;
+    camera: Camera;
     cameraDistance: number;
+    renderFrame: number;
 }
 
 
 function CanvasGL({ width, height, model, renderMode, projectionMode,
     rotateX, rotateY, rotateZ,
     translateX, translateY, translateZ,
-    scaleX, scaleY, scaleZ, cameraDistance }: CanvasGLProps) {
+    scaleX, scaleY, scaleZ, cameraDistance, camera, renderFrame }: CanvasGLProps) {
 
     const [shouldRender, setShouldRender] = React.useState(false);
 
@@ -321,30 +324,32 @@ function CanvasGL({ width, height, model, renderMode, projectionMode,
             if (vertexShaderName === "vertexTextureFullTransformationShader"
                 || vertexShaderName === "vertexFullTransformationShader" ||
                 vertexShaderName === "vertexTextureNormalFullTransformationShader") {
-                // calculate the projection matrix
-                const projectionMatrix = mat4.create();
-                if (projectionMode === "perspective") {
-                    mat4.perspective(projectionMatrix, 45 * Math.PI / 180, width / height, 0.1, 100.0);
+
+
+                camera.setViewPortWidth(width);
+                camera.setViewPortHeight(height);
+                camera.setFieldOfView(90);
+
+                //camera.setEyePosition(vec3.fromValues(0, 0, cameraDistance));
+                if (projectionMode === "orthographic") {
+                    camera.setOrthographicProjection();
                 } else {
-                    mat4.ortho(projectionMatrix, -1, 1, -1, 1, 0.1, 100.0);
+                    camera.setPerspectiveProjection();
                 }
+
 
                 // get the projection matrix location
                 const projectionMatrixLocation = gl.getUniformLocation(shaderProgram, 'projectionMatrix');
 
                 // set the projection matrix
-                gl.uniformMatrix4fv(projectionMatrixLocation, false, projectionMatrix);
+                gl.uniformMatrix4fv(projectionMatrixLocation, false, camera.projectionMatrix);
 
-
-                // calculate the view matrix
-                const viewMatrix = mat4.create();
-                mat4.translate(viewMatrix, viewMatrix, [0, 0, -cameraDistance]);
 
                 // get the view matrix location
                 const viewMatrixLocation = gl.getUniformLocation(shaderProgram, 'viewMatrix');
 
                 // set the view matrix
-                gl.uniformMatrix4fv(viewMatrixLocation, false, viewMatrix);
+                gl.uniformMatrix4fv(viewMatrixLocation, false, camera.viewMatrix);
 
             }
             console.log(` vertexShader name = ${vertexShaderName} fragmentShader name = ${fragmentShader} `);
@@ -355,9 +360,11 @@ function CanvasGL({ width, height, model, renderMode, projectionMode,
 
             mat4.translate(modelMatrix, modelMatrix, [translateX, translateY, translateZ]);
 
-            mat4.rotateX(modelMatrix, modelMatrix, rotateX * Math.PI / 180);
-            mat4.rotateY(modelMatrix, modelMatrix, rotateY * Math.PI / 180);
+
             mat4.rotateZ(modelMatrix, modelMatrix, rotateZ * Math.PI / 180);
+            mat4.rotateY(modelMatrix, modelMatrix, rotateY * Math.PI / 180);
+            mat4.rotateX(modelMatrix, modelMatrix, rotateX * Math.PI / 180);
+
 
             mat4.scale(modelMatrix, modelMatrix, [scaleX, scaleY, scaleZ]);
 
@@ -421,7 +428,7 @@ function CanvasGL({ width, height, model, renderMode, projectionMode,
     }, [shouldRender, model, width, height, renderMode, projectionMode, cameraDistance,
         rotateX, rotateY, rotateZ,
         translateX, translateY, translateZ,
-        scaleX, scaleY, scaleZ]);
+        scaleX, scaleY, scaleZ, camera, renderFrame]);
 
     return (<canvas ref={canvasRef} width={width} height={height} />);
 }

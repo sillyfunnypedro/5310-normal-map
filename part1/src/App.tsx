@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import CanvasGL from './CanvasGL';
 import ControlComponent from './ControlComponent';
+import CameraControlComponent from './CameraControlComponent';
+import Camera from './Camera';
 import ObjFileLoader from './ObjFileLoader';
 import MaterialFileLoader from './MaterialFileLoader';
 import ModelGL from './ModelGL';
@@ -40,7 +42,9 @@ function App() {
   const [scaleX, setScaleX] = useState(1);
   const [scaleY, setScaleY] = useState(1);
   const [scaleZ, setScaleZ] = useState(1);
+  const [camera, setCamera] = useState(new Camera());
   const [cameraDistance, setCameraDistance] = useState(2);
+  const [renderFrame, setRenderFrame] = useState(0);
 
 
 
@@ -98,6 +102,13 @@ function App() {
     console.log(`updateScale (APP)_: ${x}, ${y}, ${z}`);
   }
 
+  function updateCamera(newCamera: Camera) {
+    if (!modelGL) {
+      return;
+    }
+    setCamera(newCamera);
+    setRenderFrame(renderFrame + 1);
+  }
 
   function updateCameraDistance(distance: number) {
     if (!modelGL) {
@@ -139,7 +150,9 @@ function App() {
         rotateZ={rotateZ}
         translateX={translateX} translateY={translateY} translateZ={translateZ}
         scaleX={scaleX} scaleY={scaleY} scaleZ={scaleZ}
-        cameraDistance={cameraDistance} />
+        cameraDistance={cameraDistance}
+        camera={camera}
+        renderFrame={renderFrame} />
       <ControlComponent
         renderObject={renderObject}
         renderMode={renderMode}
@@ -150,7 +163,10 @@ function App() {
         updateTranslate={updateTranslate}
         updateRotate={updateRotate}
         updateScale={updateScale}
-        updateCameraDistance={updateCameraDistance} />
+        updateCameraDistance={updateCameraDistance}
+      />
+      <CameraControlComponent updateCamera={updateCamera} />
+
     </header>
 
   </div>

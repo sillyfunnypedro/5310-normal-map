@@ -12,74 +12,169 @@ import { mat4, vec3 } from 'gl-matrix';
 
 class Camera {
 
-    private static instance: Camera;
-    private viewMatrix: mat4;
-    private projectionMatrix: mat4;
-    private eyePosition: vec3;
-    private lookAt: vec3;
-    private upVector: vec3;
 
-    private constructor() {
+    viewMatrix: mat4;
+    projectionMatrix: mat4;
+    eyePosition: vec3;
+    lookAt: vec3;
+    upVector: vec3;
+    aspectRatio: number;
+    fieldOfView: number;
+    nearPlane: number;
+    farPlane: number;
+    viewPortWidth: number;
+    viewPortHeight: number;
+    roll: number;
+    private usePerspective: boolean = true;
+
+    constructor() {
         this.viewMatrix = mat4.create();
         this.projectionMatrix = mat4.create();
-        this.eyePosition = vec3.create();
-        this.lookAt = vec3.create();
-        this.upVector = vec3.create();
+        this.eyePosition = vec3.fromValues(0, 0, 1)
+        this.lookAt = vec3.fromValues(0, 0, 0);
+        this.upVector = vec3.fromValues(0, 1, 0);
+        this.aspectRatio = 1;
+        this.fieldOfView = 45;
+        this.nearPlane = 0.1;
+        this.farPlane = 100;
+        this.viewPortWidth = 1;
+        this.viewPortHeight = 1;
+        this.roll = 0;
+        this.updateCamera();
     }
 
-    public static getInstance(): Camera {
-        if (!Camera.instance) {
-            Camera.instance = new Camera();
-        }
-        return Camera.instance;
-    }
 
-    public setViewMatrix(viewMatrix: mat4): void {
-        this.viewMatrix = viewMatrix;
-    }
 
-    public getViewMatrix(): mat4 {
-        return this.viewMatrix;
-    }
 
-    public setProjectionMatrix(projectionMatrix: mat4): void {
-        this.projectionMatrix = projectionMatrix;
-    }
-
-    public getProjectionMatrix(): mat4 {
-        return this.projectionMatrix;
-    }
 
     public setEyePosition(eyePosition: vec3): void {
         this.eyePosition = eyePosition;
+        this.updateCamera();
     }
 
-    public getEyePosition(): vec3 {
-        return this.eyePosition;
+    public moveForward(distance: number): void {
+        let lookDirection = vec3.create();
+        vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
+        vec3.normalize(lookDirection, lookDirection);
+        vec3.scaleAndAdd(this.eyePosition, this.eyePosition, lookDirection, distance);
+        vec3.scaleAndAdd(this.lookAt, this.lookAt, lookDirection, distance);
+        this.updateCamera();
     }
+
+    public moveBackward(distance: number): void {
+        this.moveForward(-distance);
+    }
+
+    public lookUp(angle: number): void {
+        angle = angle / 180.0 * Math.PI;
+        let lookDirection = vec3.create();
+        vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
+        let rotationMatrix = mat4.create();
+        mat4.fromRotation(rotationMatrix, angle, vec3.fromValues(1, 0, 0));
+        vec3.transformMat4(lookDirection, lookDirection, rotationMatrix);
+        vec3.add(this.lookAt, this.eyePosition, lookDirection);
+        this.updateCamera();
+    }
+
+    public lookDown(angle: number): void {
+        this.lookUp(-angle);
+    }
+
+    public lookLeft(angle: number): void {
+        angle = angle / 180.0 * Math.PI;
+        let lookDirection = vec3.create();
+        vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
+        let rotationMatrix = mat4.create();
+        mat4.fromRotation(rotationMatrix, angle, vec3.fromValues(0, 1, 0));
+        vec3.transformMat4(lookDirection, lookDirection, rotationMatrix);
+        vec3.add(this.lookAt, this.eyePosition, lookDirection);
+        this.updateCamera();
+    }
+
+    public rollCamera(angle: number): void {
+        angle = angle / 180.0 * Math.PI;
+        let lookDirection = vec3.create();
+        vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
+        let rotationMatrix = mat4.create();
+        mat4.fromRotation(rotationMatrix, angle, lookDirection);
+        vec3.transformMat4(this.upVector, this.upVector, rotationMatrix);
+        this.updateCamera();
+    }
+
+    public lookRight(angle: number): void {
+        this.lookLeft(-angle);
+    }
+
 
     public setLookAt(lookAt: vec3): void {
         this.lookAt = lookAt;
+        this.updateCamera();
     }
 
-    public getLookAt(): vec3 {
-        return this.lookAt;
-    }
+
 
     public setUpVector(upVector: vec3): void {
         this.upVector = upVector;
+        this.updateCamera();
     }
 
-    public getUpVector(): vec3 {
-        return this.upVector;
+    public setAspectRatio(aspectRatio: number): void {
+        this.aspectRatio = aspectRatio;
+        this.updateCamera();
     }
+
+    public setFieldOfView(fieldOfView: number): void {
+        this.fieldOfView = fieldOfView;
+        this.updateCamera();
+    }
+
+    public setNearPlane(nearPlane: number): void {
+        this.nearPlane = nearPlane;
+        this.updateCamera();
+    }
+
+    public setFarPlane(farPlane: number): void {
+        this.farPlane = farPlane;
+        this.updateCamera();
+    }
+
+    public setViewPortWidth(viewPortWidth: number): void {
+        this.viewPortWidth = viewPortWidth;
+        this.updateCamera();
+    }
+
+    public setViewPortHeight(viewPortHeight: number): void {
+        this.viewPortHeight = viewPortHeight;
+        this.updateCamera();
+    }
+
 
     public updateViewMatrix(): void {
         mat4.lookAt(this.viewMatrix, this.eyePosition, this.lookAt, this.upVector);
     }
 
     public updateProjectionMatrix(): void {
-        mat4.perspective(this.projectionMatrix, 45, 1, 0.1, 100);
+        if (this.usePerspective) {
+            let aspectRatio = this.viewPortWidth / this.viewPortHeight;
+            mat4.perspective(this.projectionMatrix, this.fieldOfView / 180.0 * Math.PI, aspectRatio, this.nearPlane, this.farPlane);
+        } else {
+            let left = -this.viewPortWidth / 2;
+            let right = this.viewPortWidth / 2;
+            let bottom = -this.viewPortHeight / 2;
+            let top = this.viewPortHeight / 2;
+            mat4.ortho(this.projectionMatrix, left, right, bottom, top, this.nearPlane, this.farPlane);
+        }
+
+    }
+
+    public setOrthographicProjection(): void {
+        this.usePerspective = false;
+        this.updateProjectionMatrix();
+    }
+
+    public setPerspectiveProjection(): void {
+        this.usePerspective = true;
+        this.updateProjectionMatrix();
     }
 
     public updateCamera(): void {
