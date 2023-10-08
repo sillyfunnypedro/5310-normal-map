@@ -10,6 +10,7 @@ import MaterialFileLoader from './MaterialFileLoader';
 import ModelGL from './ModelGL';
 import { render } from '@testing-library/react';
 import PPMFileLoader from './PPMFileLoader';
+import { updateSceneData, setupCanvas } from './glCanvas';
 
 const objLoader = ObjFileLoader.getInstance();
 
@@ -52,6 +53,8 @@ function App() {
   useEffect(() => {
     setRenderObject('tri-plain');
     setRenderMode('solid');
+    setupCanvas();
+    updateSceneData(modelGL, camera)
   }, []);
 
 
@@ -65,6 +68,7 @@ function App() {
       }
 
       setModelGL(model);
+      updateSceneData(model, camera);
 
     });
   }, [renderObject]);
@@ -108,6 +112,7 @@ function App() {
     }
     setCamera(newCamera);
     setRenderFrame(renderFrame + 1);
+    updateSceneData(modelGL, newCamera);
   }
 
   function updateCameraDistance(distance: number) {
@@ -142,7 +147,7 @@ function App() {
   return (<div className="App">
     <header className="App-header">
 
-      <CanvasGL key={renderObject}
+      {/*<CanvasGL key={renderObject}
         width={800} height={500}
         model={modelGL} renderMode={renderMode}
         projectionMode={projectionMode}
@@ -152,7 +157,10 @@ function App() {
         scaleX={scaleX} scaleY={scaleY} scaleZ={scaleZ}
         cameraDistance={cameraDistance}
         camera={camera}
-        renderFrame={renderFrame} />
+renderFrame={renderFrame} /> */}
+
+      <canvas id="glCanvas" width="800" height="500"></canvas>
+
       <ControlComponent
         renderObject={renderObject}
         renderMode={renderMode}
@@ -168,6 +176,9 @@ function App() {
       <CameraControlComponent updateCamera={updateCamera} />
 
     </header>
+    <body>
+
+    </body>
 
   </div>
   );

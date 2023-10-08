@@ -385,8 +385,8 @@ function CanvasGL({ width, height, model, renderMode, projectionMode,
 
 
             // Clear the canvas to a purple color
-            gl.clearColor(.6, .2, .6, 1);
-            gl.clear(gl.COLOR_BUFFER_BIT);
+            // gl.clearColor(.6, .2, .6, 1);
+            // gl.clear(gl.COLOR_BUFFER_BIT);
 
             if (projectionMode === "orthographic") {
                 // calculate the square that fits in the canvas make that the viewport

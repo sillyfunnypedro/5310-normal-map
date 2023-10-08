@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Camera from './Camera';
 
 import './ControlComponent.css';
@@ -24,6 +24,7 @@ interface ButtonWithHoldProps {
 function ButtonWithHold({ title, onTick, delta, holdInterval = 10 }: ButtonWithHoldProps) {
     const [count, setCount] = useState(0);
     const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
+    const handleMouseDownRef = useRef<() => void>(() => { });
 
     function command() {
         setCount(count + 1);
@@ -33,13 +34,19 @@ function ButtonWithHold({ title, onTick, delta, holdInterval = 10 }: ButtonWithH
 
     function handleMouseDown() {
         command();
-        const timeout = setTimeout(handleMouseDown, holdInterval);
+        handleMouseDownRef.current = () => {
+            handleMouseDown();
+        };
+        const timeout = setTimeout(handleMouseDownRef.current, holdInterval);
         setHoldTimer(timeout);
     }
 
     function handleMouseUp() {
+        console.log('Mouse Up')
         clearTimeout(holdTimer as NodeJS.Timeout);
         setHoldTimer(null);
+        handleMouseDownRef.current = () => { };
+        onTick(0); // force an update
     }
 
 
