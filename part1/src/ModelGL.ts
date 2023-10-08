@@ -1,4 +1,5 @@
 import Material from "./Material";
+import { mat4 } from "gl-matrix";
 
 /**
  *  @class VertexAccumulator
@@ -78,9 +79,6 @@ class VertexAccumulator {
             }
 
         }
-
-
-
     }
 
 
@@ -121,6 +119,19 @@ class ModelGL {
     modelPath: string = '';
     shaderName: string = '';
 
+    // the parameters for the model transformation
+    rotateX: number = 0;
+    rotateY: number = 0;
+    rotateZ: number = 0;
+    scaleX: number = 1;
+    scaleY: number = 1;
+    scaleZ: number = 1;
+    translateX: number = 0;
+    translateY: number = 0;
+    translateZ: number = 0;
+
+
+
     textures: Map<string, string> = new Map<string, string>();
 
     private _packedIndices: number[] = []
@@ -144,8 +155,17 @@ class ModelGL {
     }
 
 
-
-
+    // each model has its own transforms now, we will provide a computed
+    // model matrix to the renderer
+    getModelMatrix(): mat4 {
+        let modelMatrix: mat4 = mat4.create();
+        mat4.translate(modelMatrix, modelMatrix, [this.translateX, this.translateY, this.translateZ]);
+        mat4.rotateX(modelMatrix, modelMatrix, this.rotateX);
+        mat4.rotateY(modelMatrix, modelMatrix, this.rotateY);
+        mat4.rotateZ(modelMatrix, modelMatrix, this.rotateZ);
+        mat4.scale(modelMatrix, modelMatrix, [this.scaleX, this.scaleY, this.scaleZ]);
+        return modelMatrix;
+    }
 
 
 

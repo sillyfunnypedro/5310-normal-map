@@ -22,9 +22,6 @@ class SceneData {
 
     renderMode: string = "solid";
     projectionMode: string = "perspective";
-    rotateX: number = 0;
-    rotateY: number = 0;
-    rotateZ: number = 0;
     translateX: number = 0;
     translateY: number = 0;
     translateZ: number = 0;
@@ -351,7 +348,7 @@ function renderLoop(): void {
         camera.setViewPortHeight(height);
         camera.setFieldOfView(90);
 
-        //camera.setEyePosition(vec3.fromValues(0, 0, cameraDistance));
+
         if (sceneData.projectionMode === "orthographic") {
             camera.setOrthographicProjection();
         } else {
@@ -373,22 +370,12 @@ function renderLoop(): void {
         gl.uniformMatrix4fv(viewMatrixLocation, false, camera.viewMatrix);
 
     }
+
     console.log(` vertexShader name = ${vertexShaderName} fragmentShader name = ${fragmentShader} `);
 
 
-    const modelMatrix = mat4.create();  // create a matrix to hold the model matrix
-
-
-    mat4.translate(modelMatrix, modelMatrix, [sceneData.translateX, sceneData.translateY, sceneData.translateZ]);
-
-
-    mat4.rotateZ(modelMatrix, modelMatrix, sceneData.rotateZ * Math.PI / 180);
-    mat4.rotateY(modelMatrix, modelMatrix, sceneData.rotateY * Math.PI / 180);
-    mat4.rotateX(modelMatrix, modelMatrix, sceneData.rotateX * Math.PI / 180);
-
-
-    mat4.scale(modelMatrix, modelMatrix, [sceneData.scaleX, sceneData.scaleY, sceneData.scaleZ]);
-
+    // get the model matrix.
+    const modelMatrix = model.getModelMatrix();
 
 
     // get the model matrix location
@@ -435,13 +422,13 @@ function renderLoop(): void {
         for (let i = 0; i < model.numTriangles!; i++) {
             const index = i * 3;
             gl.drawElements(gl.LINE_LOOP, 3, gl.UNSIGNED_SHORT, index * 2);
-            
+
         }
 
     } else {
 
         gl.drawElements(gl.TRIANGLES, model.vertexiIndices.length, gl.UNSIGNED_SHORT, 0);
-        
+
     }
 
 

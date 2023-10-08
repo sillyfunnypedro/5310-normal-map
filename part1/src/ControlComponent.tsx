@@ -1,6 +1,7 @@
 import { objectFileMap } from './ObjectFileMap';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LocalServerStatus from './LocalServerStatus';
+import ModelGl from './ModelGL';
 
 import './ControlComponent.css';
 
@@ -25,63 +26,88 @@ interface ControlComponentProps {
     updateRotate: (x: number, y: number, z: number) => void;
     updateCameraDistance: (distance: number) => void;
     updateScale: (x: number, y: number, z: number) => void;
+    modelGL: ModelGl | null;
 }
 
 const scaleSteps = 50;
 // define the ControlComponent
 function ControlComponent({ renderObject, renderMode, projectionMode,
-    updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate, updateCameraDistance, updateScale }: ControlComponentProps) {
+    updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate, updateCameraDistance, updateScale, modelGL }: ControlComponentProps) {
 
-    const [translateX, setTranslateX] = useState(0);
-    const [translateY, setTranslateY] = useState(0);
-    const [translateZ, setTranslateZ] = useState(0);
-    const [rotateX, setRotateX] = useState(0);
-    const [rotateY, setRotateY] = useState(0);
-    const [rotateZ, setRotateZ] = useState(0);
-    const [scaleX, setScaleX] = useState(0.5);
-    const [scaleY, setScaleY] = useState(0.5);
-    const [scaleZ, setScaleZ] = useState(0.5);
+    const [translateX, setTranslateX] = useState(modelGL?.translateX ?? 0);
+    const [translateY, setTranslateY] = useState(modelGL?.translateX ?? 0);
+    const [translateZ, setTranslateZ] = useState(modelGL?.translateX ?? 0);
+    const [rotateX, setRotateX] = useState(modelGL?.rotateX ?? 0)
+    const [rotateY, setRotateY] = useState(modelGL?.rotateY ?? 0);
+    const [rotateZ, setRotateZ] = useState(modelGL?.rotateZ ?? 0);
+    const [scaleX, setScaleX] = useState(modelGL?.scaleX ?? 1);
+    const [scaleY, setScaleY] = useState(modelGL?.scaleY ?? 1);
+    const [scaleZ, setScaleZ] = useState(modelGL?.scaleZ ?? 1);
     const [uniformScale, setUniformScale] = useState(true);
-
     const [eyeDistance, setEyeDistance] = useState(2);
 
+
+    function updateState() {
+        setTranslateX(modelGL?.translateX ?? 0);
+        setTranslateY(modelGL?.translateY ?? 0);
+        setTranslateZ(modelGL?.translateZ ?? 0);
+        setRotateX(modelGL?.rotateX ?? 0);
+        setRotateY(modelGL?.rotateY ?? 0);
+        setRotateZ(modelGL?.rotateZ ?? 0);
+        setScaleX(modelGL?.scaleX ?? 1);
+        setScaleY(modelGL?.scaleY ?? 1);
+        setScaleZ(modelGL?.scaleZ ?? 1);
+    }
+
+    useEffect(() => {
+        updateState();
+    }, [modelGL]);
 
 
     function handleSlideChangeRot(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
         const valueString = event.target.value;
         const value = parseFloat(valueString);
-
+        if (!modelGL) {
+            return;
+        }
         switch (axis) {
             case "x":
-                setRotateX(value);
+                modelGL.rotateX = value;
                 break;
             case "y":
-                setRotateY(value);
+                modelGL.rotateY = value;
                 break;
             case "z":
-                setRotateZ(value);
+                modelGL.rotateZ = value;
                 break;
         }
-        updateRotate(rotateX, rotateY, rotateZ);
+        updateState();
     }
 
 
 
+
+
+
     function handleSliderChangeTranslate(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
+        // convert the string value to a number
         const value = event.target.value;
+        const numValue = parseFloat(value);
+        if (!modelGL) {
+            return;
+        }
         switch (axis) {
             case "x":
-                setTranslateX(parseFloat(value));
+                modelGL.translateX = numValue;
                 break;
             case "y":
-                setTranslateY(parseFloat(value));
+                modelGL.translateY = numValue;
                 break;
             case "z":
-                setTranslateZ(parseFloat(value));
+                modelGL.translateZ = numValue;
                 break;
         }
-        console.log(`handleSliderChangeTranslate: ${translateX}, ${translateY}, ${translateZ}`);
-        updateTranslate(translateX, translateY, translateZ);
+        updateState();
     }
 
 
@@ -89,44 +115,55 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
         // convert the string value to a number
         const value = event.target.value;
         const numValue = parseFloat(value);
+        if (!modelGL) {
+            return;
+        }
 
         if (uniformScale) {
-            setScaleX(numValue);
-            setScaleY(numValue);
-            setScaleZ(numValue);
+            modelGL.scaleX = numValue;
+            modelGL.scaleY = numValue;
+            modelGL.scaleZ = numValue;
+
         } else {
             switch (axis) {
                 case "x":
-                    setScaleX(parseFloat(value));
+                    modelGL.scaleX = numValue;
                     break;
                 case "y":
-                    setScaleY(parseFloat(value));
+                    modelGL.scaleY = numValue;
                     break;
                 case "z":
-                    setScaleZ(parseFloat(value));
+                    modelGL.scaleZ = numValue;
                     break;
             }
         }
-        updateScale(scaleX, scaleY, scaleZ);
+        updateState();
+
     }
 
 
 
     function resetAllSliders() {
-        setTranslateX(0);
-        setTranslateY(0);
-        setTranslateZ(0);
-        updateTranslate(0, 0, 0);
-        setRotateX(0);
-        setRotateY(0);
-        setRotateZ(0);
-        updateRotate(0, 0, 0);
-        setScaleX(0.5);
-        setScaleY(0.5);
-        setScaleZ(0.5);
-        updateScale(0.5, 0.5, 0.5);
-        setEyeDistance(2);
-        updateCameraDistance(2);
+        if (!modelGL) {
+            return;
+        }
+        modelGL.translateX = 0;
+        modelGL.translateY = 0;
+        modelGL.translateZ = 0;
+
+        modelGL.rotateX = 0;
+        modelGL.rotateY = 0;
+        modelGL.rotateZ = 0;
+
+
+        modelGL.scaleX = 1;
+        modelGL.scaleY = 1;
+        modelGL.scaleZ = 1;
+
+        setUniformScale(true);
+        updateState();
+
+
     }
 
     function handleSlideChangeEyeDistance(event: React.ChangeEvent<HTMLInputElement>) {
@@ -198,7 +235,6 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                                 <input name="z" type="range" min="-50" max="50" step="any"
                                     value={translateZ} className="slider"
                                     onChange={(event) => handleSliderChangeTranslate(event, "z")} id="myRangeZ">
-
                                 </input>
                             </th>
                         </tr>

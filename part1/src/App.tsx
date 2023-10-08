@@ -37,9 +37,6 @@ function App() {
   const [translateX, setTranslateX] = useState(0);
   const [translateY, setTranslateY] = useState(0);
   const [translateZ, setTranslateZ] = useState(0);
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-  const [rotateZ, setRotateZ] = useState(0);
   const [scaleX, setScaleX] = useState(1);
   const [scaleY, setScaleY] = useState(1);
   const [scaleZ, setScaleZ] = useState(1);
@@ -78,31 +75,27 @@ function App() {
     if (!modelGL) {
       return;
     }
-    setTranslateX(x);
-    setTranslateY(y);
-    setTranslateZ(z);
-    console.log(`updateTranslate: ${x}, ${y}, ${z}`);
+    modelGL.translateX = x;
+    modelGL.translateY = y;
+    modelGL.translateZ = z;
   }
 
   function updateRotate(x: number, y: number, z: number) {
     if (!modelGL) {
       return;
     }
-    setRotateX(x);
-    setRotateY(y);
-    setRotateZ(z);
-
-    console.log(`updateRotate: ${x}, ${y}, ${z}`);
+    modelGL.rotateX = x;
+    modelGL.rotateY = y;
+    modelGL.rotateZ = z;
   }
 
   function updateScale(x: number, y: number, z: number) {
     if (!modelGL) {
       return;
     }
-    setScaleX(x);
-    setScaleY(y);
-    setScaleZ(z);
-
+    modelGL.scaleX = x;
+    modelGL.scaleY = y;
+    modelGL.scaleZ = z;
     console.log(`updateScale (APP)_: ${x}, ${y}, ${z}`);
   }
 
@@ -122,11 +115,6 @@ function App() {
     setCameraDistance(distance);
   }
 
-
-  // force a re-render of CanvasGL when the demo changes
-  // useEffect(() => {
-  //   setRenderObject(renderObject);
-  // }, [renderObject]);
 
 
   // these two functions are passed to the ControlComponent
@@ -172,6 +160,7 @@ renderFrame={renderFrame} /> */}
         updateRotate={updateRotate}
         updateScale={updateScale}
         updateCameraDistance={updateCameraDistance}
+        modelGL={modelGL}
       />
       <CameraControlComponent updateCamera={updateCamera} />
 
