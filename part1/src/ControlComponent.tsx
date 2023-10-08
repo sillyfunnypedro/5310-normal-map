@@ -27,7 +27,7 @@ interface ControlComponentProps {
     modelGL: ModelGl | null;
 }
 
-const scaleSteps = 50;
+
 // define the ControlComponent
 function ControlComponent({ renderObject, renderMode, projectionMode,
     updateRenderObject, updateRenderMode, updateProjectionMode, updateCameraDistance, modelGL }: ControlComponentProps) {

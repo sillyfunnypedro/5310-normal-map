@@ -117,6 +117,8 @@ class ModelGL {
     materialFile?: string;
     material?: Material;
     modelPath: string = '';
+    vertexShaderName: string = '';
+    fragmentShaderName: string = '';
     shaderName: string = '';
 
     // the parameters for the model transformation
@@ -140,6 +142,10 @@ class ModelGL {
     private _textureCoordinates: number[] = [];
     private _normals: number[] = [];
 
+    private _vertexShader: string = "";
+    private _fragmentShader: string = "";
+    private _renderingProgram: WebGLProgram | null = null;
+
     private _vertexAccumulator: VertexAccumulator = new VertexAccumulator();
 
 
@@ -154,15 +160,34 @@ class ModelGL {
 
     }
 
+    /**
+     * Get the rendering program for this model
+     * @returns WebGLProgram
+     * @memberof ModelGL
+     * @method getRenderingProgram
+     */
+    get renderingProgram(): WebGLProgram | null {
+        return this._renderingProgram;
+    }
+
+    /**
+     * Set the rendering program for this model
+     * @memberof ModelGL
+     * @method setRenderingProgram
+     */
+    set renderingProgram(program: WebGLProgram | null) {
+        this._renderingProgram = program;
+    }
+
 
     // each model has its own transforms now, we will provide a computed
     // model matrix to the renderer
     getModelMatrix(): mat4 {
         let modelMatrix: mat4 = mat4.create();
         mat4.translate(modelMatrix, modelMatrix, [this.translateX, this.translateY, this.translateZ]);
-        mat4.rotateX(modelMatrix, modelMatrix, this.rotateX);
-        mat4.rotateY(modelMatrix, modelMatrix, this.rotateY);
-        mat4.rotateZ(modelMatrix, modelMatrix, this.rotateZ);
+        mat4.rotateX(modelMatrix, modelMatrix, this.rotateX / 180 * Math.PI);
+        mat4.rotateY(modelMatrix, modelMatrix, this.rotateY / 180 * Math.PI);
+        mat4.rotateZ(modelMatrix, modelMatrix, this.rotateZ / 180 * Math.PI);
         mat4.scale(modelMatrix, modelMatrix, [this.scaleX, this.scaleY, this.scaleZ]);
         return modelMatrix;
     }
@@ -247,6 +272,39 @@ class ModelGL {
         this.vertexiIndices = new Uint16Array(this._packedIndices);
         this.numVertices = this._packedIndices.length;
         this.numTriangles = this._packedIndices.length / 3;
+
+        this.calculateVertexShaderName();
+        this.calculateFragmentShaderName();
+    }
+
+    /**
+     * Calculate the vertex shader name
+     * @memberof ModelGL
+     * @method calculateVertexShaderName
+     */
+    private calculateVertexShaderName() {
+        if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
+            this.vertexShaderName = "vertexTextureNormalFullTransformationShader";
+        } else if (this._textureCoordinates.length > 0) {
+            this.vertexShaderName = "vertexTextureFullTransformationShader";
+        } else {
+            this.vertexShaderName = "vertexFullTransformationShader";
+        }
+    }
+
+    /**
+     * Calculate the fragment shader name
+     * @memberof ModelGL
+     * @method calculateFragmentShaderName
+     */
+    private calculateFragmentShaderName() {
+        if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
+            this.fragmentShaderName = "fragmentTextureNormalShader";
+        } else if (this._textureCoordinates.length > 0) {
+            this.fragmentShaderName = "fragmentTextureShader";
+        } else {
+            this.fragmentShaderName = "fragmentShader";
+        }
     }
 
     /**

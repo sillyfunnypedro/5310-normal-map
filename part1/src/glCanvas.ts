@@ -76,10 +76,110 @@ export function updateSceneData(model: ModelGL | null, camera: Camera | null): v
     }
 }
 
-export function renderLoopStart(start: boolean): void {
-    if (start) {
-        renderLoop();
+function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
+    if (!sceneData.model) {
+        return null;
     }
+
+    if (sceneData.model.renderingProgram !== null) {
+        return sceneData.model.renderingProgram;
+    }
+    if (!sceneData.camera) {
+        return null;
+    }
+
+    if (!gl) {
+        return null;
+    }
+
+
+    const vertexShaderName = sceneData.model.vertexShaderName;
+    const fragmentShaderName = sceneData.model.fragmentShaderName;
+
+    console.log("Compiling " + vertexShaderName + " and " + fragmentShaderName);
+
+    // ******************************************************
+    // Create the vertex shader program
+    // ******************************************************   
+    const vertexShaderProgram = gl.createShader(gl.VERTEX_SHADER);
+
+    if (!vertexShaderProgram) {
+        throw new Error('Failed to create vertex shader');
+    }
+
+    // get the vertex shader source code from the shader map
+    const vertexShader = vertexShaderMap.get(vertexShaderName) as string;
+
+    // Now that we have the code let's compile it compile it
+    // attach the shader source code to the vertex shader
+    gl.shaderSource(vertexShaderProgram, vertexShader);
+
+    // compile the vertex shader
+    gl.compileShader(vertexShaderProgram);
+
+    // check if the vertex shader compiled successfully
+    const vertexShaderCompiled = gl.getShaderParameter(vertexShaderProgram, gl.COMPILE_STATUS);
+    if (!vertexShaderCompiled) {
+        console.log(vertexShader)
+        console.log('tried to compile ' + vertexShaderName);
+        console.log(gl.getShaderInfoLog(vertexShaderProgram));
+        console.error('Failed to compile vertex shader');
+        return null;
+    }
+
+    // ******************************************************
+    // create the fragment shader
+    // ******************************************************
+    const fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
+    if (!fragmentShaderObject) {
+        throw new Error('Failed to create fragment shader');
+    }
+
+    // get the fragment shader source code from the shader map 
+    const fragmentShader = fragmentShaderMap.get(fragmentShaderName) as string;
+
+    // attach the shader source code to the fragment shader
+    gl.shaderSource(fragmentShaderObject, fragmentShader);
+
+    // compile the fragment shader
+    gl.compileShader(fragmentShaderObject);
+
+    // check if the fragment shader compiled successfully
+    const fragmentShaderCompiled = gl.getShaderParameter(fragmentShaderObject, gl.COMPILE_STATUS);
+    if (!fragmentShaderCompiled) {
+        console.log(fragmentShader);
+        console.log('tried to compile ' + fragmentShaderName);
+        console.log(gl.getShaderInfoLog(fragmentShaderObject));
+        console.error('Failed to compile fragment shader');
+        return null;
+    }
+
+    // ******************************************************
+    // create a shader program
+    // ******************************************************
+    const shaderProgram = gl.createProgram();
+    if (!shaderProgram) {
+        throw new Error('Failed to create shader program');
+    }
+
+    // attach the vertex shader to the shader program
+    gl.attachShader(shaderProgram, vertexShaderProgram);
+
+    // attach the fragment shader to the shader program
+    gl.attachShader(shaderProgram, fragmentShaderObject);
+
+    // link all attached shaders
+    gl.linkProgram(shaderProgram);
+
+    // check if the shader program linked successfully
+    const shaderProgramLinked = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
+    if (!shaderProgramLinked) {
+        console.error('Failed to link shader program');
+        return null;
+    }
+    // cache the shader program
+    sceneData.model.renderingProgram = shaderProgram;
+    return shaderProgram;
 }
 
 function renderLoop(): void {
@@ -120,110 +220,15 @@ function renderLoop(): void {
     }
 
     // ******************************************************
-    // Create the vertex shader program
+    // Compile the shader program if it has not been compiled yet
+    // the compileProgram will store the compiled program in the 
+    // current model in sceneData
     // ******************************************************
-    const vertexShaderProgram = gl.createShader(gl.VERTEX_SHADER);
-    if (!vertexShaderProgram) {
-        throw new Error('Failed to create vertex shader');
-    }
+    const shaderProgram = compileProgram(gl);
 
-
-
-    let vertexShaderName = "vertexFullTransformationShader";
-
-
-
-    if (useTextureShader) {
-
-        vertexShaderName = "vertexTextureFullTransformationShader";
-        // check to see if there are normals defined
-        if (model.vertexStride === 8 * 4) {
-            vertexShaderName = "vertexTextureNormalFullTransformationShader";
-        }
-
-    }
-
-    // get the vertex shader source code from the shader map
-    const vertexShader = vertexShaderMap.get(vertexShaderName) as string;
-
-
-
-
-    // Now that we have the code let's compile it compile it
-    // attach the shader source code to the vertex shader
-    gl.shaderSource(vertexShaderProgram, vertexShader);
-
-    // compile the vertex shader
-    gl.compileShader(vertexShaderProgram);
-
-    // check if the vertex shader compiled successfully
-    const vertexShaderCompiled = gl.getShaderParameter(vertexShaderProgram, gl.COMPILE_STATUS);
-    if (!vertexShaderCompiled) {
-        console.log(vertexShader)
-        console.log('tried to compile ' + vertexShaderName);
-        console.log(gl.getShaderInfoLog(vertexShaderProgram));
-        console.error('Failed to compile vertex shader');
-        return;
-    }
-
-
-
-    // ******************************************************
-    // create a fragment shader
-    // ******************************************************
-    const fragmentShaderObject = gl.createShader(gl.FRAGMENT_SHADER);
-    if (!fragmentShaderObject) {
-        throw new Error('Failed to create fragment shader');
-    }
-
-    // get the fragment shader source code from the shader map use the simplest one by default
-    let fragmentShader = fragmentShaderMap.get("fragmentShader") as string;
-
-    if (useTextureShader) {
-        fragmentShader = fragmentShaderMap.get("fragmentTextureShader") as string;
-        if (vertexShaderName === "vertexTextureNormalFullTransformationShader") {
-            fragmentShader = fragmentShaderMap.get("fragmentTextureNormalShader") as string;
-            console.log("using fragmentTextureNormalShader")
-        }
-
-    }
-
-    // attach the shader source code to the fragment shader
-    gl.shaderSource(fragmentShaderObject, fragmentShader);
-
-    // compile the fragment shader
-    gl.compileShader(fragmentShaderObject);
-
-    // check if the fragment shader compiled successfully
-    const fragmentShaderCompiled = gl.getShaderParameter(fragmentShaderObject, gl.COMPILE_STATUS);
-    if (!fragmentShaderCompiled) {
-        console.error('Failed to compile fragment shader');
-        return;
-    }
-    // ******************************************************
-    // create a shader program
-    // ******************************************************
-    const shaderProgram = gl.createProgram();
     if (!shaderProgram) {
-        throw new Error('Failed to create shader program');
-    }
-
-    // attach the vertex shader to the shader program
-    gl.attachShader(shaderProgram, vertexShaderProgram);
-
-    // attach the fragment shader to the shader program
-    gl.attachShader(shaderProgram, fragmentShaderObject);
-
-    // link all attached shaders
-    gl.linkProgram(shaderProgram);
-
-    // check if the shader program linked successfully
-    const shaderProgramLinked = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
-    if (!shaderProgramLinked) {
-        console.error('Failed to link shader program');
         return;
     }
-
     // use the shader program
     gl.useProgram(shaderProgram);
     // ******************************************************
@@ -327,7 +332,7 @@ function renderLoop(): void {
 
     }
 
-    if (vertexShaderName === "vertexTextureNormalFullTransformationShader") {
+    if (model.vertexShaderName === "vertexTextureNormalFullTransformationShader") {
         // get the normal attribute location
         const normalLocation = gl.getAttribLocation(shaderProgram, 'normal');
 
@@ -339,11 +344,9 @@ function renderLoop(): void {
         gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, model.vertexStride, model.normalOffset);
     }
 
-    if (vertexShaderName === "vertexTextureFullTransformationShader"
-        || vertexShaderName === "vertexFullTransformationShader" ||
-        vertexShaderName === "vertexTextureNormalFullTransformationShader") {
-
-
+    if (model.vertexShaderName === "vertexTextureFullTransformationShader"
+        || model.vertexShaderName === "vertexFullTransformationShader" ||
+        model.vertexShaderName === "vertexTextureNormalFullTransformationShader") {
         camera.setViewPortWidth(width);
         camera.setViewPortHeight(height);
         camera.setFieldOfView(90);
@@ -370,8 +373,6 @@ function renderLoop(): void {
         gl.uniformMatrix4fv(viewMatrixLocation, false, camera.viewMatrix);
 
     }
-
-    console.log(` vertexShader name = ${vertexShaderName} fragmentShader name = ${fragmentShader} `);
 
 
     // get the model matrix.
