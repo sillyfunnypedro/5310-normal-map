@@ -22,17 +22,15 @@ interface ControlComponentProps {
     updateRenderObject: (newObject: string) => void;
     updateRenderMode: (newMode: string) => void;
     updateProjectionMode: (newMode: string) => void;
-    updateTranslate: (x: number, y: number, z: number) => void;
-    updateRotate: (x: number, y: number, z: number) => void;
+
     updateCameraDistance: (distance: number) => void;
-    updateScale: (x: number, y: number, z: number) => void;
     modelGL: ModelGl | null;
 }
 
 const scaleSteps = 50;
 // define the ControlComponent
 function ControlComponent({ renderObject, renderMode, projectionMode,
-    updateRenderObject, updateRenderMode, updateProjectionMode, updateTranslate, updateRotate, updateCameraDistance, updateScale, modelGL }: ControlComponentProps) {
+    updateRenderObject, updateRenderMode, updateProjectionMode, updateCameraDistance, modelGL }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(modelGL?.translateX ?? 0);
     const [translateY, setTranslateY] = useState(modelGL?.translateX ?? 0);

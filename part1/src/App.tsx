@@ -34,12 +34,6 @@ function App() {
 
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
 
-  const [translateX, setTranslateX] = useState(0);
-  const [translateY, setTranslateY] = useState(0);
-  const [translateZ, setTranslateZ] = useState(0);
-  const [scaleX, setScaleX] = useState(1);
-  const [scaleY, setScaleY] = useState(1);
-  const [scaleZ, setScaleZ] = useState(1);
   const [camera, setCamera] = useState(new Camera());
   const [cameraDistance, setCameraDistance] = useState(2);
   const [renderFrame, setRenderFrame] = useState(0);
@@ -71,34 +65,7 @@ function App() {
   }, [renderObject]);
 
 
-  function updateTranslate(x: number, y: number, z: number) {
-    if (!modelGL) {
-      return;
-    }
-    modelGL.translateX = x;
-    modelGL.translateY = y;
-    modelGL.translateZ = z;
-  }
-
-  function updateRotate(x: number, y: number, z: number) {
-    if (!modelGL) {
-      return;
-    }
-    modelGL.rotateX = x;
-    modelGL.rotateY = y;
-    modelGL.rotateZ = z;
-  }
-
-  function updateScale(x: number, y: number, z: number) {
-    if (!modelGL) {
-      return;
-    }
-    modelGL.scaleX = x;
-    modelGL.scaleY = y;
-    modelGL.scaleZ = z;
-    console.log(`updateScale (APP)_: ${x}, ${y}, ${z}`);
-  }
-
+  // this function is passed to the CameraControlComponent
   function updateCamera(newCamera: Camera) {
     if (!modelGL) {
       return;
@@ -156,9 +123,6 @@ renderFrame={renderFrame} /> */}
         updateRenderObject={updateRenderObject}
         updateRenderMode={updateRenderMode}
         updateProjectionMode={setProjectionMode}
-        updateTranslate={updateTranslate}
-        updateRotate={updateRotate}
-        updateScale={updateScale}
         updateCameraDistance={updateCameraDistance}
         modelGL={modelGL}
       />
