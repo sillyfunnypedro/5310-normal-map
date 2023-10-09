@@ -25,7 +25,7 @@ class Camera {
     viewPortWidth: number;
     viewPortHeight: number;
     roll: number;
-    private usePerspective: boolean = true;
+    usePerspective: boolean = true;
 
     constructor() {
         this.viewMatrix = mat4.create();

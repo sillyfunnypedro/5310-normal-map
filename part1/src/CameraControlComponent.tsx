@@ -29,6 +29,7 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
 
     const [cameraDistance, setCameraDistance] = useState(1);
+    const [projectionMode, setProjectionMode] = useState('perspective');
 
 
     function moveCameraForward(delta: number) {
@@ -51,11 +52,44 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
         updateCamera(camera);
     }
 
+    function updateProjectionMode(mode: string) {
+        if (mode === 'perspective') {
+            camera.setPerspectiveProjection();
+        } else {
+            camera.setOrthographicProjection();
+        }
+        updateCamera(camera);
+        setProjectionMode(mode);
+    }
+
+    function makePerspectiveControls() {
+        const isPerspective = camera.usePerspective
+        return (
+            <tr>
+                <td>
+                    Projection mode
+                </td>
+                <td>
+                    <button
+                        onClick={() => updateProjectionMode('perspective')}
+                        style={{
+                            backgroundColor: projectionMode === 'perspective' ? 'blue' : 'gray',
+                        }}>perspective</button>
+                </td>
+                <td>
+                    <button
+                        onClick={() => updateProjectionMode('orthographic')}
+                        style={{
+                            backgroundColor: projectionMode === 'orthographic' ? 'blue' : 'gray',
+                        }}>orthographic</button>
+                </td>
+
+            </tr>
+        );
+    }
 
 
-
-
-    function makeCameraSliders() {
+    function makeCameraControls() {
         const sliderWidth = 300;
         return (
             <table>
@@ -144,6 +178,11 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
                         </td>
                     </tr>
+
+
+
+                    {makePerspectiveControls()}
+
                     <tr>
                         <td>
                             Reset
@@ -166,10 +205,9 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                 <thead>
                     <tr>
                         <th className="leftAlign">
-                            <hr className="lineWidth" />
 
                             <hr className="lineWidth" />
-                            {makeCameraSliders()}
+                            {makeCameraControls()}
                             <hr className="lineWidth" />
 
                         </th>

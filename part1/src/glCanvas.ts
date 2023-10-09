@@ -325,12 +325,6 @@ function renderLoop(): void {
         camera.setViewPortHeight(height);
 
 
-        if (sceneData.projectionMode === "orthographic") {
-            camera.setOrthographicProjection();
-        } else {
-            camera.setPerspectiveProjection();
-        }
-
 
         // get the projection matrix location
         const projectionMatrixLocation = gl.getUniformLocation(shaderProgram, 'projectionMatrix');
@@ -371,7 +365,7 @@ function renderLoop(): void {
     gl.clearColor(color, .2, .6, 0.1);
     //gl.clear(gl.COLOR_BUFFER_BIT);
 
-    if (sceneData.projectionMode === "orthographic") {
+    if (!sceneData.camera!.usePerspective) {
         // calculate the square that fits in the canvas make that the viewport
         let squareSize = gl.canvas.width;
         if (gl.canvas.width > gl.canvas.height) {

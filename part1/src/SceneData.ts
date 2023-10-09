@@ -13,7 +13,6 @@ class SceneData {
 
 
     renderMode: string = "solid";
-    projectionMode: string = "perspective";
     translateX: number = 0;
     translateY: number = 0;
     translateZ: number = 0;

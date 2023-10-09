@@ -2,6 +2,7 @@ import { objectFileMap } from './ObjectFileMap';
 import React, { useState, useEffect } from 'react';
 import LocalServerStatus from './LocalServerStatus';
 import ModelGl from './ModelGL';
+import Camera from './Camera';
 
 import './ControlComponent.css';
 
@@ -14,14 +15,12 @@ interface ControlComponentProps {
     // the current object and mode
     renderObject: string;
     renderMode: string;
-    projectionMode: string;
 
 
 
     // the callback functions to update the object and mode
     updateRenderObject: (newObject: string) => void;
     updateRenderMode: (newMode: string) => void;
-    updateProjectionMode: (newMode: string) => void;
 
     updateCameraDistance: (distance: number) => void;
     modelGL: ModelGl | null;
@@ -29,8 +28,8 @@ interface ControlComponentProps {
 
 
 // define the ControlComponent
-function ControlComponent({ renderObject, renderMode, projectionMode,
-    updateRenderObject, updateRenderMode, updateProjectionMode, updateCameraDistance, modelGL }: ControlComponentProps) {
+function ControlComponent({ renderObject, renderMode,
+    updateRenderObject, updateRenderMode, updateCameraDistance, modelGL }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(modelGL?.translateX ?? 0);
     const [translateY, setTranslateY] = useState(modelGL?.translateX ?? 0);
@@ -169,6 +168,8 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
         setEyeDistance(parseFloat(value));
         updateCameraDistance(eyeDistance);
     }
+
+
 
     /**
      * 
@@ -421,9 +422,6 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                             <hr className="lineWidth" />
 
                             {makeModeButtons("Render mode:", ["solid", "wireframe"], renderMode, updateRenderMode)}
-                            <hr className="lineWidth" />
-
-                            {makeModeButtons("Projection mode:", ["perspective", "orthographic"], projectionMode, updateProjectionMode)}
                             <hr className="lineWidth" />
                         </th>
                         <th className="rightAlign">
