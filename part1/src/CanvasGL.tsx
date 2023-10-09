@@ -332,9 +332,9 @@ function CanvasGL({ width, height, model, renderMode, projectionMode,
 
                 //camera.setEyePosition(vec3.fromValues(0, 0, cameraDistance));
                 if (projectionMode === "orthographic") {
-                    camera.setOrthographicProjection();
+                    camera.setProjection(false);
                 } else {
-                    camera.setPerspectiveProjection();
+                    camera.setProjection(true);
                 }
 
 

@@ -171,40 +171,6 @@ function ControlComponent({ renderObject, renderMode,
 
 
 
-    /**
-     * 
-     * @param string[]
-     * 
-     * @returns HTML component with as many buttons as there are strings in the array
-     */
-    function makeModeButtons(title: string, strings: string[], value: string, callback: (arg: string) => void) {
-        return (
-            <div>
-                <table className="tableWidth">
-                    <thead>
-                        <tr>
-                            <th className="leftAlign">
-                                {title}
-                            </th>
-                            <th className="rightAlign">
-                                {strings.map((string) => (
-                                    <button
-                                        key={string}
-                                        onClick={() => callback(string)}
-                                        style={{
-                                            backgroundColor: value === string ? 'green' : 'gray',
-                                        }}
-                                    >
-                                        {string}
-                                    </button>
-                                ))}
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        );
-    }
 
     /**
      * make the sliders for the translation
@@ -419,9 +385,6 @@ function ControlComponent({ renderObject, renderMode,
                             <LocalServerStatus />
                             <hr className="lineWidth" />
                             {makeObjectButtons("Objects:", renderObject, updateRenderObject)}
-                            <hr className="lineWidth" />
-
-                            {makeModeButtons("Render mode:", ["solid", "wireframe"], renderMode, updateRenderMode)}
                             <hr className="lineWidth" />
                         </th>
                         <th className="rightAlign">

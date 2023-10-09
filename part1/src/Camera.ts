@@ -26,6 +26,7 @@ class Camera {
     viewPortHeight: number;
     roll: number;
     usePerspective: boolean = true;
+    renderSolid: boolean = false;
 
     constructor() {
         this.viewMatrix = mat4.create();
@@ -207,15 +208,17 @@ class Camera {
 
     }
 
-    public setOrthographicProjection(): void {
-        this.usePerspective = false;
+    public setProjection(perspective: boolean): void {
+        this.usePerspective = perspective;
         this.updateProjectionMatrix();
     }
 
-    public setPerspectiveProjection(): void {
-        this.usePerspective = true;
-        this.updateProjectionMatrix();
+
+
+    public setRenderSolid(renderSolid: boolean): void {
+        this.renderSolid = renderSolid;
     }
+
 
     public updateCamera(): void {
         this.updateViewMatrix();

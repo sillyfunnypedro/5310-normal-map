@@ -385,7 +385,7 @@ function renderLoop(): void {
     gl.enable(gl.DEPTH_TEST);
 
     // This is really slow but it is good for debugging.
-    if (sceneData.renderMode === "wireframe") {
+    if (!camera.renderSolid) {
         for (let i = 0; i < model.numTriangles!; i++) {
             const index = i * 3;
             gl.drawElements(gl.LINE_LOOP, 3, gl.UNSIGNED_SHORT, index * 2);

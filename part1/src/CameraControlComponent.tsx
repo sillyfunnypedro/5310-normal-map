@@ -23,13 +23,51 @@ interface ButtonWithHoldProps {
 }
 
 
+/**
+ * 
+ * @param string[]
+ * 
+ * @returns HTML component with as many buttons as there are strings in the array
+ * 
+ * 
+ */
+function makeModeButtons(title: string, strings: string[], value: string, callback: (arg: string) => void) {
+    return (
+        <div>
+            <table className="tableWidth">
+                <thead>
+                    <tr>
+                        <th className="leftAlign">
+                            {title}
+                        </th>
+                        <th className="rightAlign">
+                            {strings.map((string) => (
+                                <button
+                                    key={string}
+                                    onClick={() => callback(string)}
+                                    style={{
+                                        backgroundColor: value === string ? 'green' : 'gray',
+                                    }}
+                                >
+                                    {string}
+                                </button>
+                            ))}
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    );
+}
+
 
 
 function CameraControlComponent({ camera, updateCamera }: CameraControlComponentProps) {
 
 
     const [cameraDistance, setCameraDistance] = useState(1);
-    const [projectionMode, setProjectionMode] = useState('perspective');
+    const [projectionMode, setProjectionMode] = useState(camera.usePerspective ? 'perspective' : 'orthographic');
+    const [renderMode, setRenderMode] = useState(camera.renderSolid ? 'solid' : 'wireframe');
 
 
     function moveCameraForward(delta: number) {
@@ -54,13 +92,27 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
     function updateProjectionMode(mode: string) {
         if (mode === 'perspective') {
-            camera.setPerspectiveProjection();
+            camera.setProjection(true);
         } else {
-            camera.setOrthographicProjection();
+            camera.setProjection(false);
         }
+        setProjectionMode(mode); // to update the button color
         updateCamera(camera);
-        setProjectionMode(mode);
+
     }
+
+    function updateRenderMode(mode: string) {
+        if (mode === 'solid') {
+            camera.setRenderSolid(true);
+        } else {
+            camera.setRenderSolid(false);
+        }
+        setRenderMode(mode); // to update the button color
+        updateCamera(camera);
+
+    }
+
+
 
     function makePerspectiveControls() {
         const isPerspective = camera.usePerspective
@@ -82,6 +134,32 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                         style={{
                             backgroundColor: projectionMode === 'orthographic' ? 'blue' : 'gray',
                         }}>orthographic</button>
+                </td>
+
+            </tr>
+        );
+    }
+
+    function makeRenderModeControls() {
+        const isPerspective = camera.usePerspective
+        return (
+            <tr>
+                <td>
+                    Render mode
+                </td>
+                <td>
+                    <button
+                        onClick={() => updateRenderMode('solid')}
+                        style={{
+                            backgroundColor: renderMode === 'solid' ? 'blue' : 'gray',
+                        }}>solid</button>
+                </td>
+                <td>
+                    <button
+                        onClick={() => updateRenderMode('wireframe')}
+                        style={{
+                            backgroundColor: renderMode === 'wireframe' ? 'blue' : 'gray',
+                        }}>wireframe</button>
                 </td>
 
             </tr>
@@ -182,6 +260,7 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
 
                     {makePerspectiveControls()}
+                    {makeRenderModeControls()}
 
                     <tr>
                         <td>
