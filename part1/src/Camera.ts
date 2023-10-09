@@ -199,11 +199,12 @@ class Camera {
             let aspectRatio = this.viewPortWidth / this.viewPortHeight;
             mat4.perspective(this.projectionMatrix, this.fieldOfView / 180.0 * Math.PI, aspectRatio, this.nearPlane, this.farPlane);
         } else {
-            let left = -this.viewPortWidth / 2;
-            let right = this.viewPortWidth / 2;
-            let bottom = -this.viewPortHeight / 2;
-            let top = this.viewPortHeight / 2;
+            let left = -1;
+            let right = 1;
+            let bottom = -1;
+            let top = 1;
             mat4.ortho(this.projectionMatrix, left, right, bottom, top, this.nearPlane, this.farPlane);
+            console.log(this.projectionMatrix)
         }
 
     }
