@@ -45,6 +45,7 @@ function App() {
     setRenderMode('solid');
     setupCanvas();
     updateSceneData(modelGL, camera)
+
   }, []);
 
 
@@ -112,7 +113,7 @@ function App() {
         updateCameraDistance={updateCameraDistance}
         modelGL={modelGL}
       />
-      <CameraControlComponent updateCamera={updateCamera} />
+      <CameraControlComponent camera={camera!} updateCamera={updateCamera} />
 
     </header>
 

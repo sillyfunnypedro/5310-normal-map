@@ -43,6 +43,19 @@ class Camera {
         this.updateCamera();
     }
 
+    public resetCamera(): void {
+        this.eyePosition = vec3.fromValues(0, 0, 1)
+        this.lookAt = vec3.fromValues(0, 0, 0);
+        this.upVector = vec3.fromValues(0, 1, 0);
+        this.aspectRatio = 1;
+        this.fieldOfView = 45;
+        this.nearPlane = 0.1;
+        this.farPlane = 100;
+        this.viewPortWidth = 1;
+        this.viewPortHeight = 1;
+        this.roll = 0;
+        this.updateCamera();
+    }
 
 
 
@@ -73,6 +86,15 @@ class Camera {
         mat4.fromRotation(rotationMatrix, angle, vec3.fromValues(1, 0, 0));
         vec3.transformMat4(lookDirection, lookDirection, rotationMatrix);
         vec3.add(this.lookAt, this.eyePosition, lookDirection);
+        // update the up vector
+        let upVector = vec3.fromValues(0, 1, 0);
+        vec3.transformMat4(upVector, this.upVector, rotationMatrix);
+        this.upVector = upVector;
+        // check that the up vector is still perpendicular to the look direction
+        let dotProduct = vec3.dot(this.upVector, lookDirection);
+        if (Math.abs(dotProduct) > 0.001) {
+            console.log("Warning: up vector is not perpendicular to the look direction");
+        }
         this.updateCamera();
     }
 
@@ -80,24 +102,32 @@ class Camera {
         this.lookUp(-angle);
     }
 
+
     public lookLeft(angle: number): void {
+        console.log("look left" + angle);
         angle = angle / 180.0 * Math.PI;
         let lookDirection = vec3.create();
         vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
         let rotationMatrix = mat4.create();
-        mat4.fromRotation(rotationMatrix, angle, vec3.fromValues(0, 1, 0));
+        mat4.fromRotation(rotationMatrix, angle, this.upVector);
         vec3.transformMat4(lookDirection, lookDirection, rotationMatrix);
         vec3.add(this.lookAt, this.eyePosition, lookDirection);
         this.updateCamera();
     }
 
     public rollCamera(angle: number): void {
+        // calculate the new up vector
         angle = angle / 180.0 * Math.PI;
         let lookDirection = vec3.create();
+
         vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
         let rotationMatrix = mat4.create();
         mat4.fromRotation(rotationMatrix, angle, lookDirection);
         vec3.transformMat4(this.upVector, this.upVector, rotationMatrix);
+        let dotProduct = vec3.dot(this.upVector, lookDirection);
+        if (Math.abs(dotProduct) > 0.001) {
+            console.log("Warning: up vector is not perpendicular to the look direction");
+        }
         this.updateCamera();
     }
 
@@ -123,6 +153,16 @@ class Camera {
         this.updateCamera();
     }
 
+    public changeFieldOfView(angle: number): void {
+        if (this.fieldOfView + angle > 180) {
+            return;
+        }
+        if (this.fieldOfView + angle < 0) {
+            return;
+        }
+        this.fieldOfView += angle;
+        this.updateCamera();
+    }
     public setFieldOfView(fieldOfView: number): void {
         this.fieldOfView = fieldOfView;
         this.updateCamera();

@@ -205,6 +205,11 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
         );
     }
 
+    /**
+     * make the sliders for the translation
+     * 
+     * @returns three sliders for translation
+     */
     function makeTranslateSliders() {
         return (
             <div>
@@ -243,6 +248,7 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
     }
 
     /**
+     * make the sliders for the scale
      * 
      * @returns three sliders for scale plus a check box for uniform scaling
      */
@@ -290,7 +296,11 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
     }
 
 
-
+    /**
+     * creates the rotation sliders and calls handleSlideChangeRot when the user changes the slider
+     * The second parameter is the axis of rotation
+     * @returns three sliders for rotation
+     * */
     function makeRotationSliders() {
         return (
             <div>
@@ -324,27 +334,6 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
         );
     }
 
-    function makeCameraSliders() {
-        return (
-            <div>
-                <table className="tableWidth">
-                    <thead>
-                        <tr>
-                            <th className="leftAlign">Camera</th>
-                            <th className="rightAlign">
-                                <label htmlFor="distance">D:</label>
-                                <input name="distance" type="range" min="1" max="20" step="any"
-                                    value={eyeDistance} className="slider"
-                                    onChange={handleSlideChangeEyeDistance} id="distance"></input>
-                                <br />
-                            </th>
-                        </tr>
-
-                    </thead>
-                </table>
-            </div>
-        );
-    }
     /**
      * 
      * @param string[]
@@ -438,8 +427,6 @@ function ControlComponent({ renderObject, renderMode, projectionMode,
                             <hr className="lineWidth" />
                         </th>
                         <th className="rightAlign">
-                            <hr className="lineWidth" />
-                            {makeCameraSliders()}
                             <hr className="lineWidth" />
                             {makeTranslateSliders()}
                             <hr className="lineWidth" />

@@ -54,6 +54,7 @@ describe('Camera', () => {
 
     it('should update the projection matrix', () => {
         camera.updateProjectionMatrix();
+        let foundMatrix = camera.projectionMatrix;
         expect(camera.projectionMatrix).toEqual(mat4.perspective(mat4.create(), 45, 1, 0.1, 100));
     });
 
