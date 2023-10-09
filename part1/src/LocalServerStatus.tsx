@@ -1,8 +1,15 @@
 import { useState, useEffect } from 'react';
 import './ControlComponent.css'
+import './LocalServerStatus.css'
 
 
-
+function statusDiv(status: string) {
+    if (status === 'online') {
+        return (<td className="rightAlign"><div className="ok">{status}</div></td>)
+    } else {
+        return (<td className="rightAlign"><div className="warning">WARNING:{status}:WARNING</div></td>)
+    }
+}
 /**
  * A component that displays the status of the local server.
  * 
@@ -42,13 +49,13 @@ const LocalServerStatus = () => {
     }, []);
 
     // return the status
+    //<div className="warning">WARNING SERVER: {status}</div>;
     return (
         <table className="tableWidth">
             <tbody>
                 <tr>
                     <td className="leftAlign">Local server status</td>
-                    <td className="rightAlign">{status}
-                    </td>
+                    {statusDiv(status)}
                 </tr>
             </tbody>
         </table>

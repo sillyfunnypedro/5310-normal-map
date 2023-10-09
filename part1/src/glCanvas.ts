@@ -9,28 +9,10 @@ import PPMFileLoader from './PPMFileLoader';
 import fragmentShaderMap from './shaders/FragmentShader'
 import vertexShaderMap from './shaders/VertexShader'
 import { mat4 } from 'gl-matrix';
-
-
-class SceneData {
-    glContext: WebGLRenderingContext | null = null;
-    camera: Camera | null = null;
-    model: ModelGL | null = null;
-    width: number = 0;
-    height: number = 0;
+import SceneData from './SceneData';
 
 
 
-    renderMode: string = "solid";
-    projectionMode: string = "perspective";
-    translateX: number = 0;
-    translateY: number = 0;
-    translateZ: number = 0;
-    scaleX: number = 1;
-    scaleY: number = 1;
-    scaleZ: number = 1;
-    frameNumber: number = 0;
-
-}
 
 const sceneData = new SceneData();
 
@@ -170,6 +152,11 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
 
     // link all attached shaders
     gl.linkProgram(shaderProgram);
+
+    // clean up the shaders
+    gl.deleteShader(vertexShaderProgram);
+    gl.deleteShader(fragmentShaderObject);
+
 
     // check if the shader program linked successfully
     const shaderProgramLinked = gl.getProgramParameter(shaderProgram, gl.LINK_STATUS);
@@ -380,9 +367,9 @@ function renderLoop(): void {
 
 
     // Clear the canvas to a purple color
-    // let color = (sceneData.frameNumber++ % 255) / 255.0;
-    // gl.clearColor(color, .2, .6, 1);
-    // gl.clear(gl.COLOR_BUFFER_BIT);
+    let color = (sceneData.frameNumber++ % 255) / 255.0;
+    gl.clearColor(color, .2, .6, 0.1);
+    //gl.clear(gl.COLOR_BUFFER_BIT);
 
     if (sceneData.projectionMode === "orthographic") {
         // calculate the square that fits in the canvas make that the viewport
@@ -405,15 +392,11 @@ function renderLoop(): void {
 
     // This is really slow but it is good for debugging.
     if (sceneData.renderMode === "wireframe") {
-        // Draw the triangles as wireframe using gl.LINE_LOOP
         for (let i = 0; i < model.numTriangles!; i++) {
             const index = i * 3;
             gl.drawElements(gl.LINE_LOOP, 3, gl.UNSIGNED_SHORT, index * 2);
-
         }
-
     } else {
-
         gl.drawElements(gl.TRIANGLES, model.vertexiIndices.length, gl.UNSIGNED_SHORT, 0);
 
     }

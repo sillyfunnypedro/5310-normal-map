@@ -87,8 +87,17 @@ function App() {
   // these two functions are passed to the ControlComponent
   // and are called when the user changes the render mode or
   // the render object
-  function updateRenderMode(nemMode: string) {
-    setRenderMode(nemMode);
+  function updateRenderMode(newMode: string) {
+    if (newMode === renderMode) {
+      return;
+    }
+    if (newMode === 'solid') {
+      camera.setPerspectiveProjection();
+    }
+    else {
+      camera.setOrthographicProjection();
+    }
+    setRenderMode(newMode);
   }
 
   function updateRenderObject(newObject: string) {

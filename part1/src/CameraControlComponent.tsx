@@ -33,14 +33,12 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
     function moveCameraForward(delta: number) {
         camera.moveForward(delta);
-        console.log("moveCameraForward" + delta)
         updateCamera(camera);
     }
 
     function rollCamera(delta: number) {
         camera.rollCamera(delta);
         updateCamera(camera);
-        console.log("rollCamera")
     }
 
     function upDown(delta: number) {
@@ -66,14 +64,17 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                         <td>
                             Move Camera
                         </td>
+                        <td style={{ textAlign: 'right' }}>
+                            <button onClick={() => moveCameraForward(-.1)}>Backward </button>
+                        </td>
                         <td>
                             <HorizontalJoystickSlider onDelta={(delta: number) => moveCameraForward(delta)}
                                 scale={2}
                                 width={sliderWidth} />
                         </td>
                         <td>
-                            <button onClick={() => moveCameraForward(1)}>Move Forward</button>
-                            <button onClick={() => moveCameraForward(-1)}>Move Backward</button>
+                            <button onClick={() => moveCameraForward(.1)}>Forward</button>
+
                         </td>
                     </tr>
 
@@ -81,19 +82,24 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                         <td>
                             Roll Camera
                         </td>
+                        <td style={{ textAlign: 'right' }}>
+                            <button onClick={() => rollCamera(-1)}>Left</button>
+                        </td>
                         <td>
                             <HorizontalJoystickSlider onDelta={(delta: number) => rollCamera(delta)}
                                 scale={25}
                                 width={sliderWidth} />
                         </td>
                         <td>
-                            <button onClick={() => rollCamera(1)}>Roll Right</button>
-                            <button onClick={() => rollCamera(-1)}>Roll Left</button>
+                            <button onClick={() => rollCamera(1)}>Right</button>
                         </td>
                     </tr>
                     <tr>
                         <td>
-                            Look Up
+                            Look
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                            <button onClick={() => upDown(-1)}>Down</button>
                         </td>
                         <td>
                             <HorizontalJoystickSlider onDelta={(delta: number) => upDown(delta)}
@@ -101,13 +107,16 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                                 width={sliderWidth} />
                         </td>
                         <td>
-                            <button onClick={() => upDown(1)}>Look Up</button>
-                            <button onClick={() => upDown(-1)}>Look Down</button>
+                            <button onClick={() => upDown(1)}>Up</button>
+
                         </td>
                     </tr>
                     <tr>
-                        <td>
-                            Look Right
+                        <td >
+                            Look
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                            <button onClick={() => rightLeft(-1)}>Left</button>
                         </td>
                         <td>
                             <HorizontalJoystickSlider onDelta={(delta: number) => rightLeft(delta)}
@@ -115,13 +124,15 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                                 width={sliderWidth} />
                         </td>
                         <td>
-                            <button onClick={() => rightLeft(1)}>Look Right</button>
-                            <button onClick={() => rightLeft(-1)}>Look Left</button>
+                            <button onClick={() => rightLeft(1)}>Right</button>
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td >
                             Field of View
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                            <button onClick={() => camera.changeFieldOfView(-1)}>Decrease</button>
                         </td>
                         <td>
                             <HorizontalJoystickSlider onDelta={(delta: number) => camera.changeFieldOfView(delta)}
@@ -130,7 +141,7 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                         </td>
                         <td>
                             <button onClick={() => camera.changeFieldOfView(1)}>Increase</button>
-                            <button onClick={() => camera.changeFieldOfView(-1)}>Decrease</button>
+
                         </td>
                     </tr>
                     <tr>
@@ -138,7 +149,7 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                             Reset
                         </td>
 
-                        <td>
+                        <td style={{ textAlign: 'right' }}>
                             <button onClick={() => camera.resetCamera()}>Reset</button>
                         </td>
                     </tr>

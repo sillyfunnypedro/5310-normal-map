@@ -30,7 +30,7 @@ class Camera {
     constructor() {
         this.viewMatrix = mat4.create();
         this.projectionMatrix = mat4.create();
-        this.eyePosition = vec3.fromValues(0, 0, 1)
+        this.eyePosition = vec3.fromValues(0, 0, 8)
         this.lookAt = vec3.fromValues(0, 0, 0);
         this.upVector = vec3.fromValues(0, 1, 0);
         this.aspectRatio = 1;
@@ -44,7 +44,7 @@ class Camera {
     }
 
     public resetCamera(): void {
-        this.eyePosition = vec3.fromValues(0, 0, 1)
+        this.eyePosition = vec3.fromValues(0, 0, 8)
         this.lookAt = vec3.fromValues(0, 0, 0);
         this.upVector = vec3.fromValues(0, 1, 0);
         this.aspectRatio = 1;
