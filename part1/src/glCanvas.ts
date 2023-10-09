@@ -198,26 +198,12 @@ function renderLoop(): void {
         return;
     }
 
+    if (sceneData === null) {
+        return;
+    }
+
     const width = sceneData.width;
     const height = sceneData.height;
-
-
-    // ******************************************************
-    // decide whether or not to use the texture shader
-    // ******************************************************
-    let useTextureShader = true;
-
-    if (model.material === undefined) {
-        useTextureShader = false;
-    }
-
-    if (model.material!.map_Kd === "") {
-        useTextureShader = false;
-    }
-
-    if (model.vertexStride < 5) {
-        useTextureShader = false;
-    }
 
     // ******************************************************
     // Compile the shader program if it has not been compiled yet
@@ -268,7 +254,7 @@ function renderLoop(): void {
      * if we are using a texture then set up the vertex information 
      * */
 
-    if (useTextureShader) {
+    if (sceneData!.model!.useTexture) {
         // get the texture coordinate attribute location
         const texCoordLocation = gl.getAttribLocation(shaderProgram, 'textureCoord');
         // check to see if we got the attribute location

@@ -36,7 +36,6 @@ function App() {
 
   const [camera, setCamera] = useState(new Camera());
   const [cameraDistance, setCameraDistance] = useState(2);
-  const [renderFrame, setRenderFrame] = useState(0);
 
 
 
@@ -71,7 +70,7 @@ function App() {
       return;
     }
     setCamera(newCamera);
-    setRenderFrame(renderFrame + 1);
+
     updateSceneData(modelGL, newCamera);
   }
 
@@ -101,19 +100,6 @@ function App() {
 
   return (<div className="App">
     <header className="App-header">
-
-      {/*<CanvasGL key={renderObject}
-        width={800} height={500}
-        model={modelGL} renderMode={renderMode}
-        projectionMode={projectionMode}
-        rotateX={rotateX} rotateY={rotateY}
-        rotateZ={rotateZ}
-        translateX={translateX} translateY={translateY} translateZ={translateZ}
-        scaleX={scaleX} scaleY={scaleY} scaleZ={scaleZ}
-        cameraDistance={cameraDistance}
-        camera={camera}
-renderFrame={renderFrame} /> */}
-
       <canvas id="glCanvas" width="800" height="500"></canvas>
 
       <ControlComponent

@@ -134,6 +134,8 @@ class ModelGL {
 
 
 
+
+
     textures: Map<string, string> = new Map<string, string>();
 
     private _packedIndices: number[] = []
@@ -147,6 +149,7 @@ class ModelGL {
     private _renderingProgram: WebGLProgram | null = null;
 
     private _vertexAccumulator: VertexAccumulator = new VertexAccumulator();
+    private _useTexture: boolean = false;
 
 
     constructor() {
@@ -177,6 +180,16 @@ class ModelGL {
      */
     set renderingProgram(program: WebGLProgram | null) {
         this._renderingProgram = program;
+    }
+
+    /** 
+     * Get useTexture
+     * @returns boolean
+     * @memberof ModelGL
+     * @method getUseTexture
+     */
+    get useTexture(): boolean {
+        return this._useTexture;
     }
 
 
@@ -285,8 +298,10 @@ class ModelGL {
     private calculateVertexShaderName() {
         if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
             this.vertexShaderName = "vertexTextureNormalFullTransformationShader";
+            this._useTexture = true;
         } else if (this._textureCoordinates.length > 0) {
             this.vertexShaderName = "vertexTextureFullTransformationShader";
+            this._useTexture = true;
         } else {
             this.vertexShaderName = "vertexFullTransformationShader";
         }
@@ -300,8 +315,10 @@ class ModelGL {
     private calculateFragmentShaderName() {
         if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
             this.fragmentShaderName = "fragmentTextureNormalShader";
+            this._useTexture = true;
         } else if (this._textureCoordinates.length > 0) {
             this.fragmentShaderName = "fragmentTextureShader";
+            this._useTexture = true;
         } else {
             this.fragmentShaderName = "fragmentShader";
         }
