@@ -336,7 +336,6 @@ function renderLoop(): void {
         model.vertexShaderName === "vertexTextureNormalFullTransformationShader") {
         camera.setViewPortWidth(width);
         camera.setViewPortHeight(height);
-        console.log(`field of view ${camera.fieldOfView}`);
 
 
         if (sceneData.projectionMode === "orthographic") {

@@ -134,13 +134,15 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                         </td>
                     </tr>
                     <tr>
-                        Reset
-                    </tr>
-                    <tr>
+                        <td>
+                            Reset
+                        </td>
+
                         <td>
                             <button onClick={() => camera.resetCamera()}>Reset</button>
                         </td>
                     </tr>
+
                 </tbody>
             </table>
         );
