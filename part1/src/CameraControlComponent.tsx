@@ -1,11 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Camera from './Camera';
-import { VerticalJoystickSlider, HorizontalJoystickSlider, JoystickSlider } from './Joystick';
+import { HorizontalJoystickSlider } from './Joystick';
 
 
 import './ControlComponent.css';
 
-/** two buttons for the first part of the assignment */
+
 
 
 // define the ControlComponentProps interface
@@ -15,57 +15,11 @@ interface CameraControlComponentProps {
 
 }
 
-interface ButtonWithHoldProps {
-    title: string;
-    onTick: (delta: number) => void;
-    delta: number
-    holdInterval?: number;
-}
-
-
-/**
- * 
- * @param string[]
- * 
- * @returns HTML component with as many buttons as there are strings in the array
- * 
- * 
- */
-function makeModeButtons(title: string, strings: string[], value: string, callback: (arg: string) => void) {
-    return (
-        <div>
-            <table className="tableWidth">
-                <thead>
-                    <tr>
-                        <th className="leftAlign">
-                            {title}
-                        </th>
-                        <th className="rightAlign">
-                            {strings.map((string) => (
-                                <button
-                                    key={string}
-                                    onClick={() => callback(string)}
-                                    style={{
-                                        backgroundColor: value === string ? 'green' : 'gray',
-                                    }}
-                                >
-                                    {string}
-                                </button>
-                            ))}
-                        </th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-    );
-}
-
 
 
 function CameraControlComponent({ camera, updateCamera }: CameraControlComponentProps) {
 
 
-    const [cameraDistance, setCameraDistance] = useState(1);
     const [projectionMode, setProjectionMode] = useState(camera.usePerspective ? 'perspective' : 'orthographic');
     const [renderMode, setRenderMode] = useState(camera.renderSolid ? 'solid' : 'wireframe');
 
@@ -115,13 +69,12 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
 
     function makePerspectiveControls() {
-        const isPerspective = camera.usePerspective
         return (
             <tr>
                 <td>
                     Projection mode
                 </td>
-                <td>
+                <td style={{ textAlign: 'right' }}>
                     <button
                         onClick={() => updateProjectionMode('perspective')}
                         style={{
@@ -141,13 +94,12 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
     }
 
     function makeRenderModeControls() {
-        const isPerspective = camera.usePerspective
         return (
             <tr>
                 <td>
                     Render mode
                 </td>
-                <td>
+                <td style={{ textAlign: 'right' }}>
                     <button
                         onClick={() => updateRenderMode('solid')}
                         style={{

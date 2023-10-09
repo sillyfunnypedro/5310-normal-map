@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 import './App.css';
-import CanvasGL from './CanvasGL';
 import ControlComponent from './ControlComponent';
 import CameraControlComponent from './CameraControlComponent';
 import Camera from './Camera';
 import ObjFileLoader from './ObjFileLoader';
-import MaterialFileLoader from './MaterialFileLoader';
-import ModelGL from './ModelGL';
-import { render } from '@testing-library/react';
-import PPMFileLoader from './PPMFileLoader';
+import ModelGL from './ModelGL'
 import { updateSceneData, setupCanvas } from './glCanvas';
 
 const objLoader = ObjFileLoader.getInstance();
@@ -27,25 +23,19 @@ function App() {
   // the renderObject is the name of the object to render
   const [renderObject, setRenderObject] = useState('tri-plain');
 
-  // the renderMode is the name of the mode to render
-  // it can be 'solid' or 'wireframe'
-  const [renderMode, setRenderMode] = useState('solid');
-
-
   const [modelGL, setModelGL] = useState<ModelGL | null>(null);
 
   const [camera, setCamera] = useState(new Camera());
-  const [cameraDistance, setCameraDistance] = useState(2);
+
 
 
 
 
   useEffect(() => {
     setRenderObject('tri-plain');
-    setRenderMode('solid');
     setupCanvas();
-    updateSceneData(modelGL, camera)
-
+    updateSceneData(modelGL, camera);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -57,11 +47,11 @@ function App() {
         console.log('no model');
         return;
       }
-
       setModelGL(model);
       updateSceneData(model, camera);
 
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [renderObject]);
 
 
@@ -90,7 +80,6 @@ function App() {
 
       <ControlComponent
         renderObject={renderObject}
-        renderMode={renderMode}
         updateRenderObject={updateRenderObject}
         modelGL={modelGL}
       />

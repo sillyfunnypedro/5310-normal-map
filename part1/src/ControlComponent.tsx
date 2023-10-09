@@ -2,7 +2,7 @@ import { objectFileMap } from './ObjectFileMap';
 import React, { useState, useEffect } from 'react';
 import LocalServerStatus from './LocalServerStatus';
 import ModelGl from './ModelGL';
-import Camera from './Camera';
+
 
 import './ControlComponent.css';
 
@@ -14,11 +14,6 @@ interface ControlComponentProps {
 
     // the current object and mode
     renderObject: string;
-    renderMode: string;
-
-
-
-    // the callback functions to update the object and mode
     updateRenderObject: (newObject: string) => void;
 
     modelGL: ModelGl | null;
@@ -26,7 +21,7 @@ interface ControlComponentProps {
 
 
 // define the ControlComponent
-function ControlComponent({ renderObject, renderMode,
+function ControlComponent({ renderObject,
     updateRenderObject, modelGL }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(modelGL?.translateX ?? 0);
@@ -39,7 +34,6 @@ function ControlComponent({ renderObject, renderMode,
     const [scaleY, setScaleY] = useState(modelGL?.scaleY ?? 1);
     const [scaleZ, setScaleZ] = useState(modelGL?.scaleZ ?? 1);
     const [uniformScale, setUniformScale] = useState(true);
-    const [eyeDistance, setEyeDistance] = useState(2);
 
 
     function updateState() {
@@ -56,6 +50,7 @@ function ControlComponent({ renderObject, renderMode,
 
     useEffect(() => {
         updateState();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [modelGL]);
 
 
@@ -79,11 +74,12 @@ function ControlComponent({ renderObject, renderMode,
         updateState();
     }
 
-
-
-
-
-
+    /**
+     *  handle the slider change for the translation
+     * @param event 
+     * @param axis 
+     * @returns 
+     */
     function handleSliderChangeTranslate(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
         // convert the string value to a number
         const value = event.target.value;
@@ -105,7 +101,12 @@ function ControlComponent({ renderObject, renderMode,
         updateState();
     }
 
-
+    /**
+     *  handle the slider change for the scale
+     * @param event 
+     * @param axis 
+     * @returns 
+     */
     function handleSlideChangeScale(event: React.ChangeEvent<HTMLInputElement>, axis: string) {
         // convert the string value to a number
         const value = event.target.value;
@@ -137,7 +138,9 @@ function ControlComponent({ renderObject, renderMode,
     }
 
 
-
+    /**
+     * reset all the sliders to their initial values
+     */
     function resetAllSliders() {
         if (!modelGL) {
             return;
@@ -160,14 +163,6 @@ function ControlComponent({ renderObject, renderMode,
 
 
     }
-
-    function handleSlideChangeEyeDistance(event: React.ChangeEvent<HTMLInputElement>) {
-        const value = event.target.value;
-        setEyeDistance(parseFloat(value));
-        updateCameraDistance(eyeDistance);
-    }
-
-
 
 
     /**

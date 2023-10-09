@@ -1,22 +1,20 @@
-//*--------------------------------------------------------
-//*     Title: WebGL Tutorial 01 - Setup and Triangle
-//*     Web Address: https://www.youtube.com/watch?v=kB0ZVUrI4Aw
-//*     Last Accessed: 02/01/2020
-//*--------------------------------------------------------
+/**
+ * This file contains the code that sets up the canvas and WebGL context
+ */
 import Camera from './Camera';
 import ModelGL from './ModelGL';
 import PPMFileLoader from './PPMFileLoader';
 import fragmentShaderMap from './shaders/FragmentShader'
 import vertexShaderMap from './shaders/VertexShader'
-import { mat4 } from 'gl-matrix';
+
 import SceneData from './SceneData';
 
 
-// mesure the FPS
+// measure the FPS
 let fps = 0;
 let lastTime = 0;
 let frameNumber = 0;
-let lastFPSUpdate = 0;
+
 
 const sceneData = new SceneData();
 
