@@ -20,16 +20,14 @@ interface ControlComponentProps {
 
     // the callback functions to update the object and mode
     updateRenderObject: (newObject: string) => void;
-    updateRenderMode: (newMode: string) => void;
 
-    updateCameraDistance: (distance: number) => void;
     modelGL: ModelGl | null;
 }
 
 
 // define the ControlComponent
 function ControlComponent({ renderObject, renderMode,
-    updateRenderObject, updateRenderMode, updateCameraDistance, modelGL }: ControlComponentProps) {
+    updateRenderObject, modelGL }: ControlComponentProps) {
 
     const [translateX, setTranslateX] = useState(modelGL?.translateX ?? 0);
     const [translateY, setTranslateY] = useState(modelGL?.translateX ?? 0);

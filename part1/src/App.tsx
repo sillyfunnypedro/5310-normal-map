@@ -75,21 +75,6 @@ function App() {
     updateSceneData(modelGL, newCamera);
   }
 
-  function updateCameraDistance(distance: number) {
-    if (!modelGL) {
-      return;
-    }
-    setCameraDistance(distance);
-  }
-
-
-
-  // these two functions are passed to the ControlComponent
-  // and are called when the user changes the render mode or
-  // the render object
-  function updateRenderMode(newMode: string) {
-
-  }
 
   function updateRenderObject(newObject: string) {
     if (newObject === renderObject) {
@@ -107,8 +92,6 @@ function App() {
         renderObject={renderObject}
         renderMode={renderMode}
         updateRenderObject={updateRenderObject}
-        updateRenderMode={updateRenderMode}
-        updateCameraDistance={updateCameraDistance}
         modelGL={modelGL}
       />
       <CameraControlComponent camera={camera!} updateCamera={updateCamera} />

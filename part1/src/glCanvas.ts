@@ -12,13 +12,26 @@ import { mat4 } from 'gl-matrix';
 import SceneData from './SceneData';
 
 
-
+// mesure the FPS
+let fps = 0;
+let lastTime = 0;
+let frameNumber = 0;
+let lastFPSUpdate = 0;
 
 const sceneData = new SceneData();
 
 // Set up the canvas and WebGL context so that our rendering loop can draw on it
 // We store the gl context in the sceneData object so that we can access it later
 export const setupCanvas = function () {
+    if (!sceneData) {
+        return;
+    }
+
+    // React is calling this twice, we only want one glContext.
+    if (sceneData.glContext !== null) {
+        return;
+    }
+
     var canvas = document.getElementById('glCanvas') as HTMLCanvasElement;
     if (!canvas) {
         alert('Canvas not found');
@@ -361,9 +374,13 @@ function renderLoop(): void {
 
 
     // Clear the canvas to a purple color
+    // currently in this code if you leave the clear in there
+    // no image is seen.
     let color = (sceneData.frameNumber++ % 255) / 255.0;
     gl.clearColor(color, .2, .6, 0.1);
     //gl.clear(gl.COLOR_BUFFER_BIT);
+
+
 
     if (!sceneData.camera!.usePerspective) {
         // calculate the square that fits in the canvas make that the viewport
@@ -400,7 +417,18 @@ function renderLoop(): void {
     gl.finish();
 
 
+    // ******************************************************
+    // Calculate the FPS
+    // ******************************************************
+    frameNumber++;
+    const now = performance.now();
 
+    if (now - lastTime > 1000) {
+        fps = frameNumber;
+        console.log("FPS: " + fps);
+        frameNumber = 0;
+        lastTime = now;
+    }
 
     requestAnimationFrame(renderLoop);
 }
