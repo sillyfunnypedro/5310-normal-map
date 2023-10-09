@@ -115,9 +115,7 @@ function App() {
       <CameraControlComponent updateCamera={updateCamera} />
 
     </header>
-    <body>
 
-    </body>
 
   </div>
   );

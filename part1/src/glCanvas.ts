@@ -184,6 +184,8 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
 
 function renderLoop(): void {
     let gl = sceneData.glContext;
+
+    let texture: WebGLTexture | null = null;
     if (!gl) {
         return;
     }
@@ -269,12 +271,11 @@ function renderLoop(): void {
         gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, model.vertexStride, model.textureOffset);
 
         // create a texture
-        const texture = gl.createTexture();
+        texture = gl.createTexture();
         if (!texture) {
-            throw new Error('Failed to create texture');
+            console.log('Failed to create the texture object');
+            return;
         }
-
-
 
         // create a texture unit
         const textureUnit = gl.TEXTURE0;
@@ -418,7 +419,7 @@ function renderLoop(): void {
 
     }
 
-
+    gl.deleteTexture(texture);
     gl.flush();
     gl.finish();
 
