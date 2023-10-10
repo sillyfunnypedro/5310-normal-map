@@ -233,7 +233,7 @@ function renderLoop(): void {
     // create an index buffer
     const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, model.vertexiIndices, gl.STATIC_DRAW);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, model.vertexIndices, gl.STATIC_DRAW);
 
     // ******************************************************
     // Now we need to figure out where the input data is going to go
@@ -406,7 +406,7 @@ function renderLoop(): void {
             gl.drawElements(gl.LINE_LOOP, 3, gl.UNSIGNED_SHORT, index * 2);
         }
     } else {
-        gl.drawElements(gl.TRIANGLES, model.vertexiIndices.length, gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLES, model.vertexIndices.length, gl.UNSIGNED_SHORT, 0);
 
     }
 

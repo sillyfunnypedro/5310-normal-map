@@ -1,5 +1,5 @@
 import ModelGL from './ModelGL';
-import ModelBuilder from './ModelBuilder';
+import ModelParser from './ModelParser';
 import { objectFileMap } from './ObjectFileMap';
 import Material from './Material';
 import PPMFileLoader from './PPMFileLoader';
@@ -80,12 +80,10 @@ class ObjFileLoader {
             const testModelLoader = true;
 
             let model = new ModelGL();
-            if (testModelLoader) {
-                let modelLoader = new ModelBuilder();
-                modelLoader.parseModel(data, objectFilePath, model);
-            } else {
-                model.parseModel(data, objectFilePath);
-            }
+
+            let modelLoader = new ModelParser();
+            modelLoader.parseModel(data, objectFilePath, model);
+
             this.modelCache.set(objectFilePath, model);
 
             // now load the material file into the model

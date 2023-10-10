@@ -90,6 +90,65 @@ describe('Camera', () => {
         expect(camera.farPlane).toEqual(100);
     });
 
+    it('should update the upVector when i look up by 90 degrees', () => {
+        const eyePosition = vec3.fromValues(0, 0, 5);
+        const lookAt = vec3.fromValues(0, 0, 0);
+        const upVector = vec3.fromValues(0, 1, 0);
+        camera.setEyePosition(eyePosition);
+        camera.setLookAt(lookAt);
+        camera.setUpVector(upVector);
+        camera.updateCamera();
+        camera.lookUp(90);
+        const foundUpVector = camera.upVector;
+        const truncatedUpVector = vec3.fromValues(Math.round(foundUpVector[0]), Math.round(foundUpVector[1]), Math.round(foundUpVector[2]));
+        expect(truncatedUpVector).toEqual(vec3.fromValues(0, 0, 1));
+    });
+
+    it('should update the upVector when i look up by 45 degrees', () => {
+        const eyePosition = vec3.fromValues(0, 0, 5);
+        const lookAt = vec3.fromValues(0, 0, 0);
+        const upVector = vec3.fromValues(0, 1, 0);
+        camera.setEyePosition(eyePosition);
+        camera.setLookAt(lookAt);
+        camera.setUpVector(upVector);
+        camera.updateCamera();
+        camera.lookUp(45);
+        const foundUpVector = camera.upVector;
+        const expectedUpVector = vec3.fromValues(0, 0.7071067811865475, 0.7071067811865475);
+        expect(foundUpVector).toEqual(vec3.fromValues(0, 1, 1));
+
+    });
+
+    it('should update the upVector when i rotate the camera by 90 degrees', () => {
+        const eyePosition = vec3.fromValues(0, 0, 5);
+        const lookAt = vec3.fromValues(0, 0, 0);
+        const upVector = vec3.fromValues(0, 1, 0);
+        camera.setEyePosition(eyePosition);
+        camera.setLookAt(lookAt);
+        camera.setUpVector(upVector);
+        camera.updateCamera();
+        camera.rollCamera(90);
+        const foundUpVector = camera.upVector;
+        const truncatedUpVector = vec3.fromValues(Math.round(foundUpVector[0]), Math.round(foundUpVector[1]), Math.round(foundUpVector[2]));
+        const expectedUpVector = vec3.fromValues(1, 0, 0);
+        expect(truncatedUpVector).toEqual(expectedUpVector);
+    });
+
+    it('should update the upVector when i rotate the camera by 45 degrees', () => {
+        const eyePosition = vec3.fromValues(0, 0, 5);
+        const lookAt = vec3.fromValues(0, 0, 0);
+        const upVector = vec3.fromValues(0, 1, 0);
+        camera.setEyePosition(eyePosition);
+        camera.setLookAt(lookAt);
+        camera.setUpVector(upVector);
+        camera.updateCamera();
+        camera.rollCamera(45);
+        const foundUpVector = camera.upVector;
+        const expectedUpVector = vec3.fromValues(0.7071067811865475, 0.7071067811865475, 0);
+        expect(foundUpVector).toEqual(expectedUpVector);
+    });
+
+
 
 });
 

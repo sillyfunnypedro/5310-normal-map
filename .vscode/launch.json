@@ -38,6 +38,20 @@
             "cwd": "${workspaceFolder}/part1",
         },
         {
+            "name": "Test Model Parser",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm test Parser",
+            "cwd": "${workspaceFolder}/part1",
+        },
+        {
+            "name": "Test Camera",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm test Camera",
+            "cwd": "${workspaceFolder}/part1",
+        },
+        {
             "name": "Test PPM",
             "type": "node-terminal",
             "request": "launch",

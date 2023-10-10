@@ -110,7 +110,7 @@ class VertexAccumulator {
  * @property {Float32Array} packedVertexBuffer - the packed vertices of the model
  * @property {Uint16Array} vertexIndices - the indices of the model one per vertex found in the face data
  */
-class ModelBuilder {
+class ModelParser {
     packedVertexBuffer: Float32Array;
     vertexiIndices: Uint16Array;
     numVertices: number;
@@ -234,20 +234,23 @@ class ModelBuilder {
         // now that we have parsed the file, we need to 
         // build the vertex buffer and index buffer
 
+
+
         modelGL.packedVertexBuffer = new Float32Array(this._packedBuffer);
-        modelGL.vertexiIndices = new Uint16Array(this._packedIndices);
+        modelGL.vertexIndices = new Uint16Array(this._packedIndices);
         modelGL.numVertices = this._packedIndices.length;
         modelGL.numTriangles = this._packedIndices.length / 3;
         modelGL.vertexStride = this.vertexStride;
         modelGL.textureOffset = this.textureOffset;
         modelGL.normalOffset = this.normalOffset;
         modelGL.vertexOffset = this.vertexOffset;
-
         this.calculateVertexShaderName();
         this.calculateFragmentShaderName();
-
+        modelGL.useTexture = this._useTexture;
         modelGL.vertexShaderName = this.vertexShaderName;
         modelGL.fragmentShaderName = this.fragmentShaderName;
+        modelGL.modelPath = modelPath;
+        modelGL.materialFile = this.materialFile;
     }
 
     /**
@@ -387,4 +390,4 @@ class ModelBuilder {
     }
 }
 
-export default ModelBuilder;
+export default ModelParser;

@@ -84,13 +84,23 @@ class Camera {
         let lookDirection = vec3.create();
         vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
         let rotationMatrix = mat4.create();
-        mat4.fromRotation(rotationMatrix, angle, vec3.fromValues(1, 0, 0));
+        // calculate the right vector as the cross product of the look direction and the up vector
+
+        let rightVector = vec3.create();
+        vec3.cross(rightVector, lookDirection, this.upVector);
+        vec3.normalize(rightVector, rightVector);
+        // rotate the look direction around the right vector
+        mat4.fromRotation(rotationMatrix, angle, rightVector);
+
+        // this preserves the length of lookDirection
         vec3.transformMat4(lookDirection, lookDirection, rotationMatrix);
+
+        // update the lookAt position
         vec3.add(this.lookAt, this.eyePosition, lookDirection);
         // update the up vector
-        let upVector = vec3.fromValues(0, 1, 0);
-        vec3.transformMat4(upVector, this.upVector, rotationMatrix);
-        this.upVector = upVector;
+
+        vec3.transformMat4(this.upVector, this.upVector, rotationMatrix);
+
         // check that the up vector is still perpendicular to the look direction
         let dotProduct = vec3.dot(this.upVector, lookDirection);
         if (Math.abs(dotProduct) > 0.001) {
