@@ -1,4 +1,5 @@
 import ModelGL from './ModelGL';
+import ModelBuilder from './ModelBuilder';
 import { objectFileMap } from './ObjectFileMap';
 import Material from './Material';
 import PPMFileLoader from './PPMFileLoader';
@@ -76,9 +77,15 @@ class ObjFileLoader {
 
             const data = await response.text();
 
+            const testModelLoader = true;
 
             let model = new ModelGL();
-            model.parseModel(data, objectFilePath);
+            if (testModelLoader) {
+                let modelLoader = new ModelBuilder();
+                modelLoader.parseModel(data, objectFilePath, model);
+            } else {
+                model.parseModel(data, objectFilePath);
+            }
             this.modelCache.set(objectFilePath, model);
 
             // now load the material file into the model
@@ -100,7 +107,7 @@ class ObjFileLoader {
 
     /**
      * Load the material file from the model
-     * the function does not return anything. it simply copies the material into the Model
+     * the function returns a promise to the model it is the same object
      * @param {string} path
      * Call back function to indicate model is ready
      * @param {Function} callback

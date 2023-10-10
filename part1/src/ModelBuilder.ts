@@ -1,5 +1,6 @@
 import Material from "./Material";
 import { mat4 } from "gl-matrix";
+import ModelGL from "./ModelGL";
 
 /**
  *  @class VertexAccumulator
@@ -109,7 +110,7 @@ class VertexAccumulator {
  * @property {Float32Array} packedVertexBuffer - the packed vertices of the model
  * @property {Uint16Array} vertexIndices - the indices of the model one per vertex found in the face data
  */
-class ModelGL {
+class ModelBuilder {
     packedVertexBuffer: Float32Array;
     vertexiIndices: Uint16Array;
     numVertices: number;
@@ -144,17 +145,8 @@ class ModelGL {
     private _textureCoordinates: number[] = [];
     private _normals: number[] = [];
 
-    private _vertexShader: string = "";
-    private _fragmentShader: string = "";
-    private _renderingProgram: WebGLProgram | null = null;
-
     private _vertexAccumulator: VertexAccumulator = new VertexAccumulator();
     private _useTexture: boolean = false;
-
-    private _vertexStride: number = 0;
-    private _vertexOffset: number = 0;
-    private _textureOffset: number = 0;
-    private _normalOffset: number = 0;
 
 
     constructor() {
@@ -168,83 +160,40 @@ class ModelGL {
 
     }
 
-    /**
-     * Get the rendering program for this model
-     * @returns WebGLProgram
-     * @memberof ModelGL
-     * @method getRenderingProgram
-     */
-    get renderingProgram(): WebGLProgram | null {
-        return this._renderingProgram;
-    }
-
-    /**
-     * Set the rendering program for this model
-     * @memberof ModelGL
-     * @method setRenderingProgram
-     */
-    set renderingProgram(program: WebGLProgram | null) {
-        this._renderingProgram = program;
-    }
-
-    /** 
-     * Get useTexture
-     * @returns boolean
-     * @memberof ModelGL
-     * @method getUseTexture
-     */
-    get useTexture(): boolean {
-        return this._useTexture;
-    }
-
-
-    // each model has its own transforms now, we will provide a computed
-    // model matrix to the renderer
-    getModelMatrix(): mat4 {
-        let modelMatrix: mat4 = mat4.create();
-        mat4.translate(modelMatrix, modelMatrix, [this.translateX, this.translateY, this.translateZ]);
-        mat4.rotateX(modelMatrix, modelMatrix, this.rotateX / 180 * Math.PI);
-        mat4.rotateY(modelMatrix, modelMatrix, this.rotateY / 180 * Math.PI);
-        mat4.rotateZ(modelMatrix, modelMatrix, this.rotateZ / 180 * Math.PI);
-        mat4.scale(modelMatrix, modelMatrix, [this.scaleX, this.scaleY, this.scaleZ]);
-        return modelMatrix;
-    }
-
-
-
 
     /**
      * The data that the CanvasGL renderer will use to set up the draw call(s) for the model
      */
 
-    public set vertexStride(stride: number) {
-        this._vertexStride = stride;
-    }
     public get vertexStride(): number {
-        return this._vertexStride;
+        // three floats for the position
+        let stride = 3;
+        // two floats for the texture coordinates
+        if (this._textureCoordinates.length > 0) {
+            stride += 2;
+        }
+        // three floats for the normal
+        if (this._normals.length > 0) {
+            stride += 3;
+        }
+
+        return stride * Float32Array.BYTES_PER_ELEMENT;
     }
 
-    public set textureOffset(offset: number) {
-        this._textureOffset = offset;
+    public get vertexOffset(): number {
+        return 0;
     }
 
     public get textureOffset(): number {
-        return this._textureOffset;
-    }
-
-    public set vertexOffset(offset: number) {
-        this._vertexOffset = offset;
-    }
-    public get vertexOffset(): number {
-        return this._vertexOffset;
-    }
-
-    public set normalOffset(offset: number) {
-        this._normalOffset = offset;
+        return 3 * Float32Array.BYTES_PER_ELEMENT;
     }
 
     public get normalOffset(): number {
-        return this._normalOffset;
+        let offset = 3 * Float32Array.BYTES_PER_ELEMENT;
+        if (this._textureCoordinates.length > 0) {
+            offset = 5 * Float32Array.BYTES_PER_ELEMENT;
+        }
+        return offset;
     }
 
 
@@ -252,9 +201,9 @@ class ModelGL {
     /**
      * Parse a model in wavefront .obj format
      */
-    parseModel(model: string, modelPath: string): void {
-        this.modelPath = modelPath;
-        console.log(`modelPath: ${this.modelPath}`)
+    parseModel(model: string, modelPath: string, modelGL: ModelGL) {
+
+        modelGL.modelPath = modelPath;
         // split the model into lines
         let lines: string[] = model.split("\n");
         for (let line of lines) {
@@ -285,13 +234,20 @@ class ModelGL {
         // now that we have parsed the file, we need to 
         // build the vertex buffer and index buffer
 
-        this.packedVertexBuffer = new Float32Array(this._packedBuffer);
-        this.vertexiIndices = new Uint16Array(this._packedIndices);
-        this.numVertices = this._packedIndices.length;
-        this.numTriangles = this._packedIndices.length / 3;
+        modelGL.packedVertexBuffer = new Float32Array(this._packedBuffer);
+        modelGL.vertexiIndices = new Uint16Array(this._packedIndices);
+        modelGL.numVertices = this._packedIndices.length;
+        modelGL.numTriangles = this._packedIndices.length / 3;
+        modelGL.vertexStride = this.vertexStride;
+        modelGL.textureOffset = this.textureOffset;
+        modelGL.normalOffset = this.normalOffset;
+        modelGL.vertexOffset = this.vertexOffset;
 
         this.calculateVertexShaderName();
         this.calculateFragmentShaderName();
+
+        modelGL.vertexShaderName = this.vertexShaderName;
+        modelGL.fragmentShaderName = this.fragmentShaderName;
     }
 
     /**
@@ -431,4 +387,4 @@ class ModelGL {
     }
 }
 
-export default ModelGL;
+export default ModelBuilder;
