@@ -256,52 +256,9 @@ function setUpTexture(gl: WebGLRenderingContext,
     return texture;
 }
 
-
-function renderLoop(): void {
-
-    // we might get called early. lets bail out if the information is incomplete.
-
-    if (sceneData === null) {
-        return;
-    }
-
-    let gl = sceneData.glContext;
-
-    if (!gl) {
-        return;
-    }
-
-    let model = sceneData.model;
-    if (!model) {
-        return;
-    }
-
-    let camera = sceneData.camera;
-    if (!camera) {
-        return;
-    }
-
-
-    let texture: WebGLTexture | null = null;
-
-    // ******************************************************
-    // Compile the shader program if it has not been compiled yet
-    // the compileProgram will store the compiled program in the 
-    // current model in sceneData
-    // ******************************************************
-    const shaderProgram = compileProgram(gl);
-
-    if (!shaderProgram) {
-        return;
-    }
-    // use the shader program
-    gl.useProgram(shaderProgram);
-    // ******************************************************
-    // Phew, we are done with the shaders
-    // now we need to set up the buffers
-    // ******************************************************
-
-
+function setUpVertexBuffer(gl: WebGLRenderingContext,
+    model: ModelGL,
+    shaderProgram: WebGLProgram) {
     // create a buffer for Vertex data
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -328,12 +285,54 @@ function renderLoop(): void {
     // the position attribute is a vec3 (3 values per vertex) and then there are three
     // colors per vertex
     gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, model.vertexStride, 0);
-
-    /** 
-     * if we are using a texture then set up the vertex information 
-     * */
+}
 
 
+function renderLoop(): void {
+
+    // we might get called early. lets bail out if the information is incomplete.
+
+    if (sceneData === null) {
+        return;
+    }
+
+    let gl = sceneData.glContext;
+
+    if (!gl) {
+        return;
+    }
+
+    let model = sceneData.model;
+    if (!model) {
+        return;
+    }
+
+    let camera = sceneData.camera;
+    if (!camera) {
+        return;
+    }
+
+    // ******************************************************
+    // Compile the shader program if it has not been compiled yet
+    // the compileProgram will store the compiled program in the 
+    // current model in sceneData
+    // ******************************************************
+    const shaderProgram = compileProgram(gl);
+
+    if (!shaderProgram) {
+        return;
+    }
+    // use the shader program
+    gl.useProgram(shaderProgram);
+
+
+
+
+
+    setUpVertexBuffer(gl, model, shaderProgram);
+
+
+    let texture: WebGLTexture | null = null;
     if (model.useTexture) {
         texture = setUpTexture(gl, model, shaderProgram);
         if (!texture) {
@@ -433,10 +432,11 @@ function renderLoop(): void {
         }
     } else {
         gl.drawElements(gl.TRIANGLES, model.vertexIndices.length, gl.UNSIGNED_SHORT, 0);
-
     }
 
-    gl.deleteTexture(texture);
+    if (texture !== null) {
+        gl.deleteTexture(texture);
+    }
     gl.flush();
     gl.finish();
 
