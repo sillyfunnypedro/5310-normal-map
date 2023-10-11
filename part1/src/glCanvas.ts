@@ -180,10 +180,93 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
     return shaderProgram;
 }
 
+function setUpTexture(gl: WebGLRenderingContext,
+    model: ModelGL,
+    shaderProgram: WebGLProgram): WebGLTexture | null {
+    if (!gl) {
+        return null;
+    }
+
+
+
+    if (!model) {
+        return null;
+    }
+
+    // get the texture coordinate attribute location
+    const texCoordLocation = gl.getAttribLocation(shaderProgram, 'textureCoord');
+    // check to see if we got the attribute location
+    if (texCoordLocation === -1) {
+        console.log('Failed to get the storage location of texCoord');
+    }
+
+    // enable the texture coordinate attribute
+    gl.enableVertexAttribArray(texCoordLocation);
+
+    // tell the texture coordinate attribute how to get data out of the texture coordinate buffer
+    gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, model.vertexStride, model.textureOffset);
+
+    // create a texture
+    let texture = gl.createTexture();
+    if (!texture) {
+        console.log('Failed to create the texture object');
+        return null
+    }
+
+    // create a texture unit
+    const textureUnit = gl.TEXTURE0;
+
+    // bind the texture to the texture unit
+    gl.activeTexture(textureUnit);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    // set the parameters for the texture
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    // set the filtering for the texture
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+    const diffuseTextureName = model.textures.get("map_Kd") as string;
+
+    // load the texture data
+    // The PPMFileLoader caches the ppm files so if the file has already been loaded
+    // so it is ok to just call this here since it will not load the file again
+    const ppmIMG = PPMFileLoader.getInstance().loadFile(diffuseTextureName);
+
+
+    if (ppmIMG === undefined) {
+        console.log("ppmFile is undefined");
+        return null
+    }
+    // load the texture data into the texture
+    if (ppmIMG.data === undefined) {
+        console.log("ppmFile.data is undefined");
+        return null;
+    }
+
+    // set the value of the uniorm sampler to the texture unit
+    let textureLocation = gl.getUniformLocation(shaderProgram, 'textureSampler');
+    gl.uniform1i(textureLocation, 0);
+
+    // bind the data to the texture
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmIMG.width, ppmIMG.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmIMG.data);
+    gl.generateMipmap(gl.TEXTURE_2D);
+
+    return texture;
+}
+
+
 function renderLoop(): void {
+
+    // we might get called early. lets bail out if the information is incomplete.
+
+    if (sceneData === null) {
+        return;
+    }
+
     let gl = sceneData.glContext;
 
-    let texture: WebGLTexture | null = null;
     if (!gl) {
         return;
     }
@@ -198,12 +281,8 @@ function renderLoop(): void {
         return;
     }
 
-    if (sceneData === null) {
-        return;
-    }
 
-    const width = sceneData.width;
-    const height = sceneData.height;
+    let texture: WebGLTexture | null = null;
 
     // ******************************************************
     // Compile the shader program if it has not been compiled yet
@@ -254,68 +333,14 @@ function renderLoop(): void {
      * if we are using a texture then set up the vertex information 
      * */
 
-    if (sceneData!.model!.useTexture) {
-        // get the texture coordinate attribute location
-        const texCoordLocation = gl.getAttribLocation(shaderProgram, 'textureCoord');
-        // check to see if we got the attribute location
-        if (texCoordLocation === -1) {
-            console.log('Failed to get the storage location of texCoord');
-        }
 
-        // enable the texture coordinate attribute
-        gl.enableVertexAttribArray(texCoordLocation);
-
-        // tell the texture coordinate attribute how to get data out of the texture coordinate buffer
-        gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, model.vertexStride, model.textureOffset);
-
-        // create a texture
-        texture = gl.createTexture();
+    if (model.useTexture) {
+        texture = setUpTexture(gl, model, shaderProgram);
         if (!texture) {
-            console.log('Failed to create the texture object');
             return;
         }
-
-        // create a texture unit
-        const textureUnit = gl.TEXTURE0;
-
-        // bind the texture to the texture unit
-        gl.activeTexture(textureUnit);
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        // set the parameters for the texture
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-
-        // set the filtering for the texture
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-        const diffuseTextureName = model.textures.get("map_Kd") as string;
-
-        // load the texture data
-        // The PPMFileLoader caches the ppm files so if the file has already been loaded
-        // so it is ok to just call this here since it will not load the file again
-        const ppmIMG = PPMFileLoader.getInstance().loadFile(diffuseTextureName);
-
-
-        if (ppmIMG === undefined) {
-            console.log("ppmFile is undefined");
-            return;
-        }
-        // load the texture data into the texture
-        if (ppmIMG.data === undefined) {
-            console.log("ppmFile.data is undefined");
-            return;
-        }
-
-        // set the value of the uniorm sampler to the texture unit
-        let textureLocation = gl.getUniformLocation(shaderProgram, 'textureSampler');
-        gl.uniform1i(textureLocation, 0);
-
-        // bind the data to the texture
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmIMG.width, ppmIMG.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmIMG.data);
-        gl.generateMipmap(gl.TEXTURE_2D);
-
     }
+
 
     if (model.vertexShaderName === "vertexTextureNormalFullTransformationShader") {
         // get the normal attribute location
@@ -332,8 +357,8 @@ function renderLoop(): void {
     if (model.vertexShaderName === "vertexTextureFullTransformationShader"
         || model.vertexShaderName === "vertexFullTransformationShader" ||
         model.vertexShaderName === "vertexTextureNormalFullTransformationShader") {
-        camera.setViewPortWidth(width);
-        camera.setViewPortHeight(height);
+        camera.setViewPortWidth(sceneData.width);
+        camera.setViewPortHeight(sceneData.height);
 
 
 
@@ -342,7 +367,6 @@ function renderLoop(): void {
 
         // set the projection matrix
         gl.uniformMatrix4fv(projectionMatrixLocation, false, camera.projectionMatrix);
-
 
         // get the view matrix location
         const viewMatrixLocation = gl.getUniformLocation(shaderProgram, 'viewMatrix');
@@ -358,10 +382,10 @@ function renderLoop(): void {
 
 
     // get the model matrix location
-    const rotationMatrixLocation = gl.getUniformLocation(shaderProgram, 'modelMatrix');
+    const modelMatrixLocation = gl.getUniformLocation(shaderProgram, 'modelMatrix');
 
     // set the model matrix
-    gl.uniformMatrix4fv(rotationMatrixLocation, false, modelMatrix);
+    gl.uniformMatrix4fv(modelMatrixLocation, false, modelMatrix);
 
 
     // ******************************************************
@@ -398,6 +422,8 @@ function renderLoop(): void {
 
     // enable the z-buffer
     gl.enable(gl.DEPTH_TEST);
+
+
 
     // This is really slow but it is good for debugging.
     if (!camera.renderSolid) {

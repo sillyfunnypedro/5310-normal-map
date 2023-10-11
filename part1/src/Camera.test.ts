@@ -55,7 +55,7 @@ describe('Camera', () => {
     it('should update the projection matrix', () => {
         camera.updateProjectionMatrix();
         let foundMatrix = camera.projectionMatrix;
-        expect(camera.projectionMatrix).toEqual(mat4.perspective(mat4.create(), 45, 1, 0.1, 100));
+        expect(camera.projectionMatrix).toEqual(mat4.perspective(mat4.create(), 45 / 180.0 * Math.PI, 1, 0.1, 100));
     });
 
     it('should update the camera', () => {
@@ -67,7 +67,7 @@ describe('Camera', () => {
         camera.setUpVector(upVector);
         camera.updateCamera();
         expect(camera.viewMatrix).toEqual(mat4.lookAt(mat4.create(), eyePosition, lookAt, upVector));
-        expect(camera.projectionMatrix).toEqual(mat4.perspective(mat4.create(), 45, 1, 0.1, 100));
+        expect(camera.projectionMatrix).toEqual(mat4.perspective(mat4.create(), 45 / 180.0 * Math.PI, 1, 0.1, 100));
     });
 
     it('should set the aspect ratio', () => {
@@ -115,7 +115,7 @@ describe('Camera', () => {
         camera.lookUp(45);
         const foundUpVector = camera.upVector;
         const expectedUpVector = vec3.fromValues(0, 0.7071067811865475, 0.7071067811865475);
-        expect(foundUpVector).toEqual(vec3.fromValues(0, 1, 1));
+        expect(foundUpVector).toEqual(expectedUpVector);
 
     });
 

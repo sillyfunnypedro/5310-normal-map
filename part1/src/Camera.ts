@@ -45,7 +45,7 @@ class Camera {
     }
 
     public resetCamera(): void {
-        this.eyePosition = vec3.fromValues(0, 0, 8)
+        this.eyePosition = vec3.fromValues(0, 0, 1)
         this.lookAt = vec3.fromValues(0, 0, 0);
         this.upVector = vec3.fromValues(0, 1, 0);
         this.aspectRatio = 1;
@@ -207,7 +207,11 @@ class Camera {
     public updateProjectionMatrix(): void {
         if (this.usePerspective) {
             let aspectRatio = this.viewPortWidth / this.viewPortHeight;
-            mat4.perspective(this.projectionMatrix, this.fieldOfView / 180.0 * Math.PI, aspectRatio, this.nearPlane, this.farPlane);
+            mat4.perspective(this.projectionMatrix,
+                this.fieldOfView / 180.0 * Math.PI,
+                aspectRatio,
+                this.nearPlane,
+                this.farPlane);
         } else {
             let left = -1;
             let right = 1;
