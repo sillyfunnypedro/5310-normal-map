@@ -57,9 +57,9 @@ class PPM {
         // create the data array
         this._data = new Uint8Array(this._width * this._height * 3);
         for (let i = 0; i < this._width * this._height * 3; i++) {
-            this._data[i] = numbers[i + 3];
+            this._data[i] = numbers[i + 3]; 
         }
-    }
+            }
 
     /**
      * 

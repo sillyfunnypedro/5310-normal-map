@@ -44,6 +44,11 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
         updateCamera(camera);
     }
 
+    function updateFieldOfView(delta: number) {
+        camera.changeFieldOfView(delta);
+        updateCamera(camera);
+    }
+
     function updateProjectionMode(mode: string) {
         if (mode === 'perspective') {
             camera.setProjection(true);
@@ -64,6 +69,11 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
         setRenderMode(mode); // to update the button color
         updateCamera(camera);
 
+    }
+
+    function resetCamera() {
+        camera.resetCamera();
+        updateCamera(camera);
     }
 
 
@@ -117,6 +127,7 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
             </tr>
         );
     }
+
 
 
     function makeCameraControls() {
@@ -196,15 +207,15 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                             Field of View
                         </td>
                         <td style={{ textAlign: 'right' }}>
-                            <button onClick={() => camera.changeFieldOfView(-1)}>Decrease</button>
+                            <button onClick={() => updateFieldOfView(-1)}>Decrease</button>
                         </td>
                         <td>
-                            <HorizontalJoystickSlider onDelta={(delta: number) => camera.changeFieldOfView(delta)}
+                            <HorizontalJoystickSlider onDelta={(delta: number) => updateFieldOfView(delta)}
                                 scale={50}
                                 width={sliderWidth} />
                         </td>
                         <td>
-                            <button onClick={() => camera.changeFieldOfView(1)}>Increase</button>
+                            <button onClick={() => updateFieldOfView(1)}>Increase</button>
 
                         </td>
                     </tr>
@@ -220,7 +231,7 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                         </td>
 
                         <td style={{ textAlign: 'right' }}>
-                            <button onClick={() => camera.resetCamera()}>Reset</button>
+                            <button onClick={resetCamera}>Reset</button>
                         </td>
                     </tr>
 
