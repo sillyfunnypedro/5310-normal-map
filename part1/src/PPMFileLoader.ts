@@ -1,5 +1,6 @@
 import PPM from './PPM';
 import { objectFileMap } from './ObjectFileMap';
+import { ServerURLPrefix } from './ServerURL';
 
 
 /**
@@ -10,7 +11,7 @@ import { objectFileMap } from './ObjectFileMap';
 
 class PPMFileLoader {
     // this is where you would put the URL to your server
-    private URLPrefix: string = 'http://localhost:8080/objects/';
+    private URLPrefix: string = ServerURLPrefix()
     private modelCache: Map<string, PPM> = new Map();
 
     private static instance: PPMFileLoader;

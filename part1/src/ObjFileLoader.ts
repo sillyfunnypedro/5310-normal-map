@@ -3,6 +3,7 @@ import ModelParser from './ModelParser';
 import { objectFileMap } from './ObjectFileMap';
 import Material from './Material';
 import PPMFileLoader from './PPMFileLoader';
+import { ServerURLPrefix } from './ServerURL';
 
 /**
  * ObjFileLoader.ts
@@ -17,7 +18,7 @@ import PPMFileLoader from './PPMFileLoader';
 
 class ObjFileLoader {
     // this is where you would put the URL to your server
-    private URLPrefix: string = 'http://localhost:8080/objects/';
+    private URLPrefix: string = ServerURLPrefix()
     private modelCache: Map<string, ModelGL> = new Map();
 
     private static instance: ObjFileLoader;
@@ -70,6 +71,7 @@ class ObjFileLoader {
             const response = await fetch(fullPath)
 
             if (!response.ok) {
+
                 throw new Error('Network response was not ok');
             } else {
                 console.log('response was ok');

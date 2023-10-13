@@ -1,6 +1,6 @@
 import Material from './Material';
 import ModelGL from './ModelGL';
-import { objectFileMap } from './ObjectFileMap';
+import { ServerURLPrefix } from './ServerURL';
 
 
 /**
@@ -11,7 +11,7 @@ import { objectFileMap } from './ObjectFileMap';
 
 class MaterialFileLoader {
     // this is where you would put the URL to your server
-    private URLPrefix: string = 'http://localhost:8080/objects/';
+    private URLPrefix: string = ServerURLPrefix();
 
 
 

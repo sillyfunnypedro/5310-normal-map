@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import './ControlComponent.css'
 import './LocalServerStatus.css'
+import { ServerURLPrefix, GitHubPrefix, LocalServerPrefix, SelectLocalServer } from './ServerURL';
 
 
 function statusDiv(status: string) {
@@ -25,10 +26,14 @@ const LocalServerStatus = () => {
 
     // define a function to update the status
     function updateStatus() {
+        if (ServerURLPrefix() === GitHubPrefix) {
+            return;
+        }
+
         // use the fetch API to request the status from the local server
         // the fetch API returns a promise, so we use the then method to
         // specify what to do when the promise is resolved
-        fetch('http://localhost:8080/')
+        fetch(ServerURLPrefix())
             .then((data) => {
                 if (data.status === 200) {
                     setStatus('online');
@@ -42,12 +47,27 @@ const LocalServerStatus = () => {
     }
 
 
+
+
     useEffect(() => {
         const interval = setInterval(() => {
             updateStatus();
         }, 500);
     }, []);
 
+    if (ServerURLPrefix() === GitHubPrefix) {
+        return (
+            <table className="tableWidth">
+                <tbody>
+                    <tr>
+                        <td className="leftAlign">Using GitHub</td>
+
+                        <td className="rightAlign"><div className="ok">online</div></td>
+                    </tr>
+                </tbody>
+            </table>
+        )
+    }
     // return the status
     //<div className="warning">WARNING SERVER: {status}</div>;
     return (
@@ -55,6 +75,7 @@ const LocalServerStatus = () => {
             <tbody>
                 <tr>
                     <td className="leftAlign">Local server status</td>
+
                     {statusDiv(status)}
                 </tr>
             </tbody>
