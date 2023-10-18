@@ -23,6 +23,7 @@ const LocalServerStatus = () => {
     // and a function to set the status
     // set the initial state to 'offline'
     const [status, setStatus] = useState('offline');
+    const [localServer, setLocalServer] = useState("");
 
     // define a function to update the status
     function updateStatus() {
@@ -46,8 +47,15 @@ const LocalServerStatus = () => {
             });
     }
 
+    function updateDataServer(useLocal: boolean) {
 
+        SelectLocalServer(useLocal);
 
+        setLocalServer(ServerURLPrefix());
+    }
+    useEffect(() => {
+        setLocalServer(ServerURLPrefix());
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -61,7 +69,9 @@ const LocalServerStatus = () => {
                 <tbody>
                     <tr>
                         <td className="leftAlign">Using GitHub</td>
-
+                        <td>
+                            <button onClick={() => updateDataServer(true)}>Use Local Server</button>
+                        </td>
                         <td className="rightAlign"><div className="ok">online</div></td>
                     </tr>
                 </tbody>
@@ -75,7 +85,10 @@ const LocalServerStatus = () => {
             <tbody>
                 <tr>
                     <td className="leftAlign">Local server status</td>
+                    <td>
 
+                        <button onClick={() => updateDataServer(false)}>Use GitHub</button>
+                    </td>
                     {statusDiv(status)}
                 </tr>
             </tbody>
