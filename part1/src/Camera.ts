@@ -146,6 +146,16 @@ class Camera {
         this.lookLeft(-angle);
     }
 
+    public panRight(distance: number): void {
+        // TODO Assignmet 4
+        console.log('TODO Assignment 4 PanRight')
+    }
+
+    public panUp(distance: number): void {
+        // TODO Assignmet 4
+        console.log('TODO Assignment 4 PanUp')
+    }
+
 
     public setLookAt(lookAt: vec3): void {
         this.lookAt = lookAt;
