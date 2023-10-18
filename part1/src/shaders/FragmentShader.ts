@@ -48,13 +48,13 @@ const fragmentTextureNormalShader =
 
     void main() {
         vec3 normal = normalize(normalOut);
-        vec3 lightDirection = normalize(vec3(1.0, 1.0, 1.0));
+        vec3 lightDirection = normalize(vec3(0,1, 0));
         float lightIntensity = dot(normal, lightDirection);
-        float specular = pow(lightIntensity, 2.0);
+        lightIntensity = clamp(lightIntensity, 0.0, 1.0);
         vec2 textureCoord = vec2(textureCoordOut.x, 1.0 - textureCoordOut.y);
         vec4 textureColor = texture(textureSampler, textureCoord);
         
-        color = textureColor;
+        color = normalize(vec4(textureColor.rgb * lightIntensity, textureColor.a));
        
     }
     `;
