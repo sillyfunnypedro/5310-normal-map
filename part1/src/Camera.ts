@@ -147,13 +147,29 @@ class Camera {
     }
 
     public panRight(distance: number): void {
-        // TODO Assignmet 4
-        console.log('TODO Assignment 4 PanRight')
+        // calculate the right vector as the cross product of the look direction and the up vector
+        let lookDirection = vec3.create();
+        vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
+        let rightVector = vec3.create();
+        vec3.cross(rightVector, lookDirection, this.upVector);
+        vec3.normalize(rightVector, rightVector);
+        vec3.scaleAndAdd(this.eyePosition, this.eyePosition, rightVector, distance);
+        vec3.scaleAndAdd(this.lookAt, this.lookAt, rightVector, distance);
     }
 
     public panUp(distance: number): void {
-        // TODO Assignmet 4
-        console.log('TODO Assignment 4 PanUp')
+        // calculate the right vector as the cross product of the look direction and the up vector
+        let lookDirection = vec3.create();
+        vec3.subtract(lookDirection, this.lookAt, this.eyePosition);
+        let rightVector = vec3.create();
+        vec3.cross(rightVector, lookDirection, this.upVector);
+        vec3.normalize(rightVector, rightVector);
+        // now calculate the orthogonal up vector
+        let upVector = vec3.create();
+        vec3.cross(upVector, rightVector, lookDirection);
+        vec3.normalize(upVector, upVector);
+        vec3.scaleAndAdd(this.eyePosition, this.eyePosition, upVector, distance);
+        vec3.scaleAndAdd(this.lookAt, this.lookAt, upVector, distance);
     }
 
 
