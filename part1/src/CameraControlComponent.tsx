@@ -22,6 +22,8 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
     const [projectionMode, setProjectionMode] = useState(camera.usePerspective ? 'perspective' : 'orthographic');
     const [renderMode, setRenderMode] = useState(camera.renderSolid ? 'solid' : 'wireframe');
+    const sliderWidth = 300;
+
 
 
     function moveCameraForward(delta: number) {
@@ -41,6 +43,16 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
     function rightLeft(delta: number) {
         camera.lookRight(delta);
+        updateCamera(camera);
+    }
+
+    function panLeftRight(delta: number) {
+        camera.panRight(delta);
+        updateCamera(camera);
+    }
+
+    function panUpDown(delta: number) {
+        camera.panUp(delta);
         updateCamera(camera);
     }
 
@@ -131,7 +143,7 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
 
 
     function makeCameraControls() {
-        const sliderWidth = 300;
+
         return (
             <table>
                 <tbody>
@@ -167,6 +179,41 @@ function CameraControlComponent({ camera, updateCamera }: CameraControlComponent
                         </td>
                         <td>
                             <button onClick={() => rollCamera(1)}>Right</button>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            Pan
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                            <button onClick={() => panLeftRight(-1)}>Left</button>
+                        </td>
+                        <td>
+                            <HorizontalJoystickSlider onDelta={(delta: number) => panLeftRight(delta)}
+                                scale={15}
+                                width={sliderWidth} />
+                        </td>
+                        <td>
+                            <button onClick={() => panLeftRight(1)}>Right</button>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Pan
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                            <button onClick={() => panUpDown(-1)}>Down</button>
+                        </td>
+                        <td>
+                            <HorizontalJoystickSlider onDelta={(delta: number) => panUpDown(delta)}
+                                scale={15}
+                                width={sliderWidth} />
+                        </td>
+                        <td>
+                            <button onClick={() => panUpDown(1)}>Up</button>
+
                         </td>
                     </tr>
                     <tr>
