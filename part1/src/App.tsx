@@ -76,14 +76,26 @@ function App() {
 
   return (<div className="App">
     <header className="App-header">
-      <canvas id="glCanvas" width="800" height="500"></canvas>
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <canvas id="glCanvas" width="800" height="500"></canvas>
+            </th>
+            <th>
+              <CameraControlComponent camera={camera!} updateCamera={updateCamera} />
+            </th>
+          </tr>
+        </thead>
+      </table>
+
 
       <ControlComponent
         renderObject={renderObject}
         updateRenderObject={updateRenderObject}
         modelGL={modelGL}
       />
-      <CameraControlComponent camera={camera!} updateCamera={updateCamera} />
+
 
     </header>
 
