@@ -1,5 +1,14 @@
+
+import fragmentShaderBasic from './shaders/FragmentShaderBasic.glsl';
+import fragmentTextureShader from './shaders/FragmentTextureShader.glsl';
+import fragmentTextureNormalShader from './shaders/FragmentTextureNormalShader.glsl';
+
 import vertexShader from './shaders/VertexShader.glsl';
-import fragmentShader from './shaders/FragmentShader.glsl';
+import vertexTextureShader from './shaders/VertexTextureShader.glsl';
+import vertexTransformationShader from './shaders/VertexTransformationShader.glsl';
+import vertexTextureTransformationShader from './shaders/VertexTextureTransformationShader.glsl';
+import vertexTextureNormalTransformationShader from './shaders/VertexTextureNormalTransformationShader.glsl';
+
 
 // Make sure this runs at the beginning of your program so that the 
 // async fetches can complete before you need the data.
@@ -21,9 +30,17 @@ function loadShader(shaderName: string, shaderSource: string) {
 
 
 
-export function cacheShaders() {
+export function loadAndCacheShaderSource() {
+    loadShader('fragmentShaderBasic', fragmentShaderBasic);
+    loadShader('fragmentTextureShader', fragmentTextureShader);
+    loadShader('fragmentTextureNormalShader', fragmentTextureNormalShader);
+
     loadShader('vertexShader', vertexShader);
-    loadShader('fragmentShader', fragmentShader);
+    loadShader('vertexTextureShader', vertexTextureShader);
+    loadShader('vertexTransformationShader', vertexTransformationShader);
+    loadShader('vertexTextureTransformationShader', vertexTextureTransformationShader);
+    loadShader('vertexTextureNormalTransformationShader', vertexTextureNormalTransformationShader);
+
 }
 
 export default shaderTestMap;
