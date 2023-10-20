@@ -6,9 +6,6 @@ import ModelGL from './ModelGL';
 import PPMFileLoader from './PPMFileLoader';
 
 import shaderSourceCodeMap from './ShaderManager';
-import fragmentShaderMap from './shaders/FragmentShader'
-import vertexShaderMap from './shaders/VertexShader'
-
 import SceneData from './SceneData';
 
 
