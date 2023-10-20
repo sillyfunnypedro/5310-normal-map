@@ -12,6 +12,52 @@ uniform sampler2D textureSampler;
 
 out vec4 color;
 
+vec4 blinnPhongShader(vec3 normal,
+        vec3 surfaceToLightDirection,
+        vec3 viewDirection,
+        vec4 lightColor,
+        vec4 surfaceColor,
+        float shininess,
+        float Kd,
+        float Ka,
+        float Ks, float shine) {
+        // phong lighting for light one
+
+        // calculate the diffuse intensity
+        float lightIntensity = dot(normal, surfaceToLightDirection);
+        lightIntensity = clamp(lightIntensity, 0.0, 1.0);
+
+
+        // calculate the specular intensity
+        // calculate the halfway vector
+        vec3 halfVector = normalize(surfaceToLightDirection + viewDirection);
+
+        // calculate the cosine of the angle between the half vector and the normal
+        float specularIntensity = dot(normal, halfVector);
+
+        // raise the specular intensity to the power of the shine
+        specularIntensity = pow(specularIntensity, shininess);
+
+        // clamp the specular intensity to between 0 and 1
+        specularIntensity = clamp(specularIntensity, 0.0, 1.0);
+
+        // calculate the final specular intensity
+        specularIntensity = specularIntensity * Ks;
+
+        // calculate the final diffuse intensity
+        lightIntensity = lightIntensity * Kd;
+
+        // calculate the final ambient intensity
+        vec4 ambient = lightColor * surfaceColor * Ka;
+
+        // calculate the final light
+        vec4 blinnColor = ambient + (lightIntensity * surfaceColor) + (specularIntensity * lightColor);
+        return blinnColor/(Ka+Kd+Ks);
+        
+        }
+
+
+
 void main() {
     vec3 normal = normalize(normalOut);
     vec3 lightDirection = normalize(vec3(1,1, 1));
