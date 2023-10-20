@@ -246,11 +246,13 @@ class ModelParser {
         modelGL.vertexOffset = this.vertexOffset;
         this.calculateVertexShaderName();
         this.calculateFragmentShaderName();
-        modelGL.useTexture = this._useTexture;
+        modelGL.hasDifuseMap = this._useTexture;
         modelGL.vertexShaderName = this.vertexShaderName;
         modelGL.fragmentShaderName = this.fragmentShaderName;
         modelGL.modelPath = modelPath;
         modelGL.materialFile = this.materialFile;
+
+
     }
 
     /**

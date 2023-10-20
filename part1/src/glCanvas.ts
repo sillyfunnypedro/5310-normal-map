@@ -332,7 +332,7 @@ function renderLoop(): void {
 
 
     let texture: WebGLTexture | null = null;
-    if (model.useTexture) {
+    if (model.hasDifuseMap) {
         texture = setUpTexture(gl, model, shaderProgram);
         if (!texture) {
             return;

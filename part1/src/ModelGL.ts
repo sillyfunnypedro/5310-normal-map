@@ -24,6 +24,8 @@ class ModelGL {
     fragmentShaderName: string = '';
     shaderName: string = '';
 
+
+
     // the parameters for the model transformation
     rotateX: number = 0;
     rotateY: number = 0;
@@ -41,7 +43,11 @@ class ModelGL {
     renderingProgram: WebGLProgram | null = null;
 
 
-    useTexture: boolean = false;
+    hasDifuseMap: boolean = false;
+    // make it simpler to determine what maps to use for the model
+
+    hasNormalMap: boolean = false;
+    hasSpecularMap: boolean = false;
 
     vertexStride: number = 0;
     vertexOffset: number = 0;
