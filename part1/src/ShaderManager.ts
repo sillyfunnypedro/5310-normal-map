@@ -13,19 +13,24 @@ import vertexTextureNormalTransformationShader from './shaders/VertexTextureNorm
 // Make sure this runs at the beginning of your program so that the 
 // async fetches can complete before you need the data.
 
-const shaderTestMap = new Map<string, string>();
+const shaderSourceCodeMap = new Map<string, string>();
 
 
 function loadShader(shaderName: string, shaderSource: string) {
     fetch(shaderSource)
         .then(response => response.text())
         .then(data => {
-            shaderTestMap.set(shaderName, data);
+            console.log('**********************************************************')
+            console.log(`loaded ${shaderName}`);
+            console.log('*********** Source Code Here *****************************')
+            console.log(data);
+            console.log('************ End of Source  ******************************')
+            shaderSourceCodeMap.set(shaderName, data);
         })
         .catch(error => {
             console.log(error);
         })
-    shaderTestMap.set(shaderName, shaderSource);
+    shaderSourceCodeMap.set(shaderName, shaderSource);
 }
 
 
@@ -43,4 +48,4 @@ export function loadAndCacheShaderSource() {
 
 }
 
-export default shaderTestMap;
+export default shaderSourceCodeMap;

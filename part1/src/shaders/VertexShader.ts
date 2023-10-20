@@ -19,7 +19,7 @@ const vertexShader =
  * 
  * This shader applies a full transformation to the vertex position.
  */
-const vertexFullTransformationShader =
+const vertexTransformationShader =
     `#version 300 es
     in vec3 position;
 
@@ -99,7 +99,7 @@ const vertexTextureRotationShader =
  * This shader applies a full transformation to the vertex position.
  * It also passes the texture coordinate through.
  */
-const vertexTextureFullTransformationShader =
+const vertexTextureTransformationShader =
     `#version 300 es
     layout(location=0) in vec3 position;
     layout(location=1) in vec2 textureCoord;
@@ -123,7 +123,7 @@ const vertexTextureFullTransformationShader =
  * It also passes the texture coordinate through.
  * It also passes the normal through.
  */
-const vertexTextureNormalFullTransformationShader =
+const vertexTextureNormalTransformationShader =
     `#version 300 es
     layout(location=0) in vec3 position;
     layout(location=1) in vec2 textureCoord;
@@ -146,10 +146,10 @@ const vertexTextureNormalFullTransformationShader =
 
 const vertexShaderMap = new Map<string, string>();
 vertexShaderMap.set('vertexShader', vertexShader);
-vertexShaderMap.set('vertexFullTransformationShader', vertexFullTransformationShader);
+vertexShaderMap.set('vertexTransformationShader', vertexTransformationShader);
 vertexShaderMap.set('vertexShaderRotation', vertexRotationShader);
 vertexShaderMap.set('vertexTextureShader', vertexTextureShader);
 vertexShaderMap.set('vertexTextureRotationShader', vertexTextureRotationShader);
-vertexShaderMap.set('vertexTextureFullTransformationShader', vertexTextureFullTransformationShader);
-vertexShaderMap.set('vertexTextureNormalFullTransformationShader', vertexTextureNormalFullTransformationShader);
+vertexShaderMap.set('vertexTextureTransformationShader', vertexTextureTransformationShader);
+vertexShaderMap.set('vertexTextureNormalTransformationShader', vertexTextureNormalTransformationShader);
 export default vertexShaderMap;

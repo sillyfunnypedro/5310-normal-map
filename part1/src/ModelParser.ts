@@ -260,13 +260,13 @@ class ModelParser {
      */
     private calculateVertexShaderName() {
         if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
-            this.vertexShaderName = "vertexTextureNormalFullTransformationShader";
+            this.vertexShaderName = "vertexTextureNormalTransformationShader";
             this._useTexture = true;
         } else if (this._textureCoordinates.length > 0) {
-            this.vertexShaderName = "vertexTextureFullTransformationShader";
+            this.vertexShaderName = "vertexTextureTransformationShader";
             this._useTexture = true;
         } else {
-            this.vertexShaderName = "vertexFullTransformationShader";
+            this.vertexShaderName = "vertexTransformationShader";
         }
     }
 
@@ -283,7 +283,7 @@ class ModelParser {
             this.fragmentShaderName = "fragmentTextureShader";
             this._useTexture = true;
         } else {
-            this.fragmentShaderName = "fragmentShader";
+            this.fragmentShaderName = "fragmentShaderBasic";
         }
     }
 

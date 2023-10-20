@@ -4,6 +4,8 @@
 import Camera from './Camera';
 import ModelGL from './ModelGL';
 import PPMFileLoader from './PPMFileLoader';
+
+import shaderSourceCodeMap from './ShaderManager';
 import fragmentShaderMap from './shaders/FragmentShader'
 import vertexShaderMap from './shaders/VertexShader'
 
@@ -101,7 +103,7 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
     }
 
     // get the vertex shader source code from the shader map
-    const vertexShader = vertexShaderMap.get(vertexShaderName) as string;
+    const vertexShader = shaderSourceCodeMap.get(vertexShaderName) as string;
 
     // Now that we have the code let's compile it compile it
     // attach the shader source code to the vertex shader
@@ -129,7 +131,7 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
     }
 
     // get the fragment shader source code from the shader map 
-    const fragmentShader = fragmentShaderMap.get(fragmentShaderName) as string;
+    const fragmentShader = shaderSourceCodeMap.get(fragmentShaderName) as string;
 
     // attach the shader source code to the fragment shader
     gl.shaderSource(fragmentShaderObject, fragmentShader);
@@ -341,7 +343,7 @@ function renderLoop(): void {
     }
 
 
-    if (model.vertexShaderName === "vertexTextureNormalFullTransformationShader") {
+    if (model.vertexShaderName === "vertexTextureNormalTransformationShader") {
         // get the normal attribute location
         const normalLocation = gl.getAttribLocation(shaderProgram, 'normal');
 
@@ -353,9 +355,9 @@ function renderLoop(): void {
         gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, model.vertexStride, model.normalOffset);
     }
 
-    if (model.vertexShaderName === "vertexTextureFullTransformationShader"
-        || model.vertexShaderName === "vertexFullTransformationShader" ||
-        model.vertexShaderName === "vertexTextureNormalFullTransformationShader") {
+    if (model.vertexShaderName === "vertexTextureTransformationShader"
+        || model.vertexShaderName === "vertexTransformationShader" ||
+        model.vertexShaderName === "vertexTextureNormalTransformationShader") {
         camera.setViewPortWidth(sceneData.width);
         camera.setViewPortHeight(sceneData.height);
 

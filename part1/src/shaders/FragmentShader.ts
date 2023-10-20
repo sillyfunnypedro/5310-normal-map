@@ -3,7 +3,7 @@
 /**
  * A basic constant color fragment shader
  * */
-const fragmentShader =
+const fragmentShaderBasic =
     `#version 300 es
     precision mediump float;
     out vec4 color;
@@ -87,7 +87,7 @@ const fragmentTextureNormalShader =
 
 
 const fragmentShaderMap = new Map<string, string>();
-fragmentShaderMap.set('fragmentShader', fragmentShader);
+fragmentShaderMap.set('fragmentShaderBasic', fragmentShaderBasic);
 fragmentShaderMap.set('fragmentTextureShader', fragmentTextureShader);
 fragmentShaderMap.set('fragmentTextureNormalShader', fragmentTextureNormalShader);
 export default fragmentShaderMap;
