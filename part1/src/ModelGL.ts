@@ -43,18 +43,72 @@ class ModelGL {
     renderingProgram: WebGLProgram | null = null;
 
 
-    hasDifuseMap: boolean = false;
+    public get hasDiffuseMap(): boolean {
+        if (this.material === undefined) {
+            return false;
+        }
+
+        if (this.material.map_Kd !== '') {
+            return true;
+        }
+        return false;
+    }
+    diffuseTexture: WebGLTexture | null = null;
     // make it simpler to determine what maps to use for the model
 
-    hasNormalMap: boolean = false;
+    public get hasNormalMap(): boolean {
+        if (this.material == undefined) {
+            return false;
+        }
+
+        if (this.material.map_Bump === undefined) {
+            return false;
+        }
+
+        if (this.material.map_Bump !== '') {
+            return true;
+        }
+        return false;
+    }
+    normalTexture: WebGLTexture | null = null;
+
     hasSpecularMap: boolean = false;
+    specularTexture: WebGLTexture | null = null;
 
     vertexStride: number = 0;
     vertexOffset: number = 0;
     textureOffset: number = 0;
     normalOffset: number = 0;
 
+    getShaderCoreName(): string {
+        let shaderName = '';
+        if (this.textureOffset > 0) {
+            shaderName += 'Texture';
+        }
+        if (this.normalOffset > 0) {
+            shaderName += 'Normal';
+        }
+        if (this.hasNormalMap) {
+            shaderName += 'NormalMap';
+        }
+        return shaderName;
+    }
 
+    getVertexShaderName(): string {
+        // every vertex shader starts with vertex and ends with shader
+        let shaderName = 'vertex';
+        shaderName += this.getShaderCoreName();
+        shaderName += 'Shader';
+        return shaderName;
+    }
+
+    getFragmentShaderName(): string {
+        // every fragment shader starts with fragment and ends with shader
+        let shaderName = 'fragment';
+        shaderName += this.getShaderCoreName();
+        shaderName += 'Shader';
+        return shaderName;
+    }
 
 
     // each model has its own transforms now, we will provide a computed

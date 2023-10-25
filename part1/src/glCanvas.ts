@@ -85,8 +85,10 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
     }
 
 
-    const vertexShaderName = sceneData.model.vertexShaderName;
-    const fragmentShaderName = sceneData.model.fragmentShaderName;
+
+    const vertexShaderName = sceneData.model.getVertexShaderName();
+    const fragmentShaderName = sceneData.model.getFragmentShaderName();
+
 
     console.log("Compiling " + vertexShaderName + " and " + fragmentShaderName);
 
@@ -179,9 +181,14 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
     return shaderProgram;
 }
 
+
+
 function setUpTexture(gl: WebGLRenderingContext,
     model: ModelGL,
-    shaderProgram: WebGLProgram): WebGLTexture | null {
+    shaderProgram: WebGLProgram,
+    textureUnit: number,
+    textureType: string,
+    samplerName: string): WebGLTexture | null {
     if (!gl) {
         return null;
     }
@@ -212,11 +219,9 @@ function setUpTexture(gl: WebGLRenderingContext,
         return null
     }
 
-    // create a texture unit
-    const textureUnit = gl.TEXTURE0;
 
     // bind the texture to the texture unit
-    gl.activeTexture(textureUnit);
+    gl.activeTexture(gl.TEXTURE0 + textureUnit);
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
     // set the parameters for the texture
@@ -226,7 +231,7 @@ function setUpTexture(gl: WebGLRenderingContext,
     // set the filtering for the texture
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 
-    const diffuseTextureName = model.textures.get("map_Kd") as string;
+    const diffuseTextureName = model.textures.get(textureType) as string;
 
     // load the texture data
     // The PPMFileLoader caches the ppm files so if the file has already been loaded
@@ -245,14 +250,49 @@ function setUpTexture(gl: WebGLRenderingContext,
     }
 
     // set the value of the uniorm sampler to the texture unit
-    let textureLocation = gl.getUniformLocation(shaderProgram, 'textureSampler');
-    gl.uniform1i(textureLocation, 0);
+    let textureLocation = gl.getUniformLocation(shaderProgram, samplerName);
+    if (textureLocation === null) {
+        throw new Error(`The sampler name ${samplerName} was not found in the program`)
+    }
+    gl.uniform1i(textureLocation, textureUnit);
 
     // bind the data to the texture
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, ppmIMG.width, ppmIMG.height, 0, gl.RGB, gl.UNSIGNED_BYTE, ppmIMG.data);
     gl.generateMipmap(gl.TEXTURE_2D);
 
     return texture;
+}
+
+function setUpTextures(gl: WebGLRenderingContext,
+    model: ModelGL,
+    shaderProgram: WebGLProgram): boolean {
+
+    let texture: WebGLTexture | null = null;
+    if (!gl) {
+        return false;
+    }
+    if (!model) {
+        return false;
+    }
+
+    if (model.hasDiffuseMap) {
+        if (model.diffuseTexture === null) {
+            model.diffuseTexture = setUpTexture(gl, model, shaderProgram, gl.TEXTURE0, 'map_Kd', 'textureSampler');
+        }
+        if (model.diffuseTexture === null) {
+            throw new Error("Failed to set up diffuse texture, it was expected to be there but it was not");
+        }
+    }
+
+    if (model.hasNormalMap) {
+        model.normalTexture = setUpTexture(gl, model, shaderProgram, gl.TEXTURE1, 'map_Bump', 'normalSampler');
+        if (model.normalTexture === null) {
+            throw new Error("Failed to set up normal texture, it was expected to be there but it was not");
+        }
+    }
+
+    return true;
+
 }
 
 function setUpVertexBuffer(gl: WebGLRenderingContext,
@@ -332,12 +372,10 @@ function renderLoop(): void {
 
 
     let texture: WebGLTexture | null = null;
-    if (model.hasDifuseMap) {
-        texture = setUpTexture(gl, model, shaderProgram);
-        if (!texture) {
-            return;
-        }
-    }
+
+    // SetUpTextures will set up any textures required by the model.
+    setUpTextures(gl, model, shaderProgram)
+
 
 
     if (model.vertexShaderName === "vertexTextureNormalTransformationShader") {

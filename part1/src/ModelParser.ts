@@ -146,7 +146,7 @@ class ModelParser {
     private _normals: number[] = [];
 
     private _vertexAccumulator: VertexAccumulator = new VertexAccumulator();
-    private _useTexture: boolean = false;
+    private _useTextureMap: boolean = false;
 
 
     constructor() {
@@ -185,10 +185,17 @@ class ModelParser {
     }
 
     public get textureOffset(): number {
-        return 3 * Float32Array.BYTES_PER_ELEMENT;
+        if (this._textureCoordinates.length > 0) {
+            return 3 * Float32Array.BYTES_PER_ELEMENT;
+        }
+        return 0;
     }
 
     public get normalOffset(): number {
+        if (this._normals.length === 0) {
+            return 0;
+        }
+
         let offset = 3 * Float32Array.BYTES_PER_ELEMENT;
         if (this._textureCoordinates.length > 0) {
             offset = 5 * Float32Array.BYTES_PER_ELEMENT;
@@ -246,7 +253,6 @@ class ModelParser {
         modelGL.vertexOffset = this.vertexOffset;
         this.calculateVertexShaderName();
         this.calculateFragmentShaderName();
-        modelGL.hasDifuseMap = this._useTexture;
         modelGL.vertexShaderName = this.vertexShaderName;
         modelGL.fragmentShaderName = this.fragmentShaderName;
         modelGL.modelPath = modelPath;
@@ -263,10 +269,10 @@ class ModelParser {
     private calculateVertexShaderName() {
         if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
             this.vertexShaderName = "vertexTextureNormalTransformationShader";
-            this._useTexture = true;
+            this._useTextureMap = true;
         } else if (this._textureCoordinates.length > 0) {
             this.vertexShaderName = "vertexTextureTransformationShader";
-            this._useTexture = true;
+            this._useTextureMap = true;
         } else {
             this.vertexShaderName = "vertexTransformationShader";
         }
@@ -280,10 +286,10 @@ class ModelParser {
     private calculateFragmentShaderName() {
         if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
             this.fragmentShaderName = "fragmentTextureNormalShader";
-            this._useTexture = true;
+            this._useTextureMap = true;
         } else if (this._textureCoordinates.length > 0) {
             this.fragmentShaderName = "fragmentTextureShader";
-            this._useTexture = true;
+            this._useTextureMap = true;
         } else {
             this.fragmentShaderName = "fragmentShaderBasic";
         }

@@ -1,6 +1,7 @@
 export const objectFileMap: Map<string, string> = new Map([
     ["tri-plain", "tri_plain/triangle.obj"],
     ["tri-tex", "triangle_texture/triangle.obj"],
+    ["normal_square", "normal_square/square.obj"],
     ["square", "square/square.obj"],
     ["square-four-vertex", "square_four_vertex/square.obj"],
     ["square_four_by_four", "square_four_by_four/square.obj"],

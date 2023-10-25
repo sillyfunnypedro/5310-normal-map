@@ -1,13 +1,15 @@
 
-import fragmentShaderBasic from './shaders/FragmentShaderBasic.glsl';
+import fragmentShader from './shaders/FragmentShader.glsl';
 import fragmentTextureShader from './shaders/FragmentTextureShader.glsl';
 import fragmentTextureNormalShader from './shaders/FragmentTextureNormalShader.glsl';
+import fragmentTextureNormalNormalMapShader from './shaders/FragmentTextureNormalNormalMapShader.glsl';
+
+
 
 import vertexShader from './shaders/VertexShader.glsl';
 import vertexTextureShader from './shaders/VertexTextureShader.glsl';
-import vertexTransformationShader from './shaders/VertexTransformationShader.glsl';
-import vertexTextureTransformationShader from './shaders/VertexTextureTransformationShader.glsl';
-import vertexTextureNormalTransformationShader from './shaders/VertexTextureNormalTransformationShader.glsl';
+import vertexTextureNormalShader from './shaders/VertexTextureNormalShader.glsl';
+import vertexTextureNormalNormalMapShader from './shaders/VertexTextureNormalNormalMapShader.glsl';
 
 
 // Make sure this runs at the beginning of your program so that the 
@@ -36,15 +38,15 @@ function loadShader(shaderName: string, shaderSource: string) {
 
 
 export function loadAndCacheShaderSource() {
-    loadShader('fragmentShaderBasic', fragmentShaderBasic);
+    loadShader('fragmentShader', fragmentShader);
     loadShader('fragmentTextureShader', fragmentTextureShader);
     loadShader('fragmentTextureNormalShader', fragmentTextureNormalShader);
+    loadShader('fragmentTextureNormalNormalMapShader', fragmentTextureNormalNormalMapShader);
 
     loadShader('vertexShader', vertexShader);
     loadShader('vertexTextureShader', vertexTextureShader);
-    loadShader('vertexTransformationShader', vertexTransformationShader);
-    loadShader('vertexTextureTransformationShader', vertexTextureTransformationShader);
-    loadShader('vertexTextureNormalTransformationShader', vertexTextureNormalTransformationShader);
+    loadShader('vertexTextureNormalShader', vertexTextureNormalShader);
+    loadShader('vertexTextureNormalNormalMapShader', vertexTextureNormalNormalMapShader);
 
 }
 
