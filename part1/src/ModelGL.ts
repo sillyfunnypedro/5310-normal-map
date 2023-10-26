@@ -20,8 +20,6 @@ class ModelGL {
     materialFile?: string = undefined;
     material?: Material = undefined;
     modelPath: string = '';
-    vertexShaderName: string = '';
-    fragmentShaderName: string = '';
     shaderName: string = '';
 
 

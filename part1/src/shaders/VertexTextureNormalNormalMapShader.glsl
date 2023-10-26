@@ -18,10 +18,13 @@ uniform mat4 projectionMatrix;
 uniform vec3 eyePosition;
 
 
+
+
 out vec2 textureCoordOut;
 out vec3 normalOut;
 out vec3 fragPositionOut;
 out vec3 viewDirectionOut;
+
 
 void main() {
     // calculate the gl_Position
@@ -33,6 +36,8 @@ void main() {
     // calculate the normalMatrix and transform the normal
     mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
     normalOut = normalize(normalMatrix * normal);
+    normalOut = vec3(0.0, 1.0, 0.0);
+    normalOut = normal;
 
     // calculate the viewDirection
     viewDirectionOut = normalize(eyePosition - fragPositionOut);

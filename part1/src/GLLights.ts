@@ -22,6 +22,27 @@ export class GLLights {
         return this._pointLights;
     }
 
+    getPositionsFloat32(): Float32Array {
+        let positions: number[] = [];
+        for (let light of this._pointLights) {
+            positions.push(light.position[0]);
+            positions.push(light.position[1]);
+            positions.push(light.position[2]);
+        }
+        return new Float32Array(positions);
+    }
+
+    getColorsFloat32(): Float32Array {
+        let colors: number[] = [];
+        for (let light of this._pointLights) {
+            colors.push(light.color[0]);
+            colors.push(light.color[1]);
+            colors.push(light.color[2]);
+        }
+        return new Float32Array(colors);
+    }
+
+
     addPointLight(light: GLPointLight): void {
         this._pointLights.push(light);
     }

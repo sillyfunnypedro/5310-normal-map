@@ -18,10 +18,13 @@ let frameNumber = 0;
 
 const sceneData = new SceneData();
 
-// lets add a white light to the scene
-sceneData.lights.addPointLight(new GLPointLight([-5, 10, 0], [1.0, 1.0, 1.0]));
+
 // lets add a red light to the scene
-sceneData.lights.addPointLight(new GLPointLight([5, 10, 0], [1.0, 0.0, 0.0]));
+sceneData.lights.addPointLight(new GLPointLight([5, 1, -5], [1.0, 1.0, 1.0]));
+// lets add a white light to the scene
+sceneData.lights.addPointLight(new GLPointLight([-5, 1, -5], [1.0, 1.0, 1.0]));
+sceneData.lights.addPointLight(new GLPointLight([-5, 1, 5], [1.0, 1.0, 1.0]));
+sceneData.lights.addPointLight(new GLPointLight([5, 1, 5], [1.0, 1.0, 1.0]));
 
 // Set up the canvas and WebGL context so that our rendering loop can draw on it
 // We store the gl context in the sceneData object so that we can access it later
@@ -194,6 +197,44 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
     // cache the shader program
     sceneData.model.renderingProgram = shaderProgram;
     return shaderProgram;
+}
+
+/** 
+ * set up lights for gl to use
+ * @param gl
+ * uses sceneData.lights
+ */
+function setUpLights(gl: WebGLRenderingContext, shaderProgram: WebGLProgram) {
+    if (!gl) {
+        return;
+    }
+
+    if (!sceneData.lights) {
+        return;
+    }
+
+    // we only do this for a program that has a VerteTextureNormalNormalMapShader
+    if (sceneData.model!.getVertexShaderName() !== 'vertexTextureNormalNormalMapShader') {
+        return;
+    }
+
+    // get the light position attribute location
+    const lightPositionsLocation = gl.getUniformLocation(shaderProgram, 'lightsUniform');
+    if (lightPositionsLocation === null) {
+        throw new Error('Failed to get the storage location of hack');
+    }
+    let lightPositions = sceneData.lights.getPositionsFloat32();
+    gl.uniform3fv(lightPositionsLocation, lightPositions);
+
+    // get the light color attribute location
+    const lightColorsLocation = gl.getUniformLocation(shaderProgram, 'lightColors');
+    if (lightColorsLocation === null) {
+        throw new Error('Failed to get the storage location of lightColor');
+    }
+    const colors = sceneData.lights.getColorsFloat32();
+    gl.uniform3fv(lightColorsLocation, colors);
+
+
 }
 
 
@@ -430,15 +471,16 @@ function renderLoop(): void {
 
     setUpVertexBuffer(gl, model, shaderProgram);
 
-
+    setUpLights(gl, shaderProgram);
 
 
     // SetUpTextures will set up any textures required by the model.
     setUpTextures(gl, model, shaderProgram)
 
 
-
-    if (model.vertexShaderName === "vertexTextureNormalTransformationShader") {
+    const vertexShaderName = model.getVertexShaderName();
+    // check to see if Normal is in the shader name
+    if (vertexShaderName.includes('Normal')) {
         // get the normal attribute location
         const normalLocation = gl.getAttribLocation(shaderProgram, 'normal');
 
@@ -450,27 +492,25 @@ function renderLoop(): void {
         gl.vertexAttribPointer(normalLocation, 3, gl.FLOAT, false, model.vertexStride, model.normalOffset);
     }
 
-    if (model.vertexShaderName === "vertexTextureTransformationShader"
-        || model.vertexShaderName === "vertexTransformationShader" ||
-        model.vertexShaderName === "vertexTextureNormalTransformationShader") {
-        camera.setViewPortWidth(sceneData.width);
-        camera.setViewPortHeight(sceneData.height);
+
+    camera.setViewPortWidth(sceneData.width);
+    camera.setViewPortHeight(sceneData.height);
 
 
 
-        // get the projection matrix location
-        const projectionMatrixLocation = gl.getUniformLocation(shaderProgram, 'projectionMatrix');
+    // get the projection matrix location
+    const projectionMatrixLocation = gl.getUniformLocation(shaderProgram, 'projectionMatrix');
 
-        // set the projection matrix
-        gl.uniformMatrix4fv(projectionMatrixLocation, false, camera.projectionMatrix);
+    // set the projection matrix
+    gl.uniformMatrix4fv(projectionMatrixLocation, false, camera.projectionMatrix);
 
-        // get the view matrix location
-        const viewMatrixLocation = gl.getUniformLocation(shaderProgram, 'viewMatrix');
+    // get the view matrix location
+    const viewMatrixLocation = gl.getUniformLocation(shaderProgram, 'viewMatrix');
 
-        // set the view matrix
-        gl.uniformMatrix4fv(viewMatrixLocation, false, camera.viewMatrix);
+    // set the view matrix
+    gl.uniformMatrix4fv(viewMatrixLocation, false, camera.viewMatrix);
 
-    }
+
 
 
     // get the model matrix.

@@ -251,49 +251,12 @@ class ModelParser {
         modelGL.textureOffset = this.textureOffset;
         modelGL.normalOffset = this.normalOffset;
         modelGL.vertexOffset = this.vertexOffset;
-        this.calculateVertexShaderName();
-        this.calculateFragmentShaderName();
-        modelGL.vertexShaderName = this.vertexShaderName;
-        modelGL.fragmentShaderName = this.fragmentShaderName;
         modelGL.modelPath = modelPath;
         modelGL.materialFile = this.materialFile;
 
 
     }
 
-    /**
-     * Calculate the vertex shader name
-     * @memberof ModelGL
-     * @method calculateVertexShaderName
-     */
-    private calculateVertexShaderName() {
-        if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
-            this.vertexShaderName = "vertexTextureNormalTransformationShader";
-            this._useTextureMap = true;
-        } else if (this._textureCoordinates.length > 0) {
-            this.vertexShaderName = "vertexTextureTransformationShader";
-            this._useTextureMap = true;
-        } else {
-            this.vertexShaderName = "vertexTransformationShader";
-        }
-    }
-
-    /**
-     * Calculate the fragment shader name
-     * @memberof ModelGL
-     * @method calculateFragmentShaderName
-     */
-    private calculateFragmentShaderName() {
-        if (this._textureCoordinates.length > 0 && this._normals.length > 0) {
-            this.fragmentShaderName = "fragmentTextureNormalShader";
-            this._useTextureMap = true;
-        } else if (this._textureCoordinates.length > 0) {
-            this.fragmentShaderName = "fragmentTextureShader";
-            this._useTextureMap = true;
-        } else {
-            this.fragmentShaderName = "fragmentShaderBasic";
-        }
-    }
 
     /**
      * Parse a triangle from the face data

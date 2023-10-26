@@ -10,8 +10,13 @@ in vec2 textureCoordOut;
 in vec3 normalOut;
 in vec3 fragPositionOut;
 in vec3 viewDirectionOut;
+
+
 uniform sampler2D textureSampler;
 uniform sampler2D normalSampler;
+uniform vec3 lightColors[4];
+uniform vec3 lightsUniform[4];
+int lightCount = 4;
 
 out vec4 color;
 
@@ -23,7 +28,7 @@ vec4 blinnPhongShader(vec3 normal,
         float shininess,
         float Kd,
         float Ka,
-        float Ks, float shine) {
+        float Ks) {
         // phong lighting for light one
 
         // calculate the diffuse intensity
@@ -60,30 +65,58 @@ vec4 blinnPhongShader(vec3 normal,
         }
 
 
-
 void main() {
     vec3 normal = normalize(normalOut);
-    vec3 lightPosition = vec3(5,2,5);
-
-    vec3 lightDirection = normalize(lightPosition - fragPositionOut);
-
-    vec4 lightColor = vec4(1.0, 1.0, 1.0, 1.0);
-    vec4 surfaceColor = vec4(1.0, 1.0, 1.0, 1.0);
-
     
-
+    
 
     
     vec2 textureCoord = vec2(textureCoordOut.x, 1.0 - textureCoordOut.y);
     vec4 textureColor = texture(textureSampler, textureCoord);
 
     vec3 normalVector = texture(normalSampler, textureCoord).rgb;
-   
-    color = blinnPhongShader(normalVector, 
-    lightDirection, 
-    viewDirectionOut,
-    lightColor, 
-    textureColor, 1.0, 0.5, 0.1, 1.0, 40.0);
+
+    // calculate the TBN matrix
+    vec3 pos_dx = dFdx(fragPositionOut);
+    vec3 pos_dy = dFdy(fragPositionOut);
+
+    vec2 tex_dx = dFdx(textureCoordOut);    
+    vec2 tex_dy = dFdy(textureCoordOut);
+
+    vec3 t = normalize(pos_dx * tex_dy.t - pos_dy * tex_dx.t);
+    vec3 b = normalize(-pos_dx * tex_dy.s + pos_dy * tex_dx.s);
+
+    vec3 n = normalize(normalOut);
+
+    mat3 TBN = mat3(t, b, n);
+
+    normalVector = normalize(normalVector * 2.0 - 1.0);
+    normalVector = normalize(TBN * normalVector);
+    normalVector = normal;
+
+    // calculate the lighting for all the lights
+    color = vec4(lightsUniform[0], 1);
+    color = vec4(0.0, 0.0, 0.0, 1.0);
+    for (int i = 0; i < lightCount; i++) {
+        vec3 lightPosition = lightsUniform[i];
+        
+        //lightPosition = vec3(1.0,0.0,0.0);
+        vec3 lightDirection = normalize(lightPosition - fragPositionOut);
+        vec4 lightColor = vec4(lightColors[i], 1.0);
+        lightColor = vec4(1.0, 1.0, 1.0, 1.0);
+        color += blinnPhongShader(normalVector,
+        lightDirection,
+        viewDirectionOut,
+        lightColor,
+        textureColor,
+        100.0,
+        0.8,
+        0.1,
+        0.1);
+        
+        // color = vec4(hack, 1);
+    }
+    color = color / float(lightCount);
 
     
 
