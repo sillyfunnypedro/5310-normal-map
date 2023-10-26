@@ -61,7 +61,7 @@ vec4 blinnPhongShader(vec3 normal,
 
 void main() {
     vec3 normal = normalize(normalOut);
-    vec3 lightDirection = normalize(vec3(1,1, 1));
+    vec3 lightDirection = normalize(vec3(0,1, 0));
     vec4 lightColor = vec4(1.0, 1.0, 1.0, 1.0);
     float ambientIntensity = 0.0;
     float lightIntensity = dot(normal, lightDirection);
@@ -83,11 +83,11 @@ void main() {
 
     vec3 normalVector = texture(normalSampler, textureCoord).rgb;
    
-
+    color = blinnPhongShader(normalVector, lightDirection, vec3(1,1,1), lightColor, vec4(1.0, 1.0, 1.0, 1.0), 1.0, 0.5, 0.1, 1.0, 40.0);
 
     // multiply the color by the light intensity (after you get the texture value)
 
-    color = vec4(normalVector, 1.0);
+    // color = vec4(normalVector, 1.0);
 
 
 }

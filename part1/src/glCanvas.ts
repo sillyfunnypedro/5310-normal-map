@@ -7,6 +7,7 @@ import PPMFileLoader from './PPMFileLoader';
 
 import shaderSourceCodeMap from './ShaderManager';
 import SceneData from './SceneData';
+import { GLPointLight, GLLights } from './GLLights';
 
 
 // measure the FPS
@@ -16,6 +17,11 @@ let frameNumber = 0;
 
 
 const sceneData = new SceneData();
+
+// lets add a white light to the scene
+sceneData.lights.addPointLight(new GLPointLight([-5, 10, 0], [1.0, 1.0, 1.0]));
+// lets add a red light to the scene
+sceneData.lights.addPointLight(new GLPointLight([5, 10, 0], [1.0, 0.0, 0.0]));
 
 // Set up the canvas and WebGL context so that our rendering loop can draw on it
 // We store the gl context in the sceneData object so that we can access it later
@@ -277,7 +283,7 @@ function setUpTextures(gl: WebGLRenderingContext,
 
     if (model.hasDiffuseMap) {
         if (model.diffuseTexture === null) {
-            model.diffuseTexture = setUpTexture(gl, model, shaderProgram, gl.TEXTURE0, 'map_Kd', 'textureSampler');
+            model.diffuseTexture = setUpTexture(gl, model, shaderProgram, 0, 'map_Kd', 'textureSampler');
         }
         if (model.diffuseTexture === null) {
             throw new Error("Failed to set up diffuse texture, it was expected to be there but it was not");
@@ -285,10 +291,13 @@ function setUpTextures(gl: WebGLRenderingContext,
     }
 
     if (model.hasNormalMap) {
-        model.normalTexture = setUpTexture(gl, model, shaderProgram, gl.TEXTURE1, 'map_Bump', 'normalSampler');
+        if (model.normalTexture === null) {
+            model.normalTexture = setUpTexture(gl, model, shaderProgram, 1, 'map_Bump', 'normalSampler');
+        }
         if (model.normalTexture === null) {
             throw new Error("Failed to set up normal texture, it was expected to be there but it was not");
         }
+
     }
 
     return true;

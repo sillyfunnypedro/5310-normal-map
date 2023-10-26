@@ -1,6 +1,9 @@
 import Camera from "./Camera";
 import ModelGL from "./ModelGL";
 
+import { GLPointLight, GLLights } from "./GLLights";
+
+
 
 
 class SceneData {
@@ -20,6 +23,8 @@ class SceneData {
     scaleY: number = 1;
     scaleZ: number = 1;
     frameNumber: number = 0;
+
+    lights: GLLights = new GLLights();
 
 }
 
