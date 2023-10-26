@@ -20,11 +20,11 @@ const sceneData = new SceneData();
 
 
 // lets add a red light to the scene
-sceneData.lights.addPointLight(new GLPointLight([5, 1, -5], [1.0, 1.0, 1.0]));
+sceneData.lights.addPointLight(new GLPointLight([5, 5, -5], [1.0, 1.0, 1.0]));
 // lets add a white light to the scene
-sceneData.lights.addPointLight(new GLPointLight([-5, 1, -5], [1.0, 1.0, 1.0]));
-sceneData.lights.addPointLight(new GLPointLight([-5, 1, 5], [1.0, 1.0, 1.0]));
-sceneData.lights.addPointLight(new GLPointLight([5, 1, 5], [1.0, 1.0, 1.0]));
+sceneData.lights.addPointLight(new GLPointLight([-5, 5, -5], [1.0, 1.0, 1.0]));
+sceneData.lights.addPointLight(new GLPointLight([-5, 5, 5], [1.0, 1.0, 1.0]));
+sceneData.lights.addPointLight(new GLPointLight([5, 5, 5], [1.0, 1.0, 1.0]));
 
 // Set up the canvas and WebGL context so that our rendering loop can draw on it
 // We store the gl context in the sceneData object so that we can access it later

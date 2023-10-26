@@ -10,6 +10,7 @@ class SceneData {
     glContext: WebGLRenderingContext | null = null;
     camera: Camera | null = null;
     model: ModelGL | null = null;
+    models: Array<ModelGL> = [];
     width: number = 0;
     height: number = 0;
 

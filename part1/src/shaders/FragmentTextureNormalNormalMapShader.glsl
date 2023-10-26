@@ -59,21 +59,18 @@ vec4 blinnPhongShader(vec3 normal,
         vec4 ambient = lightColor * surfaceColor * Ka;
 
         // calculate the final light
-        vec4 blinnColor = ambient + (lightIntensity * surfaceColor) + (specularIntensity * lightColor);
+        vec4 blinnColor = ambient + (lightIntensity * surfaceColor * lightColor) + (specularIntensity * lightColor);
         return blinnColor/(Ka+Kd+Ks);
         
         }
 
 
 void main() {
-    vec3 normal = normalize(normalOut);
-    
-    
-
-    
+    // flip the y coordinate since all of our images are upside down.
     vec2 textureCoord = vec2(textureCoordOut.x, 1.0 - textureCoordOut.y);
     vec4 textureColor = texture(textureSampler, textureCoord);
 
+    // get the normal from the normal map.
     vec3 normalVector = texture(normalSampler, textureCoord).rgb;
 
     // calculate the TBN matrix
@@ -92,18 +89,14 @@ void main() {
 
     normalVector = normalize(normalVector * 2.0 - 1.0);
     normalVector = normalize(TBN * normalVector);
-    normalVector = normal;
 
     // calculate the lighting for all the lights
     color = vec4(lightsUniform[0], 1);
     color = vec4(0.0, 0.0, 0.0, 1.0);
     for (int i = 0; i < lightCount; i++) {
         vec3 lightPosition = lightsUniform[i];
-        
-        //lightPosition = vec3(1.0,0.0,0.0);
         vec3 lightDirection = normalize(lightPosition - fragPositionOut);
         vec4 lightColor = vec4(lightColors[i], 1.0);
-        lightColor = vec4(1.0, 1.0, 1.0, 1.0);
         color += blinnPhongShader(normalVector,
         lightDirection,
         viewDirectionOut,
@@ -111,10 +104,9 @@ void main() {
         textureColor,
         100.0,
         0.8,
-        0.1,
-        0.1);
+        0.2,
+        2.0);
         
-        // color = vec4(hack, 1);
     }
     color = color / float(lightCount);
 
