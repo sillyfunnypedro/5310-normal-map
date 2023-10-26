@@ -15,20 +15,28 @@ layout(location=2) in vec3 normal;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+uniform vec3 eyePosition;
+
 
 out vec2 textureCoordOut;
 out vec3 normalOut;
-out vec3 fragOutPosition;
+out vec3 fragPositionOut;
+out vec3 viewDirectionOut;
 
 void main() {
+    // calculate the gl_Position
     gl_Position =   projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 
     // calculate the fragOutPosition
-    fragOutPosition = vec3(modelMatrix * vec4(position, 1.0));
+    fragPositionOut = vec3(modelMatrix * vec4(position, 1.0));
 
-    // calculate the normalMatrix
+    // calculate the normalMatrix and transform the normal
     mat3 normalMatrix = transpose(inverse(mat3(modelMatrix)));
     normalOut = normalize(normalMatrix * normal);
+
+    // calculate the viewDirection
+    viewDirectionOut = normalize(eyePosition - fragPositionOut);
     
+    // pass the texture coordinate through
     textureCoordOut = textureCoord;
 }

@@ -64,8 +64,17 @@ export const setupCanvas = function () {
 
 }
 
-
+// for now the scene is contained here in glCanvas when a scene is pulled out
+// then this needs to go outside of this file.
 export function updateSceneData(model: ModelGL | null, camera: Camera | null): void {
+    if (!sceneData) {
+        return;
+    }
+
+    // We know we need to clean up the textures when we switch models
+
+    cleanUpTextures(sceneData.glContext!, sceneData.model!);
+
 
     sceneData.camera = camera;
     sceneData.model = model;
@@ -188,7 +197,16 @@ function compileProgram(gl: WebGLRenderingContext): WebGLProgram | null {
 }
 
 
-
+/**
+ * setUpTexture for gl to use.   
+ * @param gl 
+ * @param model 
+ * @param shaderProgram 
+ * @param textureUnit 
+ * @param textureType 
+ * @param samplerName 
+ * @returns 
+ */
 function setUpTexture(gl: WebGLRenderingContext,
     model: ModelGL,
     shaderProgram: WebGLProgram,
@@ -269,6 +287,14 @@ function setUpTexture(gl: WebGLRenderingContext,
     return texture;
 }
 
+/**
+ * setUpTextures based on what the model needs.
+ * If the model already has the textures then we are done.
+ * @param gl 
+ * @param model 
+ * @param shaderProgram 
+ * @returns 
+ */
 function setUpTextures(gl: WebGLRenderingContext,
     model: ModelGL,
     shaderProgram: WebGLProgram): boolean {
@@ -304,6 +330,29 @@ function setUpTextures(gl: WebGLRenderingContext,
 
 }
 
+function cleanUpTextures(gl: WebGLRenderingContext, model: ModelGL) {
+    if (!gl) {  // this should probably throw an error
+        return;
+    }
+    if (!model) {  // as should this, also throw an error
+        return;
+    }
+
+    if (model.hasDiffuseMap) {
+        if (model.diffuseTexture !== null) {
+            gl.deleteTexture(model.diffuseTexture);
+            model.diffuseTexture = null;
+        }
+    }
+
+    if (model.hasNormalMap) {
+        if (model.normalTexture !== null) {
+            gl.deleteTexture(model.normalTexture);
+            model.normalTexture = null;
+        }
+    }
+}
+
 function setUpVertexBuffer(gl: WebGLRenderingContext,
     model: ModelGL,
     shaderProgram: WebGLProgram) {
@@ -334,6 +383,8 @@ function setUpVertexBuffer(gl: WebGLRenderingContext,
     // colors per vertex
     gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, model.vertexStride, 0);
 }
+
+
 
 
 function renderLoop(): void {
@@ -380,7 +431,7 @@ function renderLoop(): void {
     setUpVertexBuffer(gl, model, shaderProgram);
 
 
-    let texture: WebGLTexture | null = null;
+
 
     // SetUpTextures will set up any textures required by the model.
     setUpTextures(gl, model, shaderProgram)
@@ -480,9 +531,7 @@ function renderLoop(): void {
         gl.drawElements(gl.TRIANGLES, model.vertexIndices.length, gl.UNSIGNED_SHORT, 0);
     }
 
-    if (texture !== null) {
-        gl.deleteTexture(texture);
-    }
+
     gl.flush();
     gl.finish();
 
