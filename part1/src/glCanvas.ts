@@ -19,12 +19,14 @@ let frameNumber = 0;
 const sceneData = new SceneData();
 
 
-// lets add a red light to the scene
-sceneData.lights.addPointLight(new GLPointLight([5, 5, -5], [1.0, 1.0, 1.0]));
-// lets add a white light to the scene
-sceneData.lights.addPointLight(new GLPointLight([-5, 5, -5], [1.0, 1.0, 1.0]));
-sceneData.lights.addPointLight(new GLPointLight([-5, 5, 5], [1.0, 1.0, 1.0]));
-sceneData.lights.addPointLight(new GLPointLight([5, 5, 5], [1.0, 1.0, 1.0]));
+// lets add a light in the center of the scene
+sceneData.lights.addPointLight(new GLPointLight([0, 5, 0], [1.0, 1.0, 1.0]));
+
+// sceneData.lights.addPointLight(new GLPointLight([5, 5, -5], [1.0, 1.0, 1.0]));
+// // lets add a white light to the scene
+// sceneData.lights.addPointLight(new GLPointLight([-5, 5, -5], [1.0, 1.0, 1.0]));
+// sceneData.lights.addPointLight(new GLPointLight([-5, 5, 5], [1.0, 1.0, 1.0]));
+// sceneData.lights.addPointLight(new GLPointLight([5, 5, 5], [1.0, 1.0, 1.0]));
 
 // Set up the canvas and WebGL context so that our rendering loop can draw on it
 // We store the gl context in the sceneData object so that we can access it later
@@ -357,15 +359,15 @@ function setUpTextures(gl: WebGLRenderingContext,
         }
     }
 
-    if (model.hasNormalMap) {
-        if (model.normalTexture === null) {
-            model.normalTexture = setUpTexture(gl, model, shaderProgram, 1, 'map_Bump', 'normalSampler');
-        }
-        if (model.normalTexture === null) {
-            throw new Error("Failed to set up normal texture, it was expected to be there but it was not");
-        }
+    // if (model.hasNormalMap) {
+    //     if (model.normalTexture === null) {
+    //         model.normalTexture = setUpTexture(gl, model, shaderProgram, 1, 'map_Bump', 'normalSampler');
+    //     }
+    //     if (model.normalTexture === null) {
+    //         throw new Error("Failed to set up normal texture, it was expected to be there but it was not");
+    //     }
 
-    }
+    // }
 
     return true;
 

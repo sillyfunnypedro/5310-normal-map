@@ -13,10 +13,10 @@ in vec3 viewDirectionOut;
 
 
 uniform sampler2D textureSampler;
-uniform sampler2D normalSampler;
-uniform vec3 lightColors[4];
-uniform vec3 lightsUniform[4];
-int lightCount = 4;
+// add a normal sampler here that matches the glCanvas texture set up for normals.
+uniform vec3 lightColors[1];
+uniform vec3 lightsUniform[1];
+int lightCount = 1;
 
 out vec4 color;
 
@@ -71,24 +71,17 @@ void main() {
     vec4 textureColor = texture(textureSampler, textureCoord);
 
     // get the normal from the normal map.
-    vec3 normalVector = texture(normalSampler, textureCoord).rgb;
+    //TODO add the normal sampler here.
+    vec3 normalVector = normalOut;//TODO get rid of this when you add the normal map.
+    // Compute the TBN matrix here.
 
-    // calculate the TBN matrix
-    vec3 pos_dx = dFdx(fragPositionOut);
-    vec3 pos_dy = dFdy(fragPositionOut);
+    // Use the differential operators dFdx and dFdy to compute the tangent and bitangent vectors.
+  
 
-    vec2 tex_dx = dFdx(textureCoordOut);    
-    vec2 tex_dy = dFdy(textureCoordOut);
-
-    vec3 t = normalize(pos_dx * tex_dy.t - pos_dy * tex_dx.t);
-    vec3 b = normalize(-pos_dx * tex_dy.s + pos_dy * tex_dx.s);
-
-    vec3 n = normalize(normalOut);
-
-    mat3 TBN = mat3(t, b, n);
-
+    // construct the TBN matrix
+    
     normalVector = normalize(normalVector * 2.0 - 1.0);
-    normalVector = normalize(TBN * normalVector);
+    //normalVector = normalize(TBN * normalVector);// 
 
     // calculate the lighting for all the lights
     color = vec4(lightsUniform[0], 1);
